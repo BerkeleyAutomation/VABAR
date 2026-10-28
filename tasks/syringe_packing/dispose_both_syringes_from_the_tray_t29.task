@@ -1,0 +1,131 @@
+; -*- mode: lisp -*-
+; TRIAL 29 of 30 in the tray_pair_both layout sweep: the whole tray
+; arrangement yawed +11.6 deg about the goal syringe and shifted by
+; (+0.0539, -0.0048) m in the bench plane; the sharps box shifted by
+; (+0.0229, +0.0006) m. All drawn from numpy default_rng(seed=0):
+; shift uniform(+-0.06) m, yaw uniform(+-25.0) deg, box uniform(+-0.03) m.
+; Written by tools/make_tray_pair_trials.py from dispose_both_syringes_from_the_tray.task; the
+; layout is start_poses/tray_pair_both_t29.json. Everything else is the base document's.
+; AUTHORED, over the `syringe` export, as `dispose_the_syringe_from_the_tray`
+; with its goal widened to BOTH syringes (level 1 of the packing work). That
+; document's goal is one syringe posted through the sharps box's aperture,
+; under the same reproduction binding -- and what this document adds is the
+; SCENE: the syringe lies in VAB-industrial's instrument tray beside one
+; identical spare, instead of alone on the bare workbench.
+;
+; WHY A SPARE, AND WHY ONLY ONE. VAB-industrial's own
+; `put_ten_syringes_in_the_sharps_box.bddl` racks ten and asks for all ten. Ten
+; identical barrels defeated the perception graph -- ten detections are one
+; ambiguity per neighbour, and the grasp went to a mid-row neighbour 160 mm
+; from the goal -- and looping the routine and the graph over ten would be a
+; different task. One spare, 90 mm from the goal along the tray's long axis,
+; keeps the packing-work read of the scene without staging that ambiguity:
+; an open Panda's fingers sweep +/-37 mm plus a pad, so anything nearer than
+; ~58 mm catches a fingertip on the descent, and 90 mm is 66 mm of clear air
+; between 23.6 mm barrels. The spare is scenery to the goal: it is declared so
+; the scene says what is in it, and no clause reads it.
+;
+; WHERE THINGS ARE. BDDL has no coordinates. `start_poses/tray_pair.json` is
+; the layout the loader reads: the goal syringe at the export's own settled
+; pose lifted onto the tray's floor, the spare one spacing along the row, the
+; tray yawed a quarter turn from the syringe's heading so its 400 mm axis
+; carries the pair, centred on their midpoint. That file was written by the
+; loader that used to compute all of this at build, and is the layout the
+; validated episode ran on (outputs/ten_syringes-rerun-20260909b, reward 1.0).
+;
+; THE TRAY DOES NOT COLLIDE AS DRAWN. Its MJCF collides as the mesh's convex
+; hull, which fills the pan solid; the loader stands an invisible floor slab
+; inside the cavity instead, the way VAB-industrial's own environment builds
+; box colliders against the mesh's cavity sites. See task.py.
+; ---------------------------------------------------------------------------
+
+(define (problem DISPOSE_BOTH_SYRINGES_FROM_THE_TRAY_T29)
+  (:domain robosuite)
+
+  (:language pick up each syringe from the instrument tray, one at a time, and
+             drop it through the hole in the top of the yellow sharps disposal
+             box, until both are in the box)
+
+  (:staging
+    (:profile vab_industrial@v2)
+    ; The same dumped scene `syringe` builds from: bins, bench, sharps box and
+    ; the goal syringe's settled pose. The tray and the spare are not in it;
+    ; they arrive from the loader at the poses named above.
+    (:export vab_tool_sort/syringe)
+    ; Two container goals: the single-syringe document's 11400 (2400 for the
+    ; goal plus a flat 9000 for a container goal, retried once) for each
+    ; syringe. Measured: one posting is 3500-5200 control steps.
+    (:max-steps 22800)
+  )
+
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    ; Welded into bin2 as geometry rather than a body of its own, so it has a
+    ; frame and no handle. The export records the offset.
+    syringe_box - sharps_box
+    ; Stands on the bench under both syringes. A fixture rather than an
+    ; object: nothing moves it and nothing scores against it.
+    syringe_tray - instrument_tray
+  )
+
+  (:objects
+    syringe_0 syringe_pack_0 - syringe
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as
+  ; (x0 y0 x1 y1), exactly as `put_the_syringe_in_the_sharps_box` states them.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        (:ranges ((-0.0445 -0.083 0.0445 0.083)))
+    )
+  )
+
+  ; No init constraint: both syringes start in the tray where the layout puts
+  ; them, and an init is verified after settling -- stating one the export did
+  ; not dump would be stating something unverified.
+  (:init)
+
+  ; Both syringes, in any order. Level 1 of the packing work: the spare is
+  ; no longer scenery -- the graph loops the same perceive/grasp/carry/post
+  ; pipeline over every syringe left in the tray, and this goal is what
+  ; scores it. The scene, layout and regions are the single-syringe
+  ; document's, so the 30-layout sweep of that document applies here as is.
+  (:goal
+    (and
+      (In syringe_0 syringe_box_region)
+      (In syringe_pack_0 syringe_box_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSharpsDisposal")
+    (:tools   "tools:register_sharps_disposal_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus over the 
+              VAB-industrial ToolSortPickPlace `syringe` export (robosuite 1.4.0,
+              MuJoCo 3.3.3, seed 0). The goal and regions are
+              put_the_syringe_in_the_sharps_box's; the tray and the spare restate
+              the scenery of VAB-industrial's put_ten_syringes_in_the_sharps_box
+              without its all-ten goal.")
+    (:note "Formerly the loader-only variant `ten_syringes`, which aliased the
+            single-syringe document and built the tray and the spare in Python.
+            The instrument tray mesh is VAB-industrial's own (add-all-syringes-
+            sharps-box branch, assets/objects/_utils/make_tray.py), vendored
+            under assets/instrument_tray.")
+  )
+)

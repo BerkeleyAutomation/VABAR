@@ -1,0 +1,248 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "cable_route_gt",
+    "description": "Route the cable using ground truth: the suite's live-planned joint-space stages (sim.plan_route, grasp solved against the actual cable with yaw across its tangent), calibrated partial grips (sim.set_gripper), a hold check off the chain's true geometry, and a verify that reads the same winding/placement measure the evaluator scores. One workflow serves both variants: stages are addressed by boundary names, not by list."
+  },
+  "nodes": {
+    "route": {
+      "type": "subgraph",
+      "ref": "route_sg"
+    },
+    "verify": {
+      "type": "subgraph",
+      "ref": "verify_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "sim.set_gripper",
+          "inputs": {
+            "width": -1
+          }
+        }
+      ]
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "route"
+    ]
+  ],
+  "conditional_edges": {
+    "route": {
+      "router_field": "exit",
+      "mapping": {
+        "released": "verify",
+        "missed": "abort",
+        "errored": "abort",
+        "unreachable": "abort"
+      }
+    },
+    "verify": {
+      "router_field": "exit",
+      "mapping": {
+        "routed": "done",
+        "short": "abort"
+      }
+    }
+  },
+  "subgraphs": {
+    "route_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "scripts/plan_route.py",
+          "inputs": {}
+        },
+        "open": {
+          "type": "script",
+          "script": "scripts/grip_cable.py",
+          "inputs": {
+            "width_m": -1,
+            "settle_steps": 12
+          }
+        },
+        "reach": {
+          "type": "script",
+          "script": "scripts/run_span.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stop_before": "close_hold"
+          }
+        },
+        "grip": {
+          "type": "script",
+          "script": "scripts/grip_cable.py",
+          "inputs": {
+            "width_m": 0.003,
+            "settle_steps": 42,
+            "latch": "hold"
+          }
+        },
+        "check_hold": {
+          "type": "script",
+          "script": "scripts/verify_hold.py",
+          "inputs": {}
+        },
+        "missed": {
+          "type": "noop"
+        },
+        "carry": {
+          "type": "script",
+          "script": "scripts/run_span.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "start_after": "close_hold",
+            "stop_before": "release_hold",
+            "merge": true
+          }
+        },
+        "release": {
+          "type": "script",
+          "script": "scripts/grip_cable.py",
+          "inputs": {
+            "width_m": -1,
+            "settle_steps": 48,
+            "latch": "release"
+          }
+        },
+        "retract": {
+          "type": "script",
+          "script": "scripts/run_span.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "start": "retract"
+          }
+        },
+        "released": {
+          "type": "noop"
+        },
+        "unreachable": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "open",
+          "reach"
+        ],
+        [
+          "reach",
+          "grip"
+        ],
+        [
+          "grip",
+          "check_hold"
+        ],
+        [
+          "carry",
+          "release"
+        ],
+        [
+          "release",
+          "retract"
+        ],
+        [
+          "retract",
+          "released"
+        ],
+        [
+          "released",
+          "END"
+        ],
+        [
+          "missed",
+          "END"
+        ],
+        [
+          "unreachable",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "plan": {
+          "router_field": "route",
+          "mapping": {
+            "planned": "open",
+            "unreachable": "unreachable"
+          }
+        },
+        "check_hold": {
+          "router_field": "route",
+          "mapping": {
+            "held": "carry",
+            "missed": "missed"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "released",
+          "missed",
+          "unreachable"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "verify_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "check": {
+          "type": "script",
+          "script": "scripts/verify_route.py",
+          "inputs": {}
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "check"
+        ],
+        [
+          "check",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "routed",
+          "short"
+        ]
+      }
+    }
+  }
+}

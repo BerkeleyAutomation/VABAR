@@ -1,0 +1,99 @@
+{
+  "variant": "tray_clutter_t24",
+  "settled_from": "tools/make_tray_clutter_trials.py: 5 syringes packed into tray_pair's own tray pose (itself the export's settled syringe_0 pose, lifted onto the tray floor).",
+  "objects": {
+    "syringe_0": {
+      "pose": [
+        -0.023054,
+        -0.420524,
+        0.795825
+      ],
+      "quat": [
+        -0.002484,
+        0.006214,
+        0.937145,
+        -0.348874
+      ]
+    },
+    "syringe_pack_0": {
+      "pose": [
+        0.050454,
+        -0.312697,
+        0.795825
+      ],
+      "quat": [
+        -0.003915,
+        0.005427,
+        0.824749,
+        -0.565458
+      ]
+    },
+    "syringe_pack_1": {
+      "pose": [
+        0.091071,
+        -0.30154,
+        0.795825
+      ],
+      "quat": [
+        -0.002951,
+        0.006006,
+        0.907727,
+        -0.419508
+      ]
+    },
+    "syringe_pack_2": {
+      "pose": [
+        0.126892,
+        -0.212436,
+        0.795825
+      ],
+      "quat": [
+        -0.004038,
+        0.005336,
+        0.811573,
+        -0.584212
+      ]
+    },
+    "syringe_pack_3": {
+      "pose": [
+        0.151792,
+        -0.189434,
+        0.795825
+      ],
+      "quat": [
+        -0.004597,
+        0.004863,
+        0.742904,
+        -0.669364
+      ]
+    }
+  },
+  "fixtures": {
+    "syringe_tray": {
+      "pose": [
+        0.085551,
+        -0.280082,
+        0.785025
+      ],
+      "quat": [
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    }
+  },
+  "box_shift": [
+    0.003452,
+    0.00622
+  ],
+  "trial": {
+    "index": 24,
+    "of": 30,
+    "n_syringes": 5,
+    "box_shift_m": [
+      0.003452,
+      0.00622
+    ]
+  }
+}

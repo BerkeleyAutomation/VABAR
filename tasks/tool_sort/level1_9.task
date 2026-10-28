@@ -1,0 +1,131 @@
+; -----------------------------------------------------------------------
+; MACHINE-DRAFTED by build_sort_scene.py, which is NOT IN THIS TREE: it lives
+; on the gap-perception-level1 branch this tier was ported from, and was left
+; there deliberately -- it is one 3,900-line module that would be the largest
+; file in the repository, and porting it is a split, not a copy. Regenerating
+; this document therefore needs that branch. Read it before it ships:
+; the structure below is generated and the argument is not. Every other
+; document in this directory says why its object set is worth staging,
+; and that is the part a generator cannot write.
+;
+; provenance.tier: derived
+; source-of-record: assets/vab_tool_sort/level1/level1_9/
+;
+; MEASURED ON THE SHIPPED SIDECAR, in metres (longest x middle x shortest):
+;
+;   tactical_flashlight      0.120 x 0.030 x 0.028   0.122 kg
+;   crimping_pliers          0.214 x 0.062 x 0.020   0.150 kg
+;   cyanoacrylate_glue       0.092 x 0.031 x 0.031   0.030 kg
+;   painters_tape            0.073 x 0.073 x 0.014   0.023 kg
+;
+; EVERY OBJECT IS SEPARATED. bin1 is scattered rather than dropped as a pile,
+; so a grasp is never a two-object problem: nothing rests on anything, and the
+; fingers can close on any object without first moving another. The
+; least free floor between any two objects is 25.7 mm (industrial_crimping_pliers_0 <-> industrial_cyanoacrylate_glue_0),
+; and between any object and a bin wall 22.4 mm.
+;
+; AND SEPARATED IS NOT THE SAME AS REACHABLE. Clear floor beside an object is
+; room for the FINGERS; the hand above them is wider. A 2F-85 is 42.6 mm each
+; side of the tool centre for the first 60 mm above its fingertips and 74.9 mm
+; at the coupler above that, while bin1's walls stand 80 mm proud of its floor,
+; so the coupler is the widest thing that has to pass inside them. Every
+; object's CENTRE is kept 80 mm from the two walls ITS OWN jaws close
+; towards -- a lengthwise object closes along y and a turned one along x, and
+; the rule is per object. The tightest centre-to-wall here is 89.5 mm.
+;
+; DRAWN AT SEED 9: each object's yaw off the two axis-aligned choices, then
+; its position, uniformly over the floor that object is allowed and rejected
+; against what is already down. Rebuilding this scene means that seed and this
+; script; the poses in the sidecar are the record either way.
+;
+; SETTLED for 3000 steps in the exported model, which is what the poses
+; below are recorded from. The deepest contact is 0.11 mm.
+; -----------------------------------------------------------------------
+
+(define (problem LEVEL1/LEVEL1_9)
+  (:domain robosuite)
+
+  (:language sort the 4 items out of bin1 into the compartment of
+             bin2 whose label names each one)
+
+  (:staging
+    (:profile vab_industrial_robotiq@v1)
+    ; The Robotiq profile welds its own hand on, so the export has to arrive
+    ; WITHOUT a robot in it -- scene.xml has the Franka-handed Panda already
+    ; inside, and importing both stands two arms in one cell.
+    (:export vab_tool_sort/level1/level1_9
+      (:file scene_norobot.xml))
+    ; 2400 per goal x 4 goals.
+    (:max-steps 9600)
+  )
+
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+
+  (:objects
+    industrial_tactical_flashlight_0 - tactical_flashlight
+    industrial_crimping_pliers_0 - crimping_pliers
+    industrial_cyanoacrylate_glue_0 - cyanoacrylate_glue
+    industrial_painters_tape_0 - painters_tape
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as (x0 y0 x1 y1).
+  ; bin2's compartments are the quadrants of its floor.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_tactical_flashlight_region
+        (:target bin2)
+        (:ranges ((0.0 0.0 0.195 0.245)))
+    )
+    (bin2_crimping_pliers_region
+        (:target bin2)
+        (:ranges ((-0.195 -0.245 0.0 0.0)))
+    )
+    (bin2_cyanoacrylate_glue_region
+        (:target bin2)
+        (:ranges ((-0.195 0.0 0.0 0.245)))
+    )
+    (bin2_painters_tape_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+  )
+
+  (:init
+    (In industrial_tactical_flashlight_0 bin1_region)
+    (In industrial_crimping_pliers_0 bin1_region)
+    (In industrial_cyanoacrylate_glue_0 bin1_region)
+    (In industrial_painters_tape_0 bin1_region)
+  )
+
+  (:goal
+    (And
+      (In industrial_tactical_flashlight_0 bin2_tactical_flashlight_region)
+      (In industrial_crimping_pliers_0 bin2_crimping_pliers_region)
+      (In industrial_cyanoacrylate_glue_0 bin2_cyanoacrylate_glue_region)
+      (In industrial_painters_tape_0 bin2_painters_tape_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSortFaces")
+    (:tools   "tools:register_tool_sort_tools")
+    ; Registered by NAME, not by directory -- the runner looks the graph up on
+    ; the task rather than by path, and refuses a --graph it cannot find rather
+    ; than running a workflow that would score zero and read like a policy
+    ; failure. Both graphs live beside the suite, shared with every variant.
+    (:graph gt "graphs/gt")
+    (:graph gap_perception_loop "graphs/gap_perception_loop")
+  )
+
+  (:provenance
+    (:tier derived)
+    (:source "generated by tools/build_sort_scene.py from assets/vab_tool_sort/scene.xml,
+              mujoco 3.11.0")
+  )
+)

@@ -1,0 +1,86 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED, over a ported scene -- see wrenches.bddl for the family's design.
+;
+; WHAT THIS ONE CHANGES: no closed loop exists on a plier, so the geometry
+; clause is a region rather than a threading. A plier hangs with its handle
+; gap over the triangular support's tip; where its body origin ends up when
+; genuinely seated is a box the support's own frame carries, and the load and
+; rest clauses are the family's usual pair. The boxes below are sized around
+; the routine's measured hang targets and are expected to be tightened once
+; against a settled hang -- wrap.bddl's own calibration method.
+;
+; RANGES ARE WORLD-AXIS OFFSETS FROM THE TARGET'S ORIGIN (the frame is a
+; translation, not a rotation -- see RegionHandle). The support's origin
+; stands at world (0.7498, y_support + 0.1634, 0.9034); its tip at
+; (0.8523, y_support, 0.9200). The box spans the tip plane's neighbourhood:
+; x 0.072..0.143, y -0.203..-0.123 relative, z -0.02..0.10 about the origin --
+; the measured hang rests a plier's origin 2 mm below the support origin plane.
+; ---------------------------------------------------------------------------
+
+(define (problem HANG_THE_TWO_PLIERS)
+
+  (:suite tool_hanging)
+
+  (:language hang plier 1 on the left triangular support, then plier 2 on the
+             right support)
+
+  (:staging
+    ; Cell, arms, arrangement and rig are tool_hanging.suite's; the budget is ours.
+    (:physics tool_hanging_480hz@v1)
+    (:max-steps 2800)
+  )
+
+  (:objects
+    plier_1 - plier_combination
+    plier_2 - plier_cutter
+  )
+
+  (:fixtures
+    ; Each support typed by its station, 75 mm either side of the board centre.
+    plier_support_left  - plier_support_left
+    plier_support_right - plier_support_right
+  )
+
+  (:regions
+    (hang_left  (:target plier_support_left)  (:ranges ((0.072 -0.203 0.143 -0.123))) (:z-range -0.02 0.10))
+    (hang_right (:target plier_support_right) (:ranges ((0.072 -0.203 0.143 -0.123))) (:z-range -0.02 0.10))
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (And
+        (>= (containment plier_1 hang_left) 1.0)
+        (>= (contact-force plier_1 plier_support_left) 0.2)
+        (<= (speed plier_1) 0.05)
+      )
+      (And
+        (>= (containment plier_2 hang_right) 1.0)
+        (>= (contact-force plier_2 plier_support_right) 0.2)
+        (<= (speed plier_2) 0.05)
+      )
+    )
+  )
+
+
+  (:observe
+    (contact-force plier_1 plier_support_left)
+    (contact-force plier_2 plier_support_right)
+  )
+
+  (:artifacts
+    (:routine "routine:HangPlierRoutine")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. Scene, objects and routine ported from the
+              tool-hanging branch's Python suite at 3e20fc7. The goal is new, its
+              boxes sized around the routine's measured support-tip targets.")
+    (:note "The supports mount at 120% scale below the board midpoint. The
+            routine drives the handle-gap axis 15 mm above the seat the box
+            scores.")
+  )
+)

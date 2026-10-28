@@ -1,0 +1,35 @@
+VABAR: A Variational Automation Benchmark for Agentic Robotics
+Copyright 2026 The VABAR Authors
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+VABAR runs on RoboSimStudio (https://github.com/robosimstudio/robosimstudio),
+Apache License 2.0, Copyright 2026 Kaiyuan Chen, installed as a dependency.
+vabar/_upstream/bench_run.py is RoboSimStudio's scripts/bench_run.py, copied
+unmodified because the RoboSimStudio wheel does not ship its scripts/.
+
+This distribution includes third-party robot models. Each keeps its own
+licence, in a LICENSE file beside the files it covers:
+
+assets/embodiments/robotiq_2f85/
+    Robotiq 2F-85 gripper, from MuJoCo Menagerie
+    (https://github.com/google-deepmind/mujoco_menagerie). BSD 2-Clause
+    License. Copyright (c) 2013, ROS-Industrial.
+
+assets/embodiments/ur5/
+    Universal Robots UR5, from ROS-Industrial universal_robot. BSD 3-Clause
+    License. Copyright 2018 ROS Industrial Consortium.
+
+assets/embodiments/yam/i2rt_yam/
+assets/embodiments/yam_i2rt/
+assets/embodiments/linear_4310/
+    i2rt YAM arm and linear_4310 gripper (https://github.com/i2rt-robotics/i2rt).
+    MIT License. Copyright (c) I2RT Robotics.
+
+assets/embodiments/panda/
+    Franka Emika Panda kinematics, identical to the file RoboSimStudio ships;
+    see RoboSimStudio's NOTICE for its provenance (robosuite, MIT;
+    example-robot-data, BSD 3-Clause; franka_description, Apache 2.0).
+
+Object meshes, fixtures and scans are listed with their sources, and with the
+licences still to be confirmed, in ASSET_PROVENANCE.md.

@@ -1,0 +1,152 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. port3's question on industrial hardware, one difficulty band up.
+;
+; WHY A SECOND TERMINATED BOARD AT ALL. port3 asks the whole task -- a run that
+; starts at a fitting, crosses three stations on required sides, and terminates
+; in a socket -- and it asks it at L1. Thirteen degrees of accumulated turning
+; is a cable being nudged past three posts. What it cannot show is whether the
+; policy has learned to weave or has learned this bench, because at L1 the
+; difference does not cost anything.
+;
+; WHAT CHANGES. The stations. An F1 spool is laboratory hardware: a 4.75 mm
+; shaft between two flanges, sitting loose on a bench. A cable cleat is what a
+; harness is actually dressed against inside a machine -- bolted to a
+; backplane, a 19 mm standoff with a retaining cap, five of them down a panel
+; where the drilling allowed. It is a fixture with a catalogue number rather
+; than one from a manipulation benchmark.
+;
+; THE LOOK AND THE DIFFICULTY ARE THE SAME CHANGE, which is the part worth
+; stating. A crossing's turn is set by how far off the station's axis a seated
+; cable rests -- the fixture's radius plus the cable's -- against the gap to the
+; next station. A cleat's standoff is twice a spool's shaft, so the same cable
+; on the same bench rests 13 mm off each axis instead of 8.25 and has to make a
+; larger excursion at every station. Five stations on this spacing accumulate
+; 142.9 degrees against port3's 12.6: L2, and mid-band rather than at an edge,
+; so a board the sampler has yawed and jittered is still the level this document
+; says it is. (The sampler checks that per draw rather than trusting it: over
+; 200 draws of an earlier version, 47 of 200 episodes were not L2 at all.)
+;
+; IN LINE, and deliberately. `_scatter` exists because a row of thin posts at
+; one x is the easiest thing there is to perceive and to plan for -- one
+; standoff serves every station. That argument does not survive a fixture this
+; thick: the required side of a 19 mm cleat is a real excursion, so the
+; alternation carries the difficulty and the uneven gaps (88, 74, 84, 78 mm)
+; carry the irregularity. An x stagger on top measured 178 degrees, hard against
+; the L2 ceiling, where jitter would keep pushing the variant into L3.
+;
+; THE ENDS ARE port3'S, unchanged: the run is welded to an anchor bracket and
+; must finish inside a port. Nothing about the question moves, so a score here
+; and a score there differ in the board and not in what was asked.
+; ---------------------------------------------------------------------------
+
+(define (problem DRESS_THE_HARNESS_ACROSS_FIVE_CLEATS_INTO_THE_PORT)
+
+  (:suite cable_route)
+
+  (:language dress the cable through the five panel cleats and route its free end into the port)
+
+  (:staging
+    (:cameras cable_panel_l2@v1)
+    ; Five crossings against three, on a longer run: the same per-crossing
+    ; budget port3 gets, not a tighter one. A step limit that bit would make
+    ; this a speed test wearing a difficulty label.
+    (:max-steps 9000)
+    ; port3's sampler: the panel is put down somewhere else every episode, the
+    ; port follows it, the anchor bracket follows the cable, and the rod's own
+    ; shape is drawn beside them.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:WEAVE_RIGID))
+  )
+
+  (:objects
+    cable - panel_l2_cable
+  )
+
+  (:fixtures
+    peg0   - panel_l2_peg0
+    peg1   - panel_l2_peg1
+    peg2   - panel_l2_peg2
+    peg3   - panel_l2_peg3
+    peg4   - panel_l2_peg4
+    ; The station names stay `peg{i}` across both boards on purpose. Every goal
+    ; clause, sampler and perception node addresses a station by that name;
+    ; renaming the part would rename the question.
+    anchor - panel_l2_anchor
+    port   - panel_l2_port
+  )
+
+  ; Sides -1, +1, -1, +1, -1: the same alternation, two crossings longer.
+  ;
+  ; The seat boxes are port3's, unchanged, and they did not need changing. A box
+  ; reaching 3 to 45 mm off the station's axis holds a cable seated at 8.25 mm
+  ; against a spool and one seated at 13 mm against a cleat -- both are inside
+  ; it, so the same tolerance scores both boards and the number says how well
+  ; the route ran rather than which fixture it ran against.
+  (:regions
+    (seat0    (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1    (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2    (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3    (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat4    (:target peg4) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (portbox  (:target port) (:ranges ((-0.045 -0.045  0.045 0.045))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  ; Six clauses under one worst_of, so each crossing and the port are a sixth of
+  ; the route each.
+  ;
+  ; THE FRACTIONS ARE SCALED TO THIS ROD, not copied. port3 asks 0.047 of a
+  ; 0.82 m rod for a seat and 0.071 for the port -- three and five bodies of the
+  ; 68 it carries. This rod is 0.90 m and the segment count scales with length,
+  ; so it carries 76 and the same lengths of cable are 0.043 and 0.064 of it.
+  ; Copying port3's numbers would have asked this board for MORE cable per
+  ; crossing than port3 asks, and called the difference difficulty.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.043)
+        (>= (containment cable seat1) 0.043)
+        (>= (containment cable seat2) 0.043)
+        (>= (containment cable seat3) 0.043)
+        (>= (containment cable seat4) 0.043)
+        (>= (containment cable portbox) 0.064)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same graphs the weaves run; the port is one more station to them. See
+  ; port2.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "AUTHORED -- no upstream. port3's terminated run, staged on five bolted
+              cable cleats instead of three ManipulationNet F1 spools.")
+    (:note "The fixture is drawn from primitives by EntityCableCleat (tasks/cable_route/
+            assets/terminals.py) rather than imported as a mesh: a 28 x 40 mm bolted foot, a
+            19 mm standoff and a retaining cap. The standoff is what a cable bears against and
+            what the asset declares its `shaft` feature about, so a seat measured here reads
+            identically to one measured against a spool -- which is exactly why seat_offset is
+            a function of the variant rather than a constant, and why this board measures
+            142.9 deg and mid-L2 instead of the 92.5 deg a spool-sized seat would have
+            reported, barely over L2's own floor.
+            Five cleats at x = 0.535 on gaps of 88, 74, 84 and 78 mm. The rod is 0.90 m at 76
+            capsules; the whole route, anchor to five seats to the port mouth, measures 751 mm,
+            so 149 mm is left over.")
+  )
+)

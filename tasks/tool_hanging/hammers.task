@@ -1,0 +1,88 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED, over a ported scene -- see wrenches.bddl for the family's design.
+;
+; WHAT THIS ONE CHANGES: no routine, one arm, the plain arrangement. The
+; branch shipped this variant as a staging scene without a script, and it
+; stays that way -- a task document does not owe a scripted baseline (astro's
+; rule) -- but it no longer ships without a goal.
+;
+; A hammer is hung when a holder bears its weight, it hangs still, and it
+; hangs at holder height -- the height clause is what tells a holder from the
+; table 40 cm below it, and it is world z, the atom's own frame. Each hammer
+; may take either holder: the Or is the instruction's freedom, not a hedge.
+;
+; NO ARTIFACTS SECTION. The plain arrangement (no hull sets in this scene --
+; the hammers and holders are boxified) needs none of the main bundle's
+; ceilings.
+; ---------------------------------------------------------------------------
+
+(define (problem HANG_THE_TWO_HAMMERS)
+
+  (:suite tool_hanging)
+
+  (:language hang the two hammers on the pegboard holders)
+
+  (:staging
+    ; The plain bench, one arm and the plain arrangement, over tool_hanging.suite's
+    ; rig, control mode and episodes.
+    (:scene bench_0728)
+    ; The whole embodiment clause, restated: a variant's clause wins key by
+    ; key, so the one arm and the solid arms both have to be said here.
+    (:embodiment yam_tool_hanging (:work-arm left) (:arms-solid true))
+    (:physics tool_hanging_plain_960hz@v1)
+    (:arms 1)
+    (:max-steps 1200)
+  )
+
+  (:objects
+    hammer_1 - hanging_hammer_1
+    hammer_2 - hanging_hammer_2
+  )
+
+  (:fixtures
+    ; Side by side on the robot's left, typed by station; either hammer may
+    ; take either one.
+    hammer_holder_1 - hammer_holder_inner
+    hammer_holder_2 - hammer_holder_outer
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (And
+        (Or
+          (>= (contact-force hammer_1 hammer_holder_1) 0.5)
+          (>= (contact-force hammer_1 hammer_holder_2) 0.5)
+        )
+        (<= (speed hammer_1) 0.05)
+        (>= (height hammer_1) 1.00)
+      )
+      (And
+        (Or
+          (>= (contact-force hammer_2 hammer_holder_1) 0.5)
+          (>= (contact-force hammer_2 hammer_holder_2) 0.5)
+        )
+        (<= (speed hammer_2) 0.05)
+        (>= (height hammer_2) 1.00)
+      )
+    )
+  )
+
+
+  (:observe
+    (height hammer_1)
+    (height hammer_2)
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. Scene and objects ported from the
+              tool-hanging branch's Python suite at 3e20fc7, which shipped this
+              variant with no routine and a stub evaluator. The goal is new.")
+    (:note "The holders stand at world z 1.12 against a 0.728 m table, so the
+            1.00 m height gate is 12 cm of slack below the holders and 27 cm
+            above anything resting on the table.")
+  )
+)

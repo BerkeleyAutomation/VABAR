@@ -1,0 +1,19 @@
+<mujoco model="countersunk_screw_m1_6">
+  <asset>
+    <mesh name="countersunk_screw_m1_6_mesh" file="meshes/countersunk_screw_m1_6.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="countersunk_screw_m1_6_mesh"
+              rgba="0.68 0.69 0.72 1" mass="0.036433" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.012500" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.012500" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.017678 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

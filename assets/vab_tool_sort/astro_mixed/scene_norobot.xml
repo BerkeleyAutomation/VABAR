@@ -1,0 +1,105 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+
+  <asset>
+  <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    
+    <texture file="../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    
+    <texture file="../assets/light-wood.png" type="2d" name="tex-light-wood" />
+    <texture file="../assets/dark-wood.png" type="2d" name="tex-dark-wood" />
+    <material name="light-wood" reflectance="0" texrepeat="15 15" texture="tex-light-wood" texuniform="true" />
+    <material name="dark-wood" reflectance="0" texrepeat="5 5" texture="tex-dark-wood" texuniform="true" />
+  <texture name="tex-concrete" type="2d" file="../assets/gray-plaster.png" /><texture name="tex-steel-plate" type="2d" file="../assets/steel-scratched.png" /><material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" /><texture name="bin2_label0_tex" type="2d" file="../assets/bin2_astro_mixed_0_carton.png" /><material name="bin2_label0_mat" texture="bin2_label0_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label1_tex" type="2d" file="../assets/bin2_astro_mixed_1_bottle.png" /><material name="bin2_label1_mat" texture="bin2_label1_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label2_tex" type="2d" file="../assets/bin2_astro_mixed_2_hand_tool.png" /><material name="bin2_label2_mat" texture="bin2_label2_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label3_tex" type="2d" file="../assets/bin2_astro_mixed_3_electrical.png" /><material name="bin2_label3_mat" texture="bin2_label3_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture type="cube" name="hammer_0_metal" file="../assets/steel-scratched.png" /><material texrepeat="3 3" specular="0.4" shininess="0.1" name="hammer_0_metal_mat" texture="hammer_0_metal" /><texture type="cube" name="hammer_0_wood" file="../assets/light-wood.png" /><material texrepeat="3 3" specular="0.4" shininess="0.1" name="hammer_0_wood_mat" texture="hammer_0_wood" /><texture name="drill_0_cordless_drill_tex" type="2d" file="../assets/obj_000015.png" />
+    <material name="drill_0_cordless_drill_mat" texture="drill_0_cordless_drill_tex" specular="0.2" shininess="0.1" />
+    <mesh name="drill_0_cordless_drill_mesh" file="../assets/cordless_drill.obj" />
+  <texture file="../assets/steel-scratched.png" type="cube" name="round_nut_0_steel-metal" />
+    <material name="round_nut_0_smetal" reflectance="1.0" shininess="1.0" specular="1.0" texrepeat="1 1" texture="round_nut_0_steel-metal" texuniform="true" />
+  <texture name="clamp_0_clamp_tex" type="2d" file="../assets/obj_000019.png" />
+    <material name="clamp_0_clamp_mat" texture="clamp_0_clamp_tex" specular="0.2" shininess="0.1" />
+    <mesh name="clamp_0_clamp_mesh" file="../assets/clamp.obj" />
+  </asset>
+
+  <visual>
+    <map znear="0.001" />
+  </visual>
+
+  <worldbody>
+  <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" material="light-wood" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        
+        </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        
+        <geom name="bin2_label0" type="box" pos="-0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label0_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label1" type="box" pos="0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label1_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label2" type="box" pos="-0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label2_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label3" type="box" pos="0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label3_mat" contype="0" conaffinity="0" group="1" /></body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+  <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" /><geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" /><geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><body pos="0 0 0" name="hammer_0_root"><joint type="free" name="hammer_0_joint0" /><site type="sphere" group="0" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" name="hammer_0_default_site" /><geom quat="1 0 0 0" rgba="0.5 0 0 1" density="133.34820823773816" friction="3.7729779622517237 0.005 0.0001" solref="0.02 1.0" solimp="0.9 0.95 0.001" type="cylinder" size="0.018 0.1" pos="0.0 0.0 0.0" group="0" name="hammer_0_handle" /><geom quat="1 0 0 0" conaffinity="0" contype="0" mass="1e-8" material="hammer_0_wood_mat" type="cylinder" size="0.018 0.1" pos="0.0 0.0 0.0" group="1" name="hammer_0_handle_vis" /><geom quat="1 0 0 0" rgba="0.5 0 0 1" density="266.6964164754763" friction="1.0 0.005 0.0001" solref="0.02 1.0" solimp="0.9 0.95 0.001" type="box" size="0.04249870902381171 0.021249354511905856 0.021249354511905856" pos="0.0 0.0 0.12124935451190585" group="0" name="hammer_0_head" /><geom quat="1 0 0 0" conaffinity="0" contype="0" mass="1e-8" material="hammer_0_metal_mat" type="box" size="0.04249870902381171 0.021249354511905856 0.021249354511905856" pos="0.0 0.0 0.12124935451190585" group="1" name="hammer_0_head_vis" /><geom quat="0.707106 0 0.707106 0" rgba="0.5 0 0 1" density="266.6964164754763" friction="1.0 0.005 0.0001" solref="0.02 1.0" solimp="0.9 0.95 0.001" type="cylinder" size="0.016999483609524687 0.004249870902381172" pos="0.046748579926192885 0.0 0.12124935451190585" group="0" name="hammer_0_neck" /><geom quat="0.707106 0 0.707106 0" conaffinity="0" contype="0" mass="1e-8" material="hammer_0_metal_mat" type="cylinder" size="0.016999483609524687 0.004249870902381172" pos="0.046748579926192885 0.0 0.12124935451190585" group="1" name="hammer_0_neck_vis" /><geom quat="0.707106 0 0.707106 0" rgba="0.5 0 0 1" density="266.6964164754763" friction="1.0 0.005 0.0001" solref="0.02 1.0" solimp="0.9 0.95 0.001" type="cylinder" size="0.021249354511905856 0.008499741804762343" pos="0.059498192633336396 0.0 0.12124935451190585" group="0" name="hammer_0_face" /><geom quat="0.707106 0 0.707106 0" conaffinity="0" contype="0" mass="1e-8" material="hammer_0_metal_mat" type="cylinder" size="0.021249354511905856 0.008499741804762343" pos="0.059498192633336396 0.0 0.12124935451190585" group="1" name="hammer_0_face_vis" /><geom quat="0.9238795 0 0.3826834 0" rgba="0.5 0 0 1" density="266.6964164754763" friction="1.0 0.005 0.0001" solref="0.02 1.0" solimp="0.9 0.95 0.001" type="box" size="0.015027543510819823 0.020186886786310563 0.015027543510819823" pos="-0.04249870902381171 0.0 0.12124935451190585" group="0" name="hammer_0_claw" /><geom quat="0.9238795 0 0.3826834 0" conaffinity="0" contype="0" mass="1e-8" material="hammer_0_metal_mat" type="box" size="0.015027543510819823 0.020186886786310563 0.015027543510819823" pos="-0.04249870902381171 0.0 0.12124935451190585" group="1" name="hammer_0_claw_vis" /></body><body name="drill_0_main">
+        <geom pos="0.0100436225 0.000660817222 -0.00114655989" type="box" mass="1.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="drill_0_g0" rgba="0.5 0 0 1" size="0.0284592586 0.0916015227 0.097689719" quat="0.4758805 0.537306752 -0.449664577 0.531639889" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="drill_0_cordless_drill_mesh" material="drill_0_cordless_drill_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="drill_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="drill_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="drill_0_default_site" /></body>
+      <body name="round_nut_0_main">
+        <geom pos="-0.04245 0 0.0" size="0.01125 0.0225 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g0" rgba="0.5 0 0 1" />
+        <geom pos="0.04245 0 0.0" size="0.01125 0.0225 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g1" rgba="0.5 0 0 1" />
+        <geom pos="0 -0.04245 0.0" size="0.0225 0.01125 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g2" rgba="0.5 0 0 1" />
+        <geom pos="0 0.04245 0.0" size="0.0225 0.01125 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g3" rgba="0.5 0 0 1" />
+        <geom pos="-0.03 -0.03 0.0" size="0.01125 0.0225 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g4" rgba="0.5 0 0 1" />
+        <geom pos="0.03 0.03 0.0" size="0.01125 0.0225 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g5" rgba="0.5 0 0 1" />
+        <geom pos="0.03 -0.03 0.0" size="0.0225 0.01125 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g6" rgba="0.5 0 0 1" />
+        <geom pos="-0.03 0.03 0.0" size="0.0225 0.01125 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g7" rgba="0.5 0 0 1" />
+        <geom pos="0.06 0 0.0" size="0.02525 0.015875 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="0" condim="4" name="round_nut_0_g8" rgba="0.5 0 0 1" />
+        <site rgba="1 0 0 1" size="0.005" pos="0.06 0 0.0" name="round_nut_0_handle_site" />
+        <site rgba="1 0 0 1" size="0.003" pos="0 0 0" name="round_nut_0_center_site" />
+      <geom pos="-0.04245 0 0.0" size="0.01125 0.0225 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g0_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0.04245 0 0.0" size="0.01125 0.0225 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g1_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0 -0.04245 0.0" size="0.0225 0.01125 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g2_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0 0.04245 0.0" size="0.0225 0.01125 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g3_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="-0.03 -0.03 0.0" size="0.01125 0.0225 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g4_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0.03 0.03 0.0" size="0.01125 0.0225 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g5_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0.03 -0.03 0.0" size="0.0225 0.01125 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g6_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="-0.03 0.03 0.0" size="0.0225 0.01125 0.01" axisangle="0 0 1 0.785398" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g7_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <geom pos="0.06 0 0.0" size="0.02525 0.015875 0.01" type="box" solimp="0.998 0.998 0.001" solref="0.02 1" density="100" friction="0.95 0.3 0.1" group="1" condim="4" material="round_nut_0_smetal" name="round_nut_0_g8_visual" conaffinity="0" contype="0" mass="1e-8" />
+        <joint type="free" damping="0.0005" name="round_nut_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="round_nut_0_default_site" /></body>
+      <body name="clamp_0_main">
+        <geom pos="0.00960650698 -0.00380854656 -0.0012250063" type="box" mass="0.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="clamp_0_g0" rgba="0.5 0 0 1" size="0.0182219236 0.0607859307 0.0828273989" quat="0.476014504 0.571182322 -0.44902229 0.495519857" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="clamp_0_clamp_mesh" material="clamp_0_clamp_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="clamp_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="clamp_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="clamp_0_default_site" /></body>
+      </worldbody>
+
+  <equality>
+  </equality>
+<tendon /><contact /></mujoco>

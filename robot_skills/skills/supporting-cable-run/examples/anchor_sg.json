@@ -1,0 +1,46 @@
+{
+  "skill": "supporting-cable-run",
+  "inputs": {
+    "scene": "str"
+  },
+  "outputs": {
+    "segment": {
+      "$ref": "take_far_end.segment"
+    },
+    "q_support": {
+      "$ref": "take_far_end.q_support"
+    },
+    "quat": {
+      "$ref": "take_far_end.quat"
+    }
+  },
+  "nodes": {
+    "take_far_end": {
+      "type": "script",
+      "script": "scripts/anchor_far_end.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "take_far_end"
+    ],
+    [
+      "take_far_end",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "anchored"
+    ]
+  },
+  "on_error": "unanchored"
+}

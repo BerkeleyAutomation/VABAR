@@ -1,0 +1,47 @@
+; -*- mode: lisp -*-
+(define (problem PLACE_TWO_SCREWDRIVERS_LEVEL2)
+  (:suite tool_hanging)
+  (:language put both screwdrivers into the box)
+  (:staging
+    (:physics tool_hanging_480hz@v1)
+    (:cameras yam_station_tool_hanging@v1)
+    (:episodes (:count 5) (:seed 0) (:sampler layouts:sample_level2_layout))
+    (:max-steps 22000)
+    (:start-poses poses/screwdrivers_level2_start.json)
+  )
+  (:objects
+    screwdriver_1 - screwdriver_slim
+    screwdriver_2 - screwdriver_slim
+    distractor_wrench_1 - wrench_adjustable_260
+    distractor_scissors_2 - scissor_pair_1
+    distractor_pliers_3 - plier_combination
+  )
+  (:fixtures rack - screwdriver_box)
+  (:regions
+    (screwdriver_box_interior
+      (:target rack)
+      (:ranges ((-0.067 -0.1252 0.016 -0.0212)))
+      (:z-range -0.01 0.141)
+    )
+  )
+  (:init)
+  (:goal
+    (And
+      (And (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
+           (>= (contact-force screwdriver_1 rack) 0.2)
+           (<= (speed screwdriver_1) 0.15))
+      (And (>= (containment screwdriver_2.tip screwdriver_box_interior) 1.0)
+           (>= (contact-force screwdriver_2 rack) 0.2)
+           (<= (speed screwdriver_2) 0.15))
+    )
+  )
+  (:reward (fraction))
+  (:observe
+    (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
+    (>= (containment screwdriver_2.tip screwdriver_box_interior) 1.0)
+  )
+  (:artifacts
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gap_perception "graphs/gap_perception_level2")
+  )
+)

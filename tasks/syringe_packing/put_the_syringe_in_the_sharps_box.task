@@ -1,0 +1,121 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; RECONSTRUCTED -- not the upstream file.
+;
+; provenance.tier: reconstructed
+; source-of-record: robosimstudio/tasks/tool_sort/suite.py
+; upstream:         VAB-industrial/bddl_files/tool_sort/put_the_syringe_in_the_sharps_box.bddl
+;
+; The upstream .bddl files are NOT vendored here -- assets/PROVENANCE.md is
+; explicit that the VAB-industrial BDDL content is transcribed into the suite
+; as region literals and goal pairs, not copied as files. This reverses that
+; transcription: every number below is read back out of the suite, which took
+; them from the original to the digit.
+;
+; READ THE CIRCULARITY BEFORE TRUSTING A ROUND TRIP. A parser checked against
+; this file is checked against our own transcription, not against upstream.
+;
+; One object, posted through a hole. The scene has no bins -- the syringe
+; lies on the workbench and the box stands on it, because a 0.18 m box on
+; a bin floor puts its hole above what reach the arm has left while
+; holding a syringe on end. The bin bodies remain as the frames everything
+; else is placed in. Containment is literal: the region is the box's
+; cavity, so a syringe left on the lid is 0.17 m above it and does not
+; count.
+; -------------------------------------------------------------------------
+
+(define (problem PUT_THE_SYRINGE_IN_THE_SHARPS_BOX)
+  (:domain robosuite)
+
+  (:language pick up the syringe from the workbench and drop it through the
+             hole in the top of the yellow sharps disposal box)
+
+  ; What BDDL cannot say: which cell, which robot, which export. The profile
+  ; supplies the first two for every VAB-industrial problem; the export is
+  ; this variant's own, and names the dumped scene its poses come from.
+  (:staging
+    (:profile vab_industrial@v2)
+    (:export vab_tool_sort/syringe)
+    ; 2400 for one goal, plus a flat 9000 for the container goal.
+    ;
+    ; 2400 is sized for reference-parity motion, not for the plan-mode
+    ; lunge: the benchmark's own scripted pick is ~8 waypoints
+    ; held 45-80 control steps each at 20 Hz, about 24 s of simulated time,
+    ; which at this suite's 50 Hz is ~1200 steps before any margin. A ceiling
+    ; that punished moving the way the benchmark moves would be measuring the
+    ; ceiling. A container goal adds a flat 9000, measured rather than scaled:
+    ; posting a tool through a hole is a much longer sequence than releasing
+    ; it over an open compartment, and the goal is retried once before being
+    ; given up, so the budget has to cover two passes.
+    (:max-steps 11400)
+  )
+
+  ; Fixtures carry the regions; the tools are what moves.
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    ; Welded into bin2 as geometry rather than a body of its own, so it
+    ; has a frame and no handle. The export records the offset.
+    syringe_box - sharps_box
+  )
+
+  (:objects
+    syringe_0 - syringe
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as
+  ; (x0 y0 x1 y1). bin2's compartments are the quadrants of its floor.
+  ;
+  ; The height window is BDDL's own _eval_in: from the frame origin up
+  ; 0.15 m. It starts at the origin rather than below it, which is what makes
+  ; an object held ABOVE a bin fail the test and one resting on its floor
+  ; pass -- and what lets a tool still between the fingers score, 15 cm up.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        ; The file's own ranges, in the BOX's frame. The export records
+        ; where that frame sits inside bin2; folding the two is the
+        ; loader's job and happens in exactly one place.
+        (:ranges ((-0.0445 -0.083 0.0445 0.083)))
+    )
+  )
+
+  ; No init constraint. This export was dumped with (:bins none): the
+  ; syringe lies on the workbench and the box stands on it, so the pile
+  ; every other variant starts from does not exist here. Stating one
+  ; anyway would be stating something false, and an init is verified
+  ; after settling -- a false one is a task that refuses to start.
+  (:init)
+
+  ; NOTE ON SEMANTICS, for whoever binds these predicates: BDDL's In is a box
+  ; test that a CARRIED object satisfies. A reproduction-tier import must
+  ; bind it to the weak box test and not to the stronger contact-and-at-rest
+  ; predicate this stack also has, because comparability with the source
+  ; benchmark outranks rigor. Rebinding it is a re-labelling, not a bug fix.
+  (:goal
+    (In syringe_0 syringe_box_region)
+  )
+
+  ; A solution is a thing that RUNS, so it stays code and is referenced.
+  (:artifacts
+    (:routine "routine:RoutineSharpsDisposal")
+    (:tools   "tools:register_sharps_disposal_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial ToolSortPickPlace,
+              robosuite 1.4.0, MuJoCo 3.3.3, seed 0")
+    (:upstream-file "put_the_syringe_in_the_sharps_box.bddl")
+  )
+)

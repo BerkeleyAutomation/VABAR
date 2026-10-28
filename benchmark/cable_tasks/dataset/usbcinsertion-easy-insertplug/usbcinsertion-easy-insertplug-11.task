@@ -1,0 +1,78 @@
+; robosimstudio-base-task: usbc_insert/insert_easy
+; Single frozen sampler draw; run episode 0.
+; Easy: a fixed receptacle and a plug with a physically attached 240 mm cable.
+; Plug pose varies by 12 mm and 8 degrees. Uses the cable-capable solver
+; capacity at unchanged 60 Hz x 16 substeps. No early success termination.
+
+(define (problem usbcinsertion-easy-insertplug-11)
+
+  (:suite usbc_insert)
+
+  (:language insert the USB-C plug into the receptacle)
+
+  (:staging
+    (:scene bench_075)
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left))
+    (:control-mode ee_pose_abs)
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    (:physics usbc_bulkhead_960hz@v1)
+    (:cameras yam_station_usbc@v1)
+    (:episodes (:count 1) (:seed 10010) (:sampler staging:USBC_EASY))
+    (:max-steps 9000)
+    (:arms 2)
+    (:terminate-on-success false)
+  )
+
+  (:objects
+    plug   - usb_c_plug
+    rig    - usbc_contact_rig
+    cables - usbc_plug_cable
+  )
+
+  (:fixtures
+    bench - usbc_bench
+    port  - usb_c_port
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (>= (insertion plug port.bore) 0.0104)
+      (<= (insertion:lat plug port.bore) 0.0087931792)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+      (> (tcp-distance plug) 0.04)
+    )
+  )
+
+  (:reward
+    (progress (insertion plug port.bore)
+              (:gate 0.0104)
+              (:gated-by (<= (insertion:lat plug port.bore) 0.0087931792))))
+
+  (:observe
+    (gripped plug.body)
+    (insertion:mate_gap plug port.bore)
+    (tcp-distance plug)
+  )
+
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "the USB-C insertion reference this suite reproduces, by way of the retired
+              usbc_insert/insert document this restores verbatim")
+    (:note "Clearance is 0.15 mm on a side. The colliders are built rather than
+            imported, because no convex hull of the authored mesh gives a fit
+            that tight. See tasks/usbc_insert/assets/stage.py. Renamed from
+            insert to port when it came back, because the suite is already
+            called usbc_insert and the variant name should say which receptacle
+            rather than repeat the verb.")
+  )
+)

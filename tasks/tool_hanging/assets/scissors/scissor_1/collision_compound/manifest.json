@@ -1,0 +1,512 @@
+[
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_00.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01499302,
+        -0.03828433,
+        -0.0046
+      ],
+      [
+        -0.00400897,
+        -0.01736163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_01.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01952344,
+        -0.02150463,
+        -0.0046
+      ],
+      [
+        -0.00573718,
+        -0.00339157,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_02.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.02337996,
+        -0.00974442,
+        -0.0046
+      ],
+      [
+        -0.01129114,
+        0.00246163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_03.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.03370886,
+        -0.00974442,
+        -0.0046
+      ],
+      [
+        -0.02162004,
+        0.00246163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_04.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.03926282,
+        -0.02150463,
+        -0.0046
+      ],
+      [
+        -0.02547656,
+        -0.00339157,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_05.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.04099103,
+        -0.03828433,
+        -0.0046
+      ],
+      [
+        -0.03000698,
+        -0.01736163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_06.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.04099103,
+        -0.05663837,
+        -0.0046
+      ],
+      [
+        -0.03000698,
+        -0.03571567,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_07.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.03926282,
+        -0.07060843,
+        -0.0046
+      ],
+      [
+        -0.02547656,
+        -0.05249537,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_08.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.03370886,
+        -0.07646163,
+        -0.0046
+      ],
+      [
+        -0.02162004,
+        -0.06425558,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_09.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.02337996,
+        -0.07646163,
+        -0.0046
+      ],
+      [
+        -0.01129114,
+        -0.06425558,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_10.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01952344,
+        -0.07060843,
+        -0.0046
+      ],
+      [
+        -0.00573718,
+        -0.05249537,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_left_11.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01499302,
+        -0.05663837,
+        -0.0046
+      ],
+      [
+        -0.00400897,
+        -0.03571567,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_00.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.03000698,
+        -0.03828433,
+        -0.0046
+      ],
+      [
+        0.04099103,
+        -0.01736163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_01.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.02547656,
+        -0.02150463,
+        -0.0046
+      ],
+      [
+        0.03926282,
+        -0.00339157,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_02.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.02162004,
+        -0.00974442,
+        -0.0046
+      ],
+      [
+        0.03370886,
+        0.00246163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_03.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.01129114,
+        -0.00974442,
+        -0.0046
+      ],
+      [
+        0.02337996,
+        0.00246163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_04.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.00573718,
+        -0.02150463,
+        -0.0046
+      ],
+      [
+        0.01952344,
+        -0.00339157,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_05.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.00400897,
+        -0.03828433,
+        -0.0046
+      ],
+      [
+        0.01499302,
+        -0.01736163,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_06.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.00400897,
+        -0.05663837,
+        -0.0046
+      ],
+      [
+        0.01499302,
+        -0.03571567,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_07.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.00573718,
+        -0.07060843,
+        -0.0046
+      ],
+      [
+        0.01952344,
+        -0.05249537,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_08.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.01129114,
+        -0.07646163,
+        -0.0046
+      ],
+      [
+        0.02337996,
+        -0.06425558,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_09.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.02162004,
+        -0.07646163,
+        -0.0046
+      ],
+      [
+        0.03370886,
+        -0.06425558,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_10.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.02547656,
+        -0.07060843,
+        -0.0046
+      ],
+      [
+        0.03926282,
+        -0.05249537,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/handle_right_11.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.03000698,
+        -0.05663837,
+        -0.0046
+      ],
+      [
+        0.04099103,
+        -0.03571567,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/neck_left.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.012,
+        -0.04,
+        -0.0046
+      ],
+      [
+        -0.002,
+        0.02,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/neck_right.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.002,
+        -0.04,
+        -0.0046
+      ],
+      [
+        0.012,
+        0.02,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/blade_left.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01,
+        0.012,
+        -0.0046
+      ],
+      [
+        -0.0008,
+        0.076,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/blade_right.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        0.0008,
+        0.012,
+        -0.0046
+      ],
+      [
+        0.01,
+        0.076,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/pivot.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.01,
+        0.006,
+        -0.0046
+      ],
+      [
+        0.01,
+        0.022,
+        0.0046
+      ]
+    ]
+  },
+  {
+    "path": "assets/tool_hanging/scissors/scissor_1/collision_compound/bridge.obj",
+    "vertices": 8,
+    "triangles": 12,
+    "bounds_m": [
+      [
+        -0.007,
+        -0.043,
+        -0.0046
+      ],
+      [
+        0.007,
+        0.01,
+        0.0046
+      ]
+    ]
+  }
+]

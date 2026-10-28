@@ -1,0 +1,23 @@
+<mujoco model="tape_measure">
+  <!-- Author: LisaGrint -->
+  <!-- Source: https://sketchfab.com/3d-models/tape-measure-d1d1c4b27f5c45a29910830e268f7ee2 -->
+  <asset>
+    <texture name="tape_measure_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="tape_measure_mat" texture="tape_measure_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="tape_measure_mesh" file="meshes/tape_measure.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="tape_measure_mesh"
+              material="tape_measure_mat" mass="0.250000" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.015898" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.015898" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.054652 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

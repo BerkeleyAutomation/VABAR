@@ -1,0 +1,8 @@
+{
+  "note": "Where the one-object reductions start their tool: at the table centre, world x=0.600 m, y=0, at the family's own resting height. Stated in the tool_hanging_bench work-surface frame, whose origin is the centre of the 0.728 m table top, so (0, 0, z) is the table centre z metres up. Each record's factory stands the tool where its two-object family does; a level-1 document names this file with (:start-poses) and only the pose is restated -- orientation, hulls and density stay the factory's. The hung poses beside this file (<variant>.json) are a different record: seven free-joint coordinates per object, written by tasks/tool_hanging/rigs/record_tool_hanging_poses.py for tests/test_tool_hanging_scenes.py.",
+  "objects": {
+    "screwdriver_1": {"pose": [0.0, 0.0, 0.0105]},
+    "scissors_1": {"pose": [0.0, 0.0, 0.00950505]},
+    "plier_1": {"pose": [0.0, 0.0, 0.007]}
+  }
+}

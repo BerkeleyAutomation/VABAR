@@ -1,0 +1,550 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "tasks/tool_hanging/assets/plier_holders/triangular_support.stl",
+  "source_vertices": 6647,
+  "source_triangles": 13290,
+  "source_watertight": true,
+  "parameters": {
+    "threshold": 0.025,
+    "max_convex_hull": 32,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 80,
+    "resolution": 2000,
+    "mcts_nodes": 20,
+    "mcts_iterations": 120,
+    "mcts_max_depth": 3,
+    "merge": false,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "hulls": [
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_00.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          127.15625887607348,
+          89.0333134872626,
+          -0.0950093272003798
+        ],
+        [
+          145.17941885808068,
+          89.43211477575642,
+          17.537925773536703
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_01.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          125.22624765354522,
+          85.30300796590836,
+          0.04089031957347089
+        ],
+        [
+          147.10589803737275,
+          89.03290904854316,
+          26.727506575933603
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_02.obj",
+      "vertices": 60,
+      "triangles": 116,
+      "bounds_mm": [
+        [
+          129.16974592081306,
+          99.71414468976809,
+          -0.09212965762161929
+        ],
+        [
+          134.0059499945378,
+          101.52558041042539,
+          14.617984888843583
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_03.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          127.59185008506665,
+          101.52593460319395,
+          -0.0950093272003798
+        ],
+        [
+          134.0059499945378,
+          102.66140413321818,
+          16.51334493860168
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_04.obj",
+      "vertices": 57,
+      "triangles": 110,
+      "bounds_mm": [
+        [
+          129.18390209969766,
+          90.2948348695387,
+          -0.09462383367553429
+        ],
+        [
+          143.14824029640386,
+          91.85271304793298,
+          15.6612708086268
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_05.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          128.23385907364468,
+          89.43228281139545,
+          -0.0950093272003798
+        ],
+        [
+          144.09479575924274,
+          90.29468619094632,
+          16.52520792523592
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_06.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          129.83048594091883,
+          91.85271345978504,
+          -0.0950093272003798
+        ],
+        [
+          142.50104032450622,
+          98.22322068241425,
+          15.078933417100874
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_07.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_mm": [
+        [
+          136.16823393616224,
+          102.66140413321818,
+          4.70419889999676
+        ],
+        [
+          138.15268118943789,
+          104.09181986606723,
+          21.501031493508435
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_08.obj",
+      "vertices": 47,
+      "triangles": 90,
+      "bounds_mm": [
+        [
+          134.0389871190987,
+          102.66140413321818,
+          4.6331025268984884
+        ],
+        [
+          136.1680396449546,
+          104.146937203079,
+          21.15318865996028
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_09.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          138.30551557499524,
+          99.71414427791603,
+          -0.09356125536987037
+        ],
+        [
+          143.1966798641722,
+          101.571884525281,
+          14.697449272024986
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_10.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          134.0059499945378,
+          99.71414427791603,
+          7.708941358670932
+        ],
+        [
+          138.3055153690692,
+          101.35125867345243,
+          15.565565451450997
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_11.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          138.30551578092127,
+          101.57199119496363,
+          -0.0950093272003798
+        ],
+        [
+          144.73966135368437,
+          102.66140413321818,
+          16.529253959838574
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_12.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          123.92735934603866,
+          102.80056729568742,
+          21.15357332978101
+        ],
+        [
+          134.20217031720472,
+          108.55937598775972,
+          25.082251512649236
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_13.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_mm": [
+        [
+          136.16823393616224,
+          102.79847755835294,
+          21.501031493508435
+        ],
+        [
+          138.15268118943789,
+          104.26969547443537,
+          25.086220119065274
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_14.obj",
+      "vertices": 37,
+      "triangles": 70,
+      "bounds_mm": [
+        [
+          134.20317626585262,
+          104.26956450548141,
+          21.51187638185911
+        ],
+        [
+          136.1680396449546,
+          108.58849392815137,
+          25.094658967702117
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_15.obj",
+      "vertices": 55,
+      "triangles": 106,
+      "bounds_mm": [
+        [
+          134.20317626585262,
+          102.79847755835294,
+          21.15318865996028
+        ],
+        [
+          136.1680396449546,
+          104.26956450548141,
+          25.08620446868713
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_16.obj",
+      "vertices": 51,
+      "triangles": 98,
+      "bounds_mm": [
+        [
+          129.85796553382988,
+          98.22322078537726,
+          -0.0950093272003798
+        ],
+        [
+          134.16587400139503,
+          99.71399848228805,
+          6.022912941797136
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_17.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          134.6744591918366,
+          98.22322088834028,
+          5.969214023267801
+        ],
+        [
+          138.18910620901522,
+          99.71385268666006,
+          15.052793990781542
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_18.obj",
+      "vertices": 49,
+      "triangles": 94,
+      "bounds_mm": [
+        [
+          136.16823393616224,
+          104.2701180346453,
+          21.512075718254437
+        ],
+        [
+          138.15268118943789,
+          108.58849392815137,
+          25.095009041950107
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_19.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          134.0059499945378,
+          102.24716827705652,
+          9.159642040856742
+        ],
+        [
+          138.3055153690692,
+          102.66136377171665,
+          17.11930822334637
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_20.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          134.0059499945378,
+          101.35125867345243,
+          9.469841596444557
+        ],
+        [
+          138.3055153690692,
+          102.24712750370293,
+          16.35775711612087
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_21.obj",
+      "vertices": 56,
+      "triangles": 108,
+      "bounds_mm": [
+        [
+          138.1895254744087,
+          98.22322078537726,
+          -0.0950093272003798
+        ],
+        [
+          142.4745961276651,
+          99.71399848228805,
+          13.55882289598799
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_22.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          138.1546902037693,
+          104.34472832948927,
+          21.14768384537365
+        ],
+        [
+          148.4162448927941,
+          108.58849392815137,
+          25.092981906128216
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_23.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          138.1536856966036,
+          102.66156887404077,
+          -0.0944113180144015
+        ],
+        [
+          148.39377424459371,
+          104.34373329492087,
+          12.1287547662746
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_24.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          138.15468690895284,
+          102.66156887404077,
+          12.1287547662746
+        ],
+        [
+          148.38680241298198,
+          104.34373329492087,
+          25.070230374825314
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_25.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          123.90977491063609,
+          102.66140413321818,
+          12.331417278808662
+        ],
+        [
+          134.03799620305085,
+          108.58849392815137,
+          21.15318865996028
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_26.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          138.364688625133,
+          104.34431318261636,
+          -0.09293029801937536
+        ],
+        [
+          148.41898782749013,
+          108.55359276118293,
+          21.147683021669536
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_27.obj",
+      "vertices": 13,
+      "triangles": 22,
+      "bounds_mm": [
+        [
+          131.39985149687186,
+          98.22322078537726,
+          6.022912941797136
+        ],
+        [
+          134.03916195029666,
+          99.71399848228805,
+          13.275078245394756
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_28.obj",
+      "vertices": 37,
+      "triangles": 70,
+      "bounds_mm": [
+        [
+          134.03948216527056,
+          98.22322078537726,
+          6.022912941797136
+        ],
+        [
+          134.6744590888736,
+          99.71399848228805,
+          14.434802154875914
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_29.obj",
+      "vertices": 56,
+      "triangles": 108,
+      "bounds_mm": [
+        [
+          129.20605232699813,
+          102.66140413321818,
+          -0.0950093272003798
+        ],
+        [
+          134.03898732502472,
+          108.58849392815137,
+          12.331417278808662
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/plier_holders/triangular_support_collision_coacd/hull_30.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          123.91159035450096,
+          102.66140413321818,
+          -0.0950093272003798
+        ],
+        [
+          129.2055342171111,
+          108.58849392815137,
+          12.331417278808662
+        ]
+      ]
+    }
+  ]
+}

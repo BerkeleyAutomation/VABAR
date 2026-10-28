@@ -1,0 +1,70 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; WHAT EVERY VARIANT SHARES, stated once. The nine documents beside this file
+; inherit it: a variant's own :staging clause wins key by key (hammers stands
+; in the plain bench with one arm and the plain arrangement, the level-1
+; reductions carry their own rig and budget), its :objects and :fixtures are
+; added to the fixture below, and its :artifacts stand alone -- the tools
+; module is not here because the hammers and the pliers ship none.
+;
+; The one shared fixture is the pegboard wall. Nothing scores against it, and
+; it used to be scenery a loader supplied undeclared; declared here it is
+; placed by its own record (skadis_pegboard's build factory) and every
+; variant stands in front of the same wall. Every other fixture is a
+; variant's own, typed by the station it stands at -- pegboard_hook_wrench_left,
+; plier_support_right -- because a record names one placement and the hook
+; stands at five; see tasks/tool_hanging/assets/records.py.
+;
+; MuJoCo integrates the arms; Newton generates the contacts from the CoACD
+; hull sets -- a wrench ring is a hole, and a hole survives decomposition
+; only as many convex pieces. See tasks/tool_hanging/staging.py for the
+; arrangement and the rig, tasks/tool_hanging/scenes.py for the cell.
+; ---------------------------------------------------------------------------
+
+(define (suite tool_hanging)
+
+  (:language Hang wrenches, scissors and pliers on their pegboard holders, stand
+             screwdrivers in a rack, and hang hammers one-armed: geometric hanging
+             goals over CoACD compound colliders on the bimanual YAM.)
+
+  (:staging
+    (:scene tool_hanging_bench)
+    ; The two arms are solid to each other. Each arm stays internally
+    ; filtered; see EmbodimentSpec.cross_arm_collisions. Only one arm hangs
+    ; anything here and the other parks -- which is exactly the case nothing
+    ; was checking, since a parked arm is only out of the way for as long as
+    ; something measures that it is. The hammers restate the whole clause
+    ; one-armed, arms-solid included.
+    (:embodiment yam_tool_hanging (:work-arm left) (:support-arm right) (:arms-solid true))
+    (:physics tool_hanging_960hz@v1)
+    (:cameras tool_hanging_views@v1)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 0) (:sampler fixed))
+    ; Every scripted variant lays out an action vector per arm and parks the
+    ; idle one, so a one-armed robot is refused at build rather than
+    ; discovered mid-rollout. The hammers say (:arms 1) for themselves.
+    (:arms 2)
+    ; The reference routines own episode completion: after placement they
+    ; retract, return home and settle before requesting termination. Keep
+    ; reporting BDDL success, but do not let it cut those motions short.
+    (:terminate-on-success false)
+  )
+
+  (:fixtures
+    pegboard - skadis_pegboard
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Scenes, objects and routines ported from the tool-hanging branch at
+              3e20fc7 -- goals authored here over features measured off the
+              vendored meshes. Mesh licences pending confirmation -- see this
+              task's assets/PROVENANCE.md.")
+  )
+
+  ; Headline first, then the four scripted families, then their one-object
+  ; reductions -- the order the suite lists and the gauntlet walks.
+  (:variants wrenches screwdrivers hammers scissors pliers
+             wrenches_level1 screwdrivers_level1 scissors_level1 pliers_level1
+             wrenches_level2 screwdrivers_level2 scissors_level2 pliers_level2)
+)

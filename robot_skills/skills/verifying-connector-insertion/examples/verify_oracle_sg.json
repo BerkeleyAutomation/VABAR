@@ -1,0 +1,72 @@
+{
+  "skill": "verifying-connector-insertion",
+  "inputs": {
+    "scene_bore_axis": "Vec3",
+    "scene_mouth_point": "Vec3",
+    "scene_receptacle_held": "bool"
+  },
+  "outputs": {
+    "verify_body": {
+      "$ref": "read.verify_body"
+    },
+    "depth_mm": {
+      "$ref": "read.depth_mm"
+    },
+    "gate_mm": {
+      "$ref": "read.gate_mm"
+    },
+    "lat_mm": {
+      "$ref": "read.lat_mm"
+    },
+    "mate_gap_mm": {
+      "$ref": "read.mate_gap_mm"
+    },
+    "hand_clear": {
+      "$ref": "read.hand_clear"
+    }
+  },
+  "nodes": {
+    "read": {
+      "type": "script",
+      "script": "scripts/verify_oracle.py",
+      "inputs": {}
+    },
+    "inserted": {
+      "type": "noop"
+    },
+    "short": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "read"
+    ],
+    [
+      "inserted",
+      "END"
+    ],
+    [
+      "short",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "read": {
+      "router_field": "route",
+      "mapping": {
+        "inserted": "inserted",
+        "short": "short"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "inserted",
+      "short"
+    ]
+  },
+  "on_error": "errored"
+}

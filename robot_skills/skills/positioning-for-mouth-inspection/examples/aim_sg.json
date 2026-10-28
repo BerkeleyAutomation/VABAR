@@ -1,0 +1,101 @@
+{
+  "skill": "positioning-for-mouth-inspection",
+  "inputs": {
+    "scene_plug_point": "Vec3",
+    "scene_mouth_point": "Vec3",
+    "scene_bore_axis": "Vec3",
+    "scene_plug_yaw_deg": "float"
+  },
+  "outputs": {
+    "aim_stages": {
+      "$ref": "plan.stages"
+    },
+    "aim_arm_id": {
+      "$ref": "plan.arm_id"
+    }
+  },
+  "nodes": {
+    "plan": {
+      "type": "script",
+      "script": "scripts/plan_stroke.py",
+      "inputs": {
+        "plug_point": {
+          "$ref": "in.scene_plug_point"
+        },
+        "mouth_point": {
+          "$ref": "in.scene_mouth_point"
+        },
+        "bore_axis": {
+          "$ref": "in.scene_bore_axis"
+        },
+        "yaw_deg": {
+          "$ref": "in.scene_plug_yaw_deg"
+        },
+        "label": "aim",
+        "with_inspect": true
+      }
+    },
+    "goto": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "goto",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    },
+    "inspect": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "inspect",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    },
+    "aimed": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "plan"
+    ],
+    [
+      "goto",
+      "inspect"
+    ],
+    [
+      "inspect",
+      "aimed"
+    ],
+    [
+      "aimed",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "plan": {
+      "router_field": "route",
+      "mapping": {
+        "planned": "goto"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "aimed"
+    ]
+  },
+  "on_error": "errored"
+}

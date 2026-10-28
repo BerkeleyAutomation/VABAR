@@ -1,0 +1,217 @@
+; ---------------------------------------------------------------------------
+; AUTHORED -- there is no upstream .bddl for this task.
+;
+; THE STATIONARY RECEPTACLE, RESTORED. This document is the retired `insert`
+; variant put back verbatim: every threshold, every clause and every staging
+; name is the one that was measured at 3/3 reward 1.00 on 2026-08-07, and the
+; `gt` graph's README still carries that row as its own provenance.
+;
+; WHY IT IS BACK. The bulkhead retired it on the grounds that a bolted-down
+; receptacle is the easier half of the same task, which was true and is the
+; wrong reason to delete it. Two things need it:
+;
+;   * A PERCEPTION GRAPH NEEDS A BED IT CAN BE MEASURED ON. Substituting a
+;     camera for ground truth is only a measurement if the choreography around
+;     it is known to work. On the bulkhead it is not -- see that document's
+;     note on `:arms-solid` -- so a vision run there cannot tell a perception
+;     error from the arm-clearance defect underneath it. Here the action side
+;     is a solved single-arm stroke, and what moves when the oracle is swapped
+;     out is perception and nothing else.
+;
+;   * A RECEPTACLE THAT DOES NOT MOVE IS A DIFFERENT PERCEPTION PROBLEM, not
+;     an easier instance of one. It is measured once from the bench and never
+;     re-looked at; the bulkhead's has to be found again after the support arm
+;     has picked it up. One graph covering both is what makes that contrast
+;     visible.
+;
+; WHAT MAKES THIS ONE INTERESTING. It is the document whose goal measures
+; against a DECLARED FEATURE rather than a region -- `port.bore` is a cavity on
+; the receptacle, stated in the receptacle's own frame, and the measure rotates
+; and translates it by rules the *kind* declares. Point the same goal at a port
+; bolted on sideways and no number in this file changes.
+; ---------------------------------------------------------------------------
+
+(define (problem INSERT_THE_USB_C_PLUG)
+
+  (:suite usbc_insert)
+
+  (:language insert the USB-C plug into the receptacle)
+
+  (:staging
+    (:scene bench_075)
+    ; NOT `(:arms-solid true)`, which the bulkhead states. This variant works
+    ; with one hand and parks the other, so there is no corridor for a support
+    ; elbow to stand in and nothing for the solidity to catch -- and it is also
+    ; the variant whose 3/3 is the reference reading for this whole suite.
+    ; Quietly changing what its arms collide against would put that number
+    ; under a scene nobody measured.
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left))
+    ; ee_pose_abs, not joint_position: a 0.15 mm clearance fit is commanded in
+    ; task space or not at all. The reference drives Cartesian waypoints and a
+    ; joint-space reproduction of it would be measuring a different controller.
+    (:control-mode ee_pose_abs)
+    ; The reference's stiffened servos: the task carries them, not the
+    ; embodiment, because a 1600-gain arm is an insertion fact -- at the
+    ; MJCF's own 300 the TCP lags ~10 mm and the fit never lines up.
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    ; Named, not described. 60 Hz x 16 substeps with the reference's own
+    ; contact settings is a calibrated fact about this fit, and the file that
+    ; holds it is tasks/usbc_insert/staging.py. NOT the bulkhead's doubled
+    ; ceilings: this scene carries no cables, and sizing for bodies that are
+    ; not there is sizing for a different scene.
+    (:physics usbc_960hz@v1)
+    ; The perception rig, not the reference multiview -- the reference's three
+    ; views were aimed by somebody who already knew where the parts were.
+    ; `topdown` and `wrist` are what a policy that has to find them reads.
+    (:cameras usbc_perception@v1)
+    ; THIRTY DRAWS, NOT THIRTY REPEATS. `fixed` was right while this variant was
+    ; a reference reproduction and every number in the graph READMEs was a
+    ; measurement of one layout run again. It is wrong for a policy that claims
+    ; to find its parts: a fixed spawn cannot tell perception from memory.
+    ;
+    ; `staging:USBC_BENCH` puts the plug where a hand would have left it --
+    ; 18 mm of position and 14 degrees of heading -- and nudges a free
+    ; receptacle by the slop in its own cradle, which on this variant is
+    ; nothing, because this receptacle is bolted down. See
+    ; tasks/usbc_insert/staging.py for both numbers and why they are the sizes
+    ; they are.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:USBC_BENCH))
+    (:max-steps 6000)
+    ; Two arms: the graph lays out an action vector per arm and parks the one
+    ; it is not inserting with. It does not manipulate with it, but it does
+    ; need it to exist -- so a one-armed robot is refused here rather than
+    ; discovered mid-rollout.
+    (:arms 2)
+  )
+
+  (:objects
+    plug - usb_c_plug
+    ; THE SUITE'S OWN ENTITY, which no generic kind expresses and no clause
+    ; names: the probe rig -- fingertip blades narrow enough to reach into a
+    ; 16.8 mm mouth, and the jaw calibration that goes with them. Surgery on
+    ; the hand rather than a thing on the bench. Built after the body it
+    ; reaches for.
+    ;
+    ; No cables and no detent here, and that is the measurement rather than
+    ; tidiness: this variant was solved 3/3 at reward 1.00 without either, and
+    ; adding a cable and a modeled retention spring to the variant they were
+    ; introduced to rescue would make the restored document a different scene
+    ; from the one whose numbers it carries.
+    rig  - usbc_rig
+  )
+
+  (:fixtures
+    ; The bench the port stands on, and the port itself. Both are scenery: the
+    ; receptacle does not move, which is what makes a 0.15 mm fit a fit rather
+    ; than a collision between two things that are both drifting.
+    bench - usbc_bench
+    port  - usb_c_port
+  )
+
+  ; No regions. Every quantity this task scores on is measured against the
+  ; port's own declared bore, not against a box in the world -- which is the
+  ; difference between "inside this rectangle" and "13 mm into that hole".
+
+  ; -------------------------------------------------------------------------
+  ; No init constraint. The plug spawns on the bench where the reference's own
+  ; assembly puts it, and the export records that pose; there is nothing for the
+  ; task to require of a starting state it did not choose.
+  (:init)
+
+  ; -------------------------------------------------------------------------
+  ; FOUR CLAUSES, and three of them are guards on the first.
+  ;
+  ; (insertion plug port.bore) >= 0.0104
+  ;     Tab tip past the mouth plane, along the bore axis. 0.0104 is 0.8 of the
+  ;     13 mm bore -- deep enough that the latch has engaged, shallow enough that
+  ;     a seat is not required to bottom out.
+  ;
+  ; (insertion:lat plug port.bore) <= 0.0087931792
+  ;     THE GUARD THE DEPTH READING CANNOT DO WITHOUT. Depth is measured along
+  ;     the axis, so a plug that slid PAST the port face reads fully inserted --
+  ;     it is beyond the mouth plane, and nothing in that arithmetic knows it is
+  ;     centimetres to the side. The number is the mouth's own half-diagonal,
+  ;     hypot(8.4, 2.6) mm: inside it and you are in the hole.
+  ;
+  ; (speed plug) <= 0.05
+  ;     Still moving is not seated.
+  ;
+  ; (not (gripped plug.body))
+  ;     Let go. A plug held at depth by the fingers has been PUT there and not
+  ;     INSERTED, and the two look identical from a pose alone. The measure reads
+  ;     the jaws stalled at the part's own width -- see the atom for the empty
+  ;     gripper that carried a whole stroke and reported a seat.
+  ;
+  ; NO TILT CLAUSE, and that is not an oversight. The bulkhead states one
+  ; because its slot is 8.00 mm tall against a real jack's 5.20, which leaves
+  ; 1.6 mm a side of rotation budget for a plug to hang in. This block's bore
+  ; is the connector's own, and a plug that fits it geometrically cannot pivot
+  ; far enough to matter -- inventing a threshold here would gate a variant
+  ; against a line it was never measured under.
+  ;
+  ; Nothing latches. A plug pushed back out stops counting, which is the honest
+  ; reading of a goal stated over the world's current state.
+  (:goal
+    (And
+      (>= (insertion plug port.bore) 0.0104)
+      (<= (insertion:lat plug port.bore) 0.0087931792)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+    )
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Progress toward the depth gate, masked to zero outside the bore.
+  ;
+  ; The mask is not decoration: without it a plug driven past the port face
+  ; earns reward for its depth along the axis, which is the same reading the
+  ; goal's second clause exists to reject. Reward and success have to agree
+  ; about what "in" means or a policy is being paid to do the wrong thing.
+  (:reward
+    (progress (insertion plug port.bore)
+              (:gate 0.0104)
+              (:gated-by (<= (insertion:lat plug port.bore) 0.0087931792))))
+
+  ; -------------------------------------------------------------------------
+  ; Recorded every step, gating nothing. The jaw gap and the trailing distance
+  ; are what distinguish "the grasp failed" from "the insertion failed", and a
+  ; run that reports neither leaves the two indistinguishable.
+  (:observe
+    (gripped plug.body)
+    (insertion:mate_gap plug port.bore)
+  )
+
+  ; -------------------------------------------------------------------------
+  ; TWO GRAPHS AND NO ROUTINE.
+  ;
+  ; The reference's open-loop stroke is not ported. It reached about 3.6 mm of
+  ; the 10.4 mm gate -- which was this variant's original reason to exist, a
+  ; task whose scripted baseline measurably fails it -- but the policy base it
+  ; was written against has since been rewritten, and a scripted solution
+  ; transcribed onto the wrong base is a solution that runs and is not the one
+  ; that was measured. What that baseline demonstrated is recorded in the `gt`
+  ; graph's README instead, where the number can be read beside the closed-loop
+  ; one that beats it.
+  ;
+  ; `gt` is the privileged ground-truth graph; `mate` carries a perception
+  ; slot in front of the same choreography and serves this variant and the
+  ; bulkhead from one workflow.
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "the USB-C insertion reference this suite reproduces, by way of the retired
+              usbc_insert/insert document this restores verbatim")
+    (:note "Clearance is 0.15 mm on a side. The colliders are built rather than
+            imported, because no convex hull of the authored mesh gives a fit
+            that tight. See tasks/usbc_insert/assets/stage.py. Renamed from
+            insert to port when it came back, because the suite is already
+            called usbc_insert and the variant name should say which receptacle
+            rather than repeat the verb.")
+  )
+)

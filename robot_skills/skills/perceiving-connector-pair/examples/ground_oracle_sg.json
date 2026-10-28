@@ -1,0 +1,74 @@
+{
+  "skill": "perceiving-connector-pair",
+  "inputs": {},
+  "outputs": {
+    "scene_body": {
+      "$ref": "read.scene_body"
+    },
+    "scene_plug_point": {
+      "$ref": "read.scene_plug_point"
+    },
+    "scene_plug_yaw_deg": {
+      "$ref": "read.scene_plug_yaw_deg"
+    },
+    "scene_mouth_point": {
+      "$ref": "read.scene_mouth_point"
+    },
+    "scene_bore_axis": {
+      "$ref": "read.scene_bore_axis"
+    },
+    "scene_barrel_point": {
+      "$ref": "read.scene_barrel_point"
+    },
+    "scene_receptacle_held": {
+      "$ref": "read.scene_receptacle_held"
+    },
+    "scene_plug_half_h": {
+      "$ref": "read.scene_plug_half_h"
+    }
+  },
+  "nodes": {
+    "read": {
+      "type": "script",
+      "script": "scripts/ground_oracle.py",
+      "inputs": {}
+    },
+    "found": {
+      "type": "noop"
+    },
+    "not_found": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "read"
+    ],
+    [
+      "found",
+      "END"
+    ],
+    [
+      "not_found",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "read": {
+      "router_field": "route",
+      "mapping": {
+        "found": "found",
+        "not_found": "not_found"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "found",
+      "not_found"
+    ]
+  },
+  "on_error": "errored"
+}

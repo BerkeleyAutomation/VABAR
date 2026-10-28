@@ -1,0 +1,131 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design: the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor, and the 0.047 share.
+;
+; WHAT THIS ONE CHANGES: the four stations sit on an arc of radius 0.22 m
+; instead of a straight line. Same count, same pitch measured ALONG the arc,
+; same rod, same seats.
+;
+; WHY AN ARC IS HARDER, and it is not because it is longer -- the arc-length
+; pitch is the line's and the scored route about 10 mm shorter than weave4's.
+; It is that THE CARRY DIRECTION STOPS BEING CONSTANT. On the line every
+; crossing is the same move in x at a different y, which is exactly the shape an
+; open-loop stroke can repeat: aim once, translate along the line, repeat. Here
+; the stations' own x differs by 98 mm end to middle at the 155 mm pitch, so the
+; direction the rod must be carried to reach a seat is different at every
+; station and a stroke that worked at peg0 misses at peg3 by ten seat widths.
+;
+; The centre of the arc sits BEHIND the line, so the middle stations stay where
+; the line put them and the outer two move away from the robot. That direction
+; is deliberate: bulging toward the robot would have brought the outer stations
+; into the space the rod starts in, and the 100 mm clear gap that makes the idle
+; floor zero is a property this family does not spend.
+;
+; WHAT THE WIDER PITCH DID TO IT. At a 70 mm pitch the arc was weave4's control
+; -- 95 degrees of turning against its 93, the same level, differently
+; distributed. At 155 the arc bends much further round its own circle and the
+; two part company: 160.1 degrees against weave4's 36.5, which is L2 against L1.
+; It now pairs with weave5 (119.9) rather than with weave4, and the pairing is
+; a shared BAND rather than a shared number. What survives unchanged is the
+; distribution: its four turns are 35.3, -29.1, -51.0 and 44.8 degrees against
+; the line's even -6.1, +12.2, -12.2, +6.1, so its weakest station is wrapped
+; barely half as much as its strongest and it is still the member whose outer
+; seat is predicted to go first.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_FOUR_PEGS_ON_AN_ARC)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the four pegs on the curve, alternating sides)
+
+  ; The cell, the robot, the arrangement and the episode are the suite's;
+  ; only what this arrangement changes is stated here.
+  (:staging
+    ; Aimed at this layout's own centroid, which is 63 mm further from the robot
+    ; than the line's -- an overhead framed on the line crops the outer pair.
+    (:cameras cable_weave_arc@v1)
+    ; Three crossings, each needing its own approach rather than a repeat.
+    (:max-steps 6000)
+    ; The rod's own shape and placement, drawn per episode; the board does not
+    ; move. See weave4 for what the four fractions are and why they are in the
+    ; model key rather than in a pose.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  ; The family's rod and spools, placed on this layout -- see weave4 for what
+  ; the types carry and why they are per arrangement.
+  (:objects
+    cable - weave_arc_cable
+  )
+
+  (:fixtures
+    peg0 - weave_arc_peg0
+    peg1 - weave_arc_peg1
+    peg2 - weave_arc_peg2
+    peg3 - weave_arc_peg3
+  )
+
+  ; -------------------------------------------------------------------------
+  ; THE SEATS ARE UNCHANGED, and that is the point rather than an oversight.
+  ;
+  ; A seat is stated in its own station's frame, so bending the line moves every
+  ; box with the station it belongs to and no number in this section has to know
+  ; the layout curved. That is the property the feature-and-region split exists
+  ; for, and this document is the one that spends it: four arrangements share
+  ; one definition of what "seated on the near side" means.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3 (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable seat2) 0.047)
+        (>= (containment cable seat3) 0.047)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine, the oracle graph, and the vision
+  ; graph that runs the same crossing loop off the `cable` camera. See weave4.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "this stack -- weave4's family with the stations bent onto a curve")
+    (:note "Four F1 spools on a 0.22 m arc whose centre sits behind the peg line, spaced at
+            weave4's 155 mm measured along the arc, so the run has the line's length along the
+            curve and what varies is approach direction. The rod is weave4's 0.80 m at
+            42 capsules. The radius is chosen rather than measured: it was the shallowest
+            curve that moved the outer stations a full seat width in x at a 70 mm pitch, and
+            at 155 the same radius moves them 98 mm and takes the layout from L2's edge to
+            160 deg of turning. Not independently reach-checked -- every station stays inside
+            the envelope weave4's axis offset was measured against, which is why the arc
+            bulges away from the robot rather than toward it. No scripted routine.")
+  )
+)

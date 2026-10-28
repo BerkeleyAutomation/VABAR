@@ -1,0 +1,433 @@
+{
+  "method": "quadric decimation followed by CoACD 1.0.11",
+  "source": "assets/tool_hanging/pliers/plier_1/plier_1.obj",
+  "source_vertices": 11053,
+  "source_triangles": 15688,
+  "decimated": "assets/tool_hanging/pliers/plier_1/plier_1_collision_decimated.obj",
+  "decimated_vertices": 3383,
+  "decimated_triangles": 4988,
+  "parameters": {
+    "threshold": 0.035,
+    "max_convex_hull": 24,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 50,
+    "resolution": 800,
+    "mcts_nodes": 10,
+    "mcts_iterations": 80,
+    "mcts_max_depth": 3,
+    "merge": true,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "hulls": [
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_00.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.06472459870383732,
+          -0.003841746597669702,
+          -0.004375080872555198
+        ],
+        [
+          0.08736087023663339,
+          0.01179415616231324,
+          0.002528487841836415
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_01.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.0298398426360181,
+          0.0032636247876366648,
+          -0.008767990718822567
+        ],
+        [
+          0.06472266480077127,
+          0.008841746968682042,
+          0.002573061114744314
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_02.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds": [
+        [
+          -0.06711443543283874,
+          -0.0016481258231625853,
+          -0.03386685405025812
+        ],
+        [
+          -0.006941385895227099,
+          0.009648133805073825,
+          -0.015002427832088711
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_03.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.0005699734324137885,
+          -0.0015408398139183186,
+          -0.020221918180047493
+        ],
+        [
+          0.01230724391909446,
+          0.009653783857958415,
+          -0.009529995278039686
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_04.obj",
+      "vertices": 45,
+      "triangles": 86,
+      "bounds": [
+        [
+          0.05273323205475576,
+          -0.0007132193832196923,
+          0.003298046709905282
+        ],
+        [
+          0.06561463197906431,
+          0.0010925819893437437,
+          0.005370094994322311
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_05.obj",
+      "vertices": 50,
+      "triangles": 96,
+      "bounds": [
+        [
+          0.029682991238522093,
+          0.006866230493455233,
+          0.00791408689391957
+        ],
+        [
+          0.04857144529006872,
+          0.008783165441548673,
+          0.010262084103301906
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_06.obj",
+      "vertices": 18,
+      "triangles": 32,
+      "bounds": [
+        [
+          0.025376447952413082,
+          -0.0005913595443249806,
+          0.008249450885606262
+        ],
+        [
+          0.030038138397216092,
+          0.0010600080946432645,
+          0.009931357031908894
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_07.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.0017833608249052443,
+          0.0036493115939380837,
+          0.00772544411409282
+        ],
+        [
+          0.010679965973315534,
+          0.009657423609483667,
+          0.016704291506407426
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_08.obj",
+      "vertices": 16,
+      "triangles": 28,
+      "bounds": [
+        [
+          0.04971933534816347,
+          0.006917586965575485,
+          0.0065095447514177205
+        ],
+        [
+          0.05306686682238605,
+          0.0075722824250193934,
+          0.007013911460189651
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_09.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.009279808180630284,
+          -0.001655196656247822,
+          0.007636738853941267
+        ],
+        [
+          0.014851893186095949,
+          0.009639011620800017,
+          0.015186466088637798
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_10.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.06711386985741377,
+          0.001580228874614818,
+          0.012508045690626069
+        ],
+        [
+          0.004825353807750111,
+          0.009633809125081359,
+          0.027874743670504635
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_11.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.02136362536795506,
+          -0.0016543271980592241,
+          0.008973917656536656
+        ],
+        [
+          0.009279166777048532,
+          0.006881200282916812,
+          0.026728969959161405
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_12.obj",
+      "vertices": 60,
+      "triangles": 116,
+      "bounds": [
+        [
+          -0.008141235914945467,
+          -0.0016285747017177445,
+          -0.018101865541162578
+        ],
+        [
+          0.0005690270057953795,
+          0.009628518828339067,
+          -0.009831711522895917
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_13.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.06712091218367314,
+          -0.0016860421820966724,
+          0.016704291506407426
+        ],
+        [
+          -0.0105360783912564,
+          0.006291137779598909,
+          0.027876431274595288
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_14.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.02825625425154555,
+          -0.0008392925309758685,
+          -0.007166815903343146
+        ],
+        [
+          0.04554739559237968,
+          0.0032636247876366648,
+          0.002419517649320596
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_15.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.046758746457232006,
+          -0.0016508487951683174,
+          0.023253914909883114
+        ],
+        [
+          -0.02136611800480788,
+          0.009650302604384924,
+          0.03167038876390167
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_16.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.06709551602265487,
+          -0.001658121456580612,
+          0.027876431274595288
+        ],
+        [
+          -0.04676371804766123,
+          0.009643060730344554,
+          0.032110068923714985
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_17.obj",
+      "vertices": 37,
+      "triangles": 70,
+      "bounds": [
+        [
+          0.016143186261521045,
+          -0.0006902856418188191,
+          0.003340061210124377
+        ],
+        [
+          0.02731491097032445,
+          0.0010076105532427645,
+          0.006892101793308446
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_18.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds": [
+        [
+          0.0005690270057953795,
+          0.00212808046568348,
+          -0.011009579359060473
+        ],
+        [
+          0.013334338013035432,
+          0.007099295745081106,
+          -0.002226752883240578
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_19.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.008141235914945467,
+          -0.0016319829778170467,
+          -0.023667535940674205
+        ],
+        [
+          0.0005690270057953795,
+          0.009635622729342297,
+          -0.017760980917580677
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_20.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.0005690270057953795,
+          -0.0016548374702420408,
+          -0.020182685946031908
+        ],
+        [
+          0.012306668081212176,
+          0.0025949960469192892,
+          -0.011016950083953711
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_21.obj",
+      "vertices": 58,
+      "triangles": 112,
+      "bounds": [
+        [
+          0.025375966757192635,
+          -0.0007106035968791769,
+          -0.01212121557630504
+        ],
+        [
+          0.05308078271449575,
+          0.0032636247876366648,
+          -0.006846778891646003
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_22.obj",
+      "vertices": 30,
+      "triangles": 56,
+      "bounds": [
+        [
+          0.025375965616919603,
+          0.0032636250727049237,
+          -0.012015776809376218
+        ],
+        [
+          0.030038138397216092,
+          0.008591364960621893,
+          -0.010091359104563928
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/pliers/plier_1/collision_coacd/hull_23.obj",
+      "vertices": 52,
+      "triangles": 100,
+      "bounds": [
+        [
+          0.029673522411245882,
+          0.007489484919458166,
+          0.002573061114744314
+        ],
+        [
+          0.04188938601530587,
+          0.008841746968682042,
+          0.007914086323783053
+        ]
+      ]
+    }
+  ]
+}

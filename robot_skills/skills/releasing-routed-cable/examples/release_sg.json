@@ -1,0 +1,51 @@
+{
+  "skill": "releasing-routed-cable",
+  "inputs": {
+    "plan": "str",
+    "arm_id": "int",
+    "grip_open_m": "float",
+    "grip_close_m": "float"
+  },
+  "outputs": {},
+  "nodes": {
+    "open_and_clear": {
+      "type": "script",
+      "script": "scripts/run_legs.py",
+      "inputs": {
+        "plan": {
+          "$ref": "in.plan"
+        },
+        "arm_id": {
+          "$ref": "in.arm_id"
+        },
+        "legs": "clear,retreat",
+        "open_before": true,
+        "close_after": false,
+        "grip_open_m": {
+          "$ref": "in.grip_open_m"
+        },
+        "grip_close_m": {
+          "$ref": "in.grip_close_m"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "open_and_clear"
+    ],
+    [
+      "open_and_clear",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "done"
+    ]
+  },
+  "on_error": "blocked"
+}

@@ -1,0 +1,78 @@
+{
+  "variant": "tray_pair_t17",
+  "settled_from": "the export's syringe_0 pose (vab_tool_sort/syringe/scene_meta.json), laid out by the loader's former _pack_staging and recorded by tools at 2026-09-09; validated by outputs/ten_syringes-rerun-20260909b (reward 1.0)",
+  "objects": {
+    "syringe_0": {
+      "pose": [
+        0.024105,
+        -0.299955,
+        0.795825
+      ],
+      "quat": [
+        -0.004153,
+        0.005247,
+        0.79864,
+        -0.601772
+      ]
+    },
+    "syringe_pack_0": {
+      "pose": [
+        0.048919,
+        -0.213443,
+        0.795825
+      ],
+      "quat": [
+        -0.004153,
+        0.005247,
+        0.79864,
+        -0.601772
+      ]
+    },
+    "syringe_pack_1": {
+      "pose": [
+        0.073733,
+        -0.126931,
+        0.795825
+      ],
+      "quat": [
+        -0.004153,
+        0.005247,
+        0.79864,
+        -0.601772
+      ]
+    }
+  },
+  "fixtures": {
+    "syringe_tray": {
+      "pose": [
+        0.036511,
+        -0.256699,
+        0.785025
+      ],
+      "quat": [
+        0.0,
+        0.0,
+        0.990263,
+        0.13921
+      ]
+    }
+  },
+  "box_shift": [
+    -0.005609,
+    0.024598
+  ],
+  "trial": {
+    "index": 17,
+    "of": 30,
+    "seed": 0,
+    "offset_m": [
+      -0.032741,
+      0.014782
+    ],
+    "yaw_deg": 23.631,
+    "box_shift_m": [
+      -0.005609,
+      0.024598
+    ]
+  }
+}

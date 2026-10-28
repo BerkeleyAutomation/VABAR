@@ -1,0 +1,56 @@
+{
+  "skill": "perceiving-deformable-linear-objects",
+  "inputs": {
+    "scene": "str",
+    "index": "int"
+  },
+  "outputs": {
+    "rod": {
+      "$ref": "fit_centreline.rod"
+    },
+    "arclength_m": {
+      "$ref": "fit_centreline.arclength_m"
+    },
+    "source": {
+      "$ref": "fit_centreline.source"
+    },
+    "used_camera": {
+      "$ref": "fit_centreline.camera"
+    },
+    "visible": {
+      "$ref": "fit_centreline.visible"
+    }
+  },
+  "nodes": {
+    "fit_centreline": {
+      "type": "script",
+      "script": "scripts/perceive_rod.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        },
+        "index": {
+          "$ref": "in.index"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "fit_centreline"
+    ],
+    [
+      "fit_centreline",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "found"
+    ]
+  },
+  "on_error": "lost"
+}

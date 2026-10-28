@@ -1,0 +1,164 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design: the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor, and what the 0.047 share means.
+;
+; THE MIDDLE RUNG OF THE DIFFICULTY LADDER, and the first document in this
+; family that names a level rather than a comparison. What a level is and how it
+; is measured is difficulty.py; the two sentences it comes to are these. A
+; route's difficulty is its ACCUMULATED TURNING ANGLE -- the total absolute
+; curvature the rod's centreline has to acquire, measured from the straight rod
+; the episode starts with -- and the levels are bands at a quarter, a half and a
+; whole turn.
+;
+; WHAT THIS ONE CHANGES against weave4: five stations instead of four, and a
+; 12.5 mm stagger either side of the peg line. Both at once, and deliberately:
+; the ladder's rungs raise the station count and the crossing obliquity
+; together, because those are the two ways of buying turning and a ladder that
+; raised one of them would measure one of them.
+;
+;   weave3   3 stations   scatter     12.6 deg   L1   <- the ladder's L1 rung
+;   weave4   4 stations   0    mm     36.5 deg   L1
+;   weave5   5 stations  12.5  mm    119.9 deg   L2   <- this one, the L2 rung
+;   weave6   6 stations  25    mm    232.2 deg   L3   <- the L3 rung
+;
+; 120 degrees is a third of a turn, and what the rod does about it is the reason
+; this is a different problem rather than a longer one. Tension delivered
+; through a route falls as exp(-mu * Theta): at weave4's 36.5 degrees a pull at
+; the free end reaches the far station at 83% of its strength, and here at 53%.
+; A policy that drags the rod through the route starts to lose the far stations
+; somewhere in this band, and one that pays slack out station by station starts
+; to be the thing that works.
+;
+; THE MATCHED PAIR. weave_stagger sits at this level too, at 139 degrees against
+; this 120 -- and it buys them the other way, four stations at 23 degrees of
+; obliquity against this five at 15. Same band, different source. Which of the
+; two a policy finds harder is the question the pair exists to ask, and neither
+; document can answer it. weave_arc and panel_l2 are at L2 as well and each
+; changes something else again: the arc's turns are unequal to each other, and
+; the panel's come from a thicker fixture rather than from a wider board.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_FIVE_PEGS)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the five pegs, alternating sides)
+
+  ; The cell, the robot and the arrangement are the suite's; only what this
+  ; arrangement changes is stated here.
+  (:staging
+    (:cameras cable_weave5@v1)
+    ; Four crossings rather than three, each carrying the rod 2 * (12.5 + 8.25)
+    ; = 41.5 mm in x against the straight weave's 16.5, plus the settle and the
+    ; retreat.
+    (:max-steps 8000)
+    ; The rod's own shape and placement, drawn per episode; the board does not
+    ; move. See weave4 for what the four fractions are and why they are in the
+    ; model key rather than in a pose.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  ; A 0.95 m rod at 80 capsules -- discretised at the family's 11.9 mm pitch
+  ; rather than at weave4's count, because a longer rod at 42 would be a coarser
+  ; one and a station's turn would fall inside a single capsule. See
+  ; weave_segments in assets/cable.py.
+  (:objects
+    cable - weave5_cable
+  )
+
+  (:fixtures
+    peg0 - weave5_peg0
+    peg1 - weave5_peg1
+    peg2 - weave5_peg2
+    peg3 - weave5_peg3
+    peg4 - weave5_peg4
+  )
+
+  ; -------------------------------------------------------------------------
+  ; THE SEATS ARE UNCHANGED, again, and by now that is the family's whole
+  ; argument for stating a region in its own station's frame: five stations at
+  ; two different x, and not one number here has to know either fact. Same box,
+  ; same 45 mm reach, same +/- 35 mm along the line -- which still does not
+  ; overlap, because the stations are 155 mm apart in y whichever row they stand
+  ; in.
+  ;
+  ; The sides continue to alternate: -1, +1, -1, +1, -1. The outer two share a
+  ; side, as they do on every odd-count layout, and the stagger is phased
+  ; against the sides exactly as weave_stagger's is -- a station the rod must
+  ; pass on the robot's side is the near one.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3 (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat4 (:target peg4) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  ; The same two groups under worst_of, at five clauses rather than four. The
+  ; idle floor is zero against the BOW, which is the term the spawn line was
+  ; sized against: this board's near row stands at x = 0.5075, so its near-side
+  ; seat boxes begin at 0.4625 and a rod bowed 20 mm off a 0.42 spawn reaches
+  ; 0.440, clear by 22.5 mm. Against the whole spawn envelope -- bow, second
+  ; harmonic and shift, all at an extreme and aligned -- the worst capsule
+  ; reaches 0.480 and is 17.4 mm inside that box edge. What that envelope is and
+  ; is not is written up on WEAVE_CABLE_WAVE in assets/cable.py; eleven of the
+  ; thirteen layouts are inside it and no rollout has measured an idle score at
+  ; these constants.
+  ;
+  ; The 0.047 share is weave4's number carried over, and on this rod it asks
+  ; for MORE than weave4's two capsules: 0.047 of 80 is 3.8 bodies, about 45 mm
+  ; of cable inside a 70 mm box. Kept at weave4's value rather than rescaled to
+  ; two capsules (0.025) because what a seat should ask for is a length of rod
+  ; lying in it, and a finer rod is not a reason to ask for less of one.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.024)
+        (>= (containment cable seat1) 0.024)
+        (>= (containment cable seat2) 0.024)
+        (>= (containment cable seat3) 0.024)
+        (>= (containment cable seat4) 0.024)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine, the oracle graph, and the vision
+  ; graph that runs the same crossing loop off the `cable` camera. See weave4.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "this stack -- the L2 rung of the cable_route difficulty ladder")
+    (:note "Five F1 spools on weave4's 155 mm y-pitch, offset +/-12.5 mm in x and phased
+            against the required sides. Accumulated turning of the scored route is 119.9 deg
+            at a mean crossing obliquity of 15.0 deg, which places it in the 90-180 deg band;
+            see tasks/cable_route/difficulty.py for the measure and rigs/difficulty_ladder.py
+            for the table. The 12.5 mm depth is chosen rather than measured -- it is the
+            flange radius, and it is the depth at which five stations reach this band without
+            reaching the next. The rod is 0.95 m at 80 capsules: the seated route is 722 mm
+            including its tails, which clears WEAVE_MIN_SLACK by 208 mm. Reach-checked against
+            rigs/weave_reach.py, which puts the right arm's band at y in [-0.36, +0.10] over
+            the x this layout spans; the stations run y = -0.370 to +0.250, so its two outer
+            stations sit past that band and are reached by chaining rather than from home. No
+            scripted routine of its own -- RoutineWeave plans per station and does not know
+            how many there are.")
+  )
+)

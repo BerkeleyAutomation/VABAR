@@ -1,0 +1,44 @@
+{
+  "skill": "sequencing-crossings",
+  "inputs": {
+    "scene": "str"
+  },
+  "outputs": {
+    "index": {
+      "$ref": "next_crossing.index"
+    },
+    "remaining": {
+      "$ref": "next_crossing.remaining"
+    }
+  },
+  "nodes": {
+    "next_crossing": {
+      "type": "script",
+      "script": "scripts/next_station.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "next_crossing"
+    ],
+    [
+      "next_crossing",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "found",
+      "finished"
+    ]
+  },
+  "on_error": "errored"
+}

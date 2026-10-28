@@ -1,0 +1,111 @@
+; -----------------------------------------------------------------------
+; MACHINE-DRAFTED by tools/build_gear_scenes.py, which IS in this tree. The
+; structure below is generated and the argument is not: what a 2-station
+; board asks of a policy is stated once, in tasks/gear_mesh/difficulty.py,
+; rather than restated in 200 headers.
+;
+; provenance.tier: derived
+; source-of-record: assets/variants.json (row 'gearmesh-easy-pair-38')
+; regenerate with: uv run python tools/build_gear_scenes.py --single 40 --pair 60 --train 100 --seed 0 --write
+;
+; LEVEL EASY BY MEASURE, NOT BY NAME: difficulty.level((24, 20)) --
+; 2 stations, 0 repeated tooth counts.
+;
+; DRAWN AT SEED 1428549396 (assets/layout.py draw_layout; 1 layout tried):
+;   stations, pinion outward: 24t, 20t
+;   plate centre  surface (+0.0304, +0.0292)  world (0.6304, +0.0292)
+;                 = the tiers' spot +10.4 mm in x, +29.2 mm in y
+;   chain turned  +5.8 deg off the tiers' (along world +y, across the arm)
+;   link lengths  47.5 mm, 55.0 mm
+;   gear_a  24t  surface (-0.0980, +0.0496)  world (0.5020, +0.0496)  clock  106.9 deg
+;   gear_b  20t  surface (-0.1297, -0.0523)  world (0.4703, -0.0523)  clock  258.7 deg
+;
+; KEPT BECAUSE A HAND CAN WORK IT. Each gear was dropped uniformly on the mat
+; with its tip circle 8.0 mm inside the edge and rejected against what was
+; already down: least free bench between a gear and the plate 48.6 mm
+; (rule >= 15.0 mm),
+; least free mat between two gears' tip circles 46.7 mm (rule >= 25.0 mm),
+; least free mat to the edge 10.5 mm. The board itself was drawn first;
+; a gear that found no spot restarted the whole layout with a fresh board.
+;
+; A SPAWN POSE IS A SETTLED POSE: a disc lying flat has its centre exactly half
+; a face above the mat, so the poses file is arithmetic (layout.start_poses_for)
+; and tests/test_gear_mesh.py holds it to that.
+; -----------------------------------------------------------------------
+
+(define (problem GEARMESH_EASY_PAIR_38)
+
+  (:suite gear_mesh)
+
+  (:language put both gears on their pegs so they mesh, then press the red
+             button at the near end of the board to start them)
+
+  ; The cell, the arm, the physics and the cameras are the suite's. What is this
+  ; draw's alone: its step budget, where its gears and its board start, and that
+  ; the recorded draw IS the scene -- one episode, no sampler moving it, so a
+  ; score on this document is a score on this layout.
+  (:staging
+    (:max-steps 12000)
+    (:start-poses poses/gearmesh-easy-pair-38.json)
+    (:episodes (:count 1) (:seed 1428549396) (:sampler fixed))
+  )
+
+  (:objects
+    gear_a - gear_wheel_24t
+    gear_b - gear_wheel_20t
+  )
+
+  (:fixtures
+    mat   - gear_mat
+    board - gear_board_24_20
+  )
+
+  (:init
+    (loose board)
+    (unstarted board)
+  )
+
+  ; Assemble, then start, then turn -- pair.task says why the `after`s nest and
+  ; why `worst_of` rather than a flat `and`.
+  (:goal
+    (once
+      (after (>= (gears-seated board) 2)
+        (after (started board)
+          (hold-for 1.0
+            (worst_of
+              (And (gear0-on-peg board) (gear0-turning board) (not (gripped gear_a.body)))
+              (And (gear1-on-peg board) (gear1-turning board) (not (gripped gear_b.body)))
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (:reward (progress (turning-fraction board) (:gate 1.0)))
+
+  (:observe
+    (turning-fraction board)
+    (gears-seated board)
+    (press-travel board)
+    (pinion-speed board)
+    (gear0-ratio board)
+    (gear1-ratio board)
+    (gear0-signed board)
+    (gear1-signed board)
+    (speed gear_a)
+    (speed gear_b)
+  )
+
+  (:provenance
+    (:tier derived)
+    (:source "Drawn by tools/build_gear_scenes.py at seed 1428549396 from the
+              gear_mesh suite's own arithmetic (assets/layout.py draw_layout):
+              the board pair.task and train.task describe, cut for 24t, 20t,
+              its plate centre and chain turn drawn within the suite's stated
+              bands, its gears dropped on the mat where a hand can work them.
+              The row of record is assets/variants.json.")
+    (:note "One of the easy level's 60 pair draws; tasks/gear_mesh/difficulty.py
+            says what makes 2 stations that level.")
+  )
+)

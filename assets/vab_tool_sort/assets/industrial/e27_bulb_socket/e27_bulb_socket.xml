@@ -1,0 +1,21 @@
+<mujoco model="e27_bulb_socket">
+  <asset>
+    <texture name="e27_bulb_socket_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="e27_bulb_socket_mat" texture="e27_bulb_socket_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="e27_bulb_socket_mesh" file="meshes/e27_bulb_socket.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="e27_bulb_socket_mesh"
+              material="e27_bulb_socket_mat" mass="0.049722" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.020000" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.020000" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.038501 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

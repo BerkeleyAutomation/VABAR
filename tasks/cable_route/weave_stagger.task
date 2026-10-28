@@ -1,0 +1,134 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design: the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor, and the 0.047 share.
+;
+; WHAT THIS ONE CHANGES: the four stations split into two rows, 25 mm either
+; side of the peg line, phased AGAINST the sides the cable must take.
+;
+; THE OBLIQUITY CONTROL, and the phasing is why. A station the rod must pass on
+; the robot's side is the NEAR one; its neighbour, which the rod must pass on
+; the far side, is the FAR one. So between two adjacent stations the rod has to
+; travel 2 * (25 + 8.25) = 66.5 mm in x, against the straight weave's
+; 2 * 8.25 = 16.5 mm. The route stops being a line with wiggles in it and
+; becomes a genuine serpentine with depth: the rod is carried toward and away
+; from the robot as much as across it.
+;
+; 139.3 degrees of accumulated turning at 23.2 degrees of obliquity per crossing
+; -- L2, beside weave5's 119.9 at 15.0 over five stations. That is the pair this
+; variant exists for: same band, four sharp crossings against five shallow ones,
+; and which of the two a policy finds harder is a question neither document can
+; answer alone. They are 16% apart in total turning rather than the 3% they were
+; at a 70 mm pitch; see difficulty.py, where the table moved with the constants.
+;
+; That costs cable -- the rod is 0.90 m against weave4's 0.80. The suite's
+; assets/layout.py computes the route length and refuses to mint a layout whose
+; path exceeds its rod, because an impossible weave builds, steps and scores
+; zero for ever while looking exactly like a hard one.
+;
+; ONE THING THIS BOARD DOES NOT HAVE, and it is written down rather than
+; quietly true: its near row stands at x = 0.495, so its near-side seat boxes
+; reach back to x = 0.450, while the rod's whole spawn envelope -- bow, second
+; harmonic and shift, all at an extreme and aligned -- reaches x = 0.480. That
+; is 29.9 mm inside the box, the widest breach of any layout here, and it
+; shares it with weave6 and board_l4. Against the BOW alone, the term the 0.42
+; spawn line was sized against, it clears by 10 mm. WEAVE_CABLE_WAVE in
+; assets/cable.py has the per-layout table and says what the envelope is and is
+; not: no rollout has measured an idle score at these constants.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_FOUR_STAGGERED_PEGS)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the four staggered pegs, alternating sides)
+
+  ; The cell, the robot, the arrangement and the episode are the suite's;
+  ; only what this arrangement changes is stated here.
+  (:staging
+    (:cameras cable_weave_stagger@v1)
+    ; Three crossings, each roughly four times the x-travel of the straight
+    ; weave's, on a longer rod.
+    (:max-steps 7500)
+    ; The rod's own shape and placement, drawn per episode; the board does not
+    ; move. See weave4 for what the four fractions are and why they are in the
+    ; model key rather than in a pose.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  ; The family's rod at 0.90 m rather than 0.80, and its spools on this layout
+  ; -- see weave4 for what the types carry and why they are per arrangement.
+  (:objects
+    cable - weave_stagger_cable
+  )
+
+  (:fixtures
+    peg0 - weave_stagger_peg0
+    peg1 - weave_stagger_peg1
+    peg2 - weave_stagger_peg2
+    peg3 - weave_stagger_peg3
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Unchanged, again, and here it is load-bearing rather than tidy: the stations
+  ; are at four different x now, and a seat stated in world coordinates would
+  ; have needed four different boxes saying the same thing. Stated in the
+  ; station's own frame it needs none -- the box travels with the peg, and
+  ; "seated on the near side" means one thing across the family.
+  ;
+  ; The +/- 35 mm along the line still does not overlap: the stations are 155 mm
+  ; apart in y regardless of which row they are in.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3 (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable seat2) 0.047)
+        (>= (containment cable seat3) 0.047)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine, the oracle graph, and the vision
+  ; graph that runs the same crossing loop off the `cable` camera. See weave4.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "this stack -- weave4's family split into two rows")
+    (:note "Four F1 spools on weave4's 155 mm y-pitch, offset +/-25 mm in x and phased against
+            the required sides so every crossing travels 66.5 mm in x rather than 16.5, for
+            139.3 deg of accumulated turning at 23.2 deg per crossing. The rod is 0.90 m at 42
+            capsules: the layout measures the seated route (586 mm with its tails) and refuses
+            anything with less than 20 mm of slack. The 25 mm depth is chosen rather than
+            measured -- it is twice the flange radius, so the rod clears a station's own
+            fixture on the way past its neighbour. Not independently reach-checked; every
+            station stays inside the envelope weave4's axis offset was measured against. No
+            scripted routine.")
+  )
+)

@@ -1,0 +1,37 @@
+{
+  "skill": "verifying-routing-state",
+  "inputs": {
+    "scene": "str"
+  },
+  "outputs": {},
+  "nodes": {
+    "measure_route": {
+      "type": "script",
+      "script": "scripts/verify_weave_vision.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "measure_route"
+    ],
+    [
+      "measure_route",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "exit",
+    "success_values": [
+      "woven",
+      "short"
+    ]
+  },
+  "on_error": "errored"
+}

@@ -1,0 +1,63 @@
+{
+  "skill": "executing-held-object-motion",
+  "inputs": {
+    "plan": "str",
+    "arm_id": "int",
+    "grip_open_m": "float",
+    "grip_close_m": "float",
+    "q_support": "str",
+    "quat": "str",
+    "segment": "int"
+  },
+  "outputs": {},
+  "nodes": {
+    "stream_with_feed": {
+      "type": "script",
+      "script": "scripts/run_legs.py",
+      "inputs": {
+        "plan": {
+          "$ref": "in.plan"
+        },
+        "arm_id": {
+          "$ref": "in.arm_id"
+        },
+        "legs": "move,cross",
+        "open_before": false,
+        "close_after": false,
+        "grip_open_m": {
+          "$ref": "in.grip_open_m"
+        },
+        "grip_close_m": {
+          "$ref": "in.grip_close_m"
+        },
+        "q_support": {
+          "$ref": "in.q_support"
+        },
+        "quat": {
+          "$ref": "in.quat"
+        },
+        "segment": {
+          "$ref": "in.segment"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "stream_with_feed"
+    ],
+    [
+      "stream_with_feed",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "done"
+    ]
+  },
+  "on_error": "blocked"
+}

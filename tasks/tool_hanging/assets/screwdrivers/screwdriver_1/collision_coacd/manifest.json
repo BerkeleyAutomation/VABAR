@@ -1,0 +1,58 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "assets/tool_hanging/screwdrivers/screwdriver_1/screwdriver_1.obj",
+  "source_vertices": 12248,
+  "source_triangles": 19756,
+  "source_watertight": false,
+  "parameters": {
+    "threshold": 0.04,
+    "max_convex_hull": 24,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 50,
+    "resolution": 800,
+    "mcts_nodes": 10,
+    "mcts_iterations": 60,
+    "mcts_max_depth": 3,
+    "merge": true,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "holder_opening_clearance_validation": null,
+  "hulls": [
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_1/collision_coacd/hull_00.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.08498131334781646,
+          -0.004106938280165195,
+          -0.003205588925629854
+        ],
+        [
+          0.1754812568426132,
+          0.0041059629991650574,
+          0.003205588925629854
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_1/collision_coacd/hull_01.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.0009414643049240057,
+          -0.010890540480613707,
+          -0.009573443047702312
+        ],
+        [
+          0.08497290350496768,
+          0.010890540480613707,
+          0.009573453478515147
+        ]
+      ]
+    }
+  ]
+}

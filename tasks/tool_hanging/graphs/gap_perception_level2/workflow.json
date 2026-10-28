@@ -1,0 +1,4744 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "wrench_hanging_gap_perception",
+    "description": "Zero-shot-style wrench hanging: RGB-D perception grounds the wrench ring and hook, a generic support-disengagement tool clears initial contact, feature mating computes one 6D TCP goal, and the collision-aware backend plans the complete attached-object path without an authored intermediate pose.",
+    "composes": {
+      "carry_sg_1": "executing-held-object-motion",
+      "carry_sg_2": "executing-held-object-motion",
+      "disengage_sg_1": "planning-held-object-motion",
+      "disengage_sg_2": "planning-held-object-motion",
+      "fixture_sg_1": "perceiving-functional-features",
+      "fixture_sg_2": "perceiving-functional-features",
+      "pair_sg_1": "perceiving-relational-correspondences",
+      "pair_sg_2": "perceiving-relational-correspondences",
+      "preapproach_sg_1": "executing-held-object-motion",
+      "preapproach_sg_2": "executing-held-object-motion",
+      "target_sg_1": "perceiving-functional-features",
+      "target_sg_2": "perceiving-functional-features"
+    },
+    "composes_note": "Subgraphs listed in `composes` run this graph's own scripts for the named skill, so they are labelled `generic`: graph-as-policy's SK1/SK2 contract reserves a bundle label for subgraphs that run that bundle's canonical scripts."
+  },
+  "nodes": {
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "robot.open_gripper",
+          "inputs": {}
+        },
+        {
+          "tool": "robot.go_home",
+          "inputs": {}
+        }
+      ]
+    },
+    "pair_1": {
+      "type": "subgraph",
+      "ref": "pair_sg_1",
+      "inputs": {
+        "instruction": {
+          "$ref": "in.instruction"
+        }
+      }
+    },
+    "target_1": {
+      "type": "subgraph",
+      "ref": "target_sg_1",
+      "inputs": {
+        "instruction": {
+          "$ref": "pair_1.instruction"
+        },
+        "selected_mask": {
+          "$ref": "pair_1.selected_mask"
+        }
+      }
+    },
+    "fixture_1": {
+      "type": "subgraph",
+      "ref": "fixture_sg_1",
+      "inputs": {
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "destination_anchor_y": {
+          "$ref": "pair_1.destination_anchor_y"
+        }
+      }
+    },
+    "collision_world_1": {
+      "type": "subgraph",
+      "ref": "collision_world_sg_1",
+      "inputs": {
+        "target_mask": {
+          "$ref": "target_1.target_mask"
+        },
+        "fixture_mask": {
+          "$ref": "fixture_1.fixture_mask"
+        },
+        "hook_tip": {
+          "$ref": "fixture_1.hook_tip"
+        },
+        "fixture_axis": {
+          "$ref": "fixture_1.fixture_axis"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        }
+      }
+    },
+    "grasp_1": {
+      "type": "subgraph",
+      "ref": "grasp_sg_1",
+      "inputs": {
+        "target_obb": {
+          "$ref": "target_1.target_obb"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "arm_id": {
+          "$ref": "pair_1.arm_id"
+        }
+      }
+    },
+    "register_1": {
+      "type": "subgraph",
+      "ref": "register_sg_1",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_1.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_1.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "arm_id": {
+          "$ref": "pair_1.arm_id"
+        }
+      }
+    },
+    "disengage_1": {
+      "type": "subgraph",
+      "ref": "disengage_sg_1",
+      "inputs": {
+        "attached_object": {
+          "$ref": "register_1.attached_object"
+        },
+        "arm_id": {
+          "$ref": "pair_1.arm_id"
+        }
+      }
+    },
+    "mate_1": {
+      "type": "subgraph",
+      "ref": "mate_sg_1",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register_1.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_1.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "attached_object": {
+          "$ref": "register_1.attached_object"
+        }
+      }
+    },
+    "motion_plan_1": {
+      "type": "subgraph",
+      "ref": "motion_plan_sg_1",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "mate_1.approach_pose"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "register_1.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_1.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "world_config": {
+          "$ref": "collision_world_1.world_config"
+        },
+        "attached_object": {
+          "$ref": "register_1.attached_object"
+        }
+      }
+    },
+    "carry_1": {
+      "type": "subgraph",
+      "ref": "carry_sg_1",
+      "inputs": {
+        "reorientation_plan": {
+          "$ref": "motion_plan_1.reorientation_plan"
+        }
+      }
+    },
+    "realign_1": {
+      "type": "subgraph",
+      "ref": "realign_sg_1",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_1.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_1.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "register_1.held_feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register_1.held_object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register_1.attached_object"
+        }
+      }
+    },
+    "remate_1": {
+      "type": "subgraph",
+      "ref": "mate_sg_1",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "realign_1.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_1.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "attached_object": {
+          "$ref": "realign_1.attached_object"
+        }
+      }
+    },
+    "placement_choice_1": {
+      "type": "subgraph",
+      "ref": "placement_choice_sg_1",
+      "inputs": {
+        "relation": {
+          "$ref": "target_1.relation"
+        }
+      }
+    },
+    "placement_plan_1": {
+      "type": "subgraph",
+      "ref": "placement_plan_sg_1",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "remate_1.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "remate_1.engaged_pose"
+        },
+        "target_pose": {
+          "$ref": "remate_1.target_pose"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "world_config": {
+          "$ref": "collision_world_1.world_config"
+        },
+        "attached_object": {
+          "$ref": "realign_1.attached_object"
+        }
+      }
+    },
+    "preapproach_1": {
+      "type": "subgraph",
+      "ref": "preapproach_sg_1",
+      "inputs": {
+        "placement_plan": {
+          "$ref": "placement_plan_1.placement_plan"
+        }
+      }
+    },
+    "final_realign_1": {
+      "type": "subgraph",
+      "ref": "final_realign_sg_1",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_1.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_1.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_1.target_kind"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "realign_1.held_feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "realign_1.held_object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "realign_1.attached_object"
+        }
+      }
+    },
+    "final_remate_1": {
+      "type": "subgraph",
+      "ref": "final_mate_sg_1",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "final_realign_1.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_1.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "attached_object": {
+          "$ref": "final_realign_1.attached_object"
+        }
+      }
+    },
+    "final_placement_plan_1": {
+      "type": "subgraph",
+      "ref": "final_placement_plan_sg_1",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "final_remate_1.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "final_remate_1.engaged_pose"
+        },
+        "target_pose": {
+          "$ref": "final_remate_1.target_pose"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "world_config": {
+          "$ref": "collision_world_1.world_config"
+        },
+        "attached_object": {
+          "$ref": "final_realign_1.attached_object"
+        }
+      }
+    },
+    "insert_1": {
+      "type": "subgraph",
+      "ref": "insert_sg_1",
+      "inputs": {
+        "placement_plan": {
+          "$ref": "final_placement_plan_1.placement_plan"
+        }
+      }
+    },
+    "release_1": {
+      "type": "subgraph",
+      "ref": "release_sg_1",
+      "inputs": {
+        "target_pose": {
+          "$ref": "final_remate_1.target_pose"
+        },
+        "fixture_axis": {
+          "$ref": "fixture_1.fixture_axis"
+        },
+        "relation": {
+          "$ref": "target_1.relation"
+        },
+        "attached_object": {
+          "$ref": "final_realign_1.attached_object"
+        }
+      }
+    },
+    "container_drop_1": {
+      "type": "subgraph",
+      "ref": "container_drop_sg_1",
+      "inputs": {
+        "engaged_pose": {
+          "$ref": "remate_1.engaged_pose"
+        },
+        "arm_id": {
+          "$ref": "pair_1.arm_id"
+        }
+      }
+    },
+    "pair_2": {
+      "type": "subgraph",
+      "ref": "pair_sg_2",
+      "inputs": {
+        "instruction": {
+          "$ref": "in.instruction"
+        }
+      }
+    },
+    "target_2": {
+      "type": "subgraph",
+      "ref": "target_sg_2",
+      "inputs": {
+        "instruction": {
+          "$ref": "pair_2.instruction"
+        },
+        "selected_mask": {
+          "$ref": "pair_2.selected_mask"
+        }
+      }
+    },
+    "fixture_2": {
+      "type": "subgraph",
+      "ref": "fixture_sg_2",
+      "inputs": {
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "destination_anchor_y": {
+          "$ref": "pair_2.destination_anchor_y"
+        }
+      }
+    },
+    "collision_world_2": {
+      "type": "subgraph",
+      "ref": "collision_world_sg_2",
+      "inputs": {
+        "target_mask": {
+          "$ref": "target_2.target_mask"
+        },
+        "fixture_mask": {
+          "$ref": "fixture_2.fixture_mask"
+        },
+        "hook_tip": {
+          "$ref": "fixture_2.hook_tip"
+        },
+        "fixture_axis": {
+          "$ref": "fixture_2.fixture_axis"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        }
+      }
+    },
+    "grasp_2": {
+      "type": "subgraph",
+      "ref": "grasp_sg_2",
+      "inputs": {
+        "target_obb": {
+          "$ref": "target_2.target_obb"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "arm_id": {
+          "$ref": "pair_2.arm_id"
+        }
+      }
+    },
+    "register_2": {
+      "type": "subgraph",
+      "ref": "register_sg_2",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_2.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_2.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "arm_id": {
+          "$ref": "pair_2.arm_id"
+        }
+      }
+    },
+    "disengage_2": {
+      "type": "subgraph",
+      "ref": "disengage_sg_2",
+      "inputs": {
+        "attached_object": {
+          "$ref": "register_2.attached_object"
+        },
+        "arm_id": {
+          "$ref": "pair_2.arm_id"
+        }
+      }
+    },
+    "mate_2": {
+      "type": "subgraph",
+      "ref": "mate_sg_2",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register_2.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_2.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "attached_object": {
+          "$ref": "register_2.attached_object"
+        }
+      }
+    },
+    "motion_plan_2": {
+      "type": "subgraph",
+      "ref": "motion_plan_sg_2",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "mate_2.approach_pose"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "register_2.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_2.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "world_config": {
+          "$ref": "collision_world_2.world_config"
+        },
+        "attached_object": {
+          "$ref": "register_2.attached_object"
+        }
+      }
+    },
+    "carry_2": {
+      "type": "subgraph",
+      "ref": "carry_sg_2",
+      "inputs": {
+        "reorientation_plan": {
+          "$ref": "motion_plan_2.reorientation_plan"
+        }
+      }
+    },
+    "realign_2": {
+      "type": "subgraph",
+      "ref": "realign_sg_2",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_2.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_2.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "register_2.held_feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register_2.held_object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register_2.attached_object"
+        }
+      }
+    },
+    "remate_2": {
+      "type": "subgraph",
+      "ref": "mate_sg_2",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "realign_2.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_2.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "attached_object": {
+          "$ref": "realign_2.attached_object"
+        }
+      }
+    },
+    "placement_choice_2": {
+      "type": "subgraph",
+      "ref": "placement_choice_sg_2",
+      "inputs": {
+        "relation": {
+          "$ref": "target_2.relation"
+        }
+      }
+    },
+    "placement_plan_2": {
+      "type": "subgraph",
+      "ref": "placement_plan_sg_2",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "remate_2.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "remate_2.engaged_pose"
+        },
+        "target_pose": {
+          "$ref": "remate_2.target_pose"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "world_config": {
+          "$ref": "collision_world_2.world_config"
+        },
+        "attached_object": {
+          "$ref": "realign_2.attached_object"
+        }
+      }
+    },
+    "preapproach_2": {
+      "type": "subgraph",
+      "ref": "preapproach_sg_2",
+      "inputs": {
+        "placement_plan": {
+          "$ref": "placement_plan_2.placement_plan"
+        }
+      }
+    },
+    "final_realign_2": {
+      "type": "subgraph",
+      "ref": "final_realign_sg_2",
+      "inputs": {
+        "reference_cloud": {
+          "$ref": "target_2.reference_cloud"
+        },
+        "functional_feature": {
+          "$ref": "target_2.functional_feature"
+        },
+        "target_kind": {
+          "$ref": "target_2.target_kind"
+        },
+        "held_feature_in_tcp": {
+          "$ref": "realign_2.held_feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "realign_2.held_object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "realign_2.attached_object"
+        }
+      }
+    },
+    "final_remate_2": {
+      "type": "subgraph",
+      "ref": "final_mate_sg_2",
+      "inputs": {
+        "held_feature_in_tcp": {
+          "$ref": "final_realign_2.held_feature_in_tcp"
+        },
+        "fixture_feature": {
+          "$ref": "fixture_2.fixture_feature"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "attached_object": {
+          "$ref": "final_realign_2.attached_object"
+        }
+      }
+    },
+    "final_placement_plan_2": {
+      "type": "subgraph",
+      "ref": "final_placement_plan_sg_2",
+      "inputs": {
+        "approach_pose": {
+          "$ref": "final_remate_2.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "final_remate_2.engaged_pose"
+        },
+        "target_pose": {
+          "$ref": "final_remate_2.target_pose"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "world_config": {
+          "$ref": "collision_world_2.world_config"
+        },
+        "attached_object": {
+          "$ref": "final_realign_2.attached_object"
+        }
+      }
+    },
+    "insert_2": {
+      "type": "subgraph",
+      "ref": "insert_sg_2",
+      "inputs": {
+        "placement_plan": {
+          "$ref": "final_placement_plan_2.placement_plan"
+        }
+      }
+    },
+    "release_2": {
+      "type": "subgraph",
+      "ref": "release_sg_2",
+      "inputs": {
+        "target_pose": {
+          "$ref": "final_remate_2.target_pose"
+        },
+        "fixture_axis": {
+          "$ref": "fixture_2.fixture_axis"
+        },
+        "relation": {
+          "$ref": "target_2.relation"
+        },
+        "attached_object": {
+          "$ref": "final_realign_2.attached_object"
+        }
+      }
+    },
+    "container_drop_2": {
+      "type": "subgraph",
+      "ref": "container_drop_sg_2",
+      "inputs": {
+        "engaged_pose": {
+          "$ref": "remate_2.engaged_pose"
+        },
+        "arm_id": {
+          "$ref": "pair_2.arm_id"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "pair_1"
+    ]
+  ],
+  "conditional_edges": {
+    "pair_1": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "target_1",
+        "finished": "done",
+        "ambiguous": "abort"
+      }
+    },
+    "target_1": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "fixture_1",
+        "not_found": "abort"
+      }
+    },
+    "fixture_1": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "collision_world_1",
+        "not_found": "abort"
+      }
+    },
+    "collision_world_1": {
+      "router_field": "exit",
+      "mapping": {
+        "built": "grasp_1",
+        "failed": "abort"
+      }
+    },
+    "grasp_1": {
+      "router_field": "exit",
+      "mapping": {
+        "grasped": "register_1",
+        "failed": "abort"
+      }
+    },
+    "register_1": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "disengage_1",
+        "lost": "abort"
+      }
+    },
+    "disengage_1": {
+      "router_field": "exit",
+      "mapping": {
+        "cleared": "mate_1",
+        "blocked": "abort"
+      }
+    },
+    "mate_1": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "motion_plan_1",
+        "infeasible": "abort"
+      }
+    },
+    "motion_plan_1": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "carry_1",
+        "blocked": "abort"
+      }
+    },
+    "carry_1": {
+      "router_field": "exit",
+      "mapping": {
+        "reoriented": "realign_1",
+        "blocked": "abort"
+      }
+    },
+    "realign_1": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "remate_1",
+        "lost": "abort"
+      }
+    },
+    "remate_1": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "placement_choice_1",
+        "infeasible": "abort"
+      }
+    },
+    "placement_choice_1": {
+      "router_field": "exit",
+      "mapping": {
+        "drop": "container_drop_1",
+        "fixture": "placement_plan_1",
+        "unsupported": "abort"
+      }
+    },
+    "placement_plan_1": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "preapproach_1",
+        "blocked": "abort"
+      }
+    },
+    "preapproach_1": {
+      "router_field": "exit",
+      "mapping": {
+        "reached": "final_realign_1",
+        "blocked": "abort"
+      }
+    },
+    "final_realign_1": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "final_remate_1",
+        "lost": "abort"
+      }
+    },
+    "final_remate_1": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "final_placement_plan_1",
+        "infeasible": "abort"
+      }
+    },
+    "final_placement_plan_1": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "insert_1",
+        "blocked": "abort"
+      }
+    },
+    "insert_1": {
+      "router_field": "exit",
+      "mapping": {
+        "seated": "release_1",
+        "blocked": "abort"
+      }
+    },
+    "release_1": {
+      "router_field": "exit",
+      "mapping": {
+        "released": "pair_2",
+        "failed": "abort"
+      }
+    },
+    "container_drop_1": {
+      "router_field": "exit",
+      "mapping": {
+        "placed": "pair_2",
+        "blocked": "abort"
+      }
+    },
+    "pair_2": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "target_2",
+        "finished": "done",
+        "ambiguous": "abort"
+      }
+    },
+    "target_2": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "fixture_2",
+        "not_found": "abort"
+      }
+    },
+    "fixture_2": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "collision_world_2",
+        "not_found": "abort"
+      }
+    },
+    "collision_world_2": {
+      "router_field": "exit",
+      "mapping": {
+        "built": "grasp_2",
+        "failed": "abort"
+      }
+    },
+    "grasp_2": {
+      "router_field": "exit",
+      "mapping": {
+        "grasped": "register_2",
+        "failed": "abort"
+      }
+    },
+    "register_2": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "disengage_2",
+        "lost": "abort"
+      }
+    },
+    "disengage_2": {
+      "router_field": "exit",
+      "mapping": {
+        "cleared": "mate_2",
+        "blocked": "abort"
+      }
+    },
+    "mate_2": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "motion_plan_2",
+        "infeasible": "abort"
+      }
+    },
+    "motion_plan_2": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "carry_2",
+        "blocked": "abort"
+      }
+    },
+    "carry_2": {
+      "router_field": "exit",
+      "mapping": {
+        "reoriented": "realign_2",
+        "blocked": "abort"
+      }
+    },
+    "realign_2": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "remate_2",
+        "lost": "abort"
+      }
+    },
+    "remate_2": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "placement_choice_2",
+        "infeasible": "abort"
+      }
+    },
+    "placement_choice_2": {
+      "router_field": "exit",
+      "mapping": {
+        "drop": "container_drop_2",
+        "fixture": "placement_plan_2",
+        "unsupported": "abort"
+      }
+    },
+    "placement_plan_2": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "preapproach_2",
+        "blocked": "abort"
+      }
+    },
+    "preapproach_2": {
+      "router_field": "exit",
+      "mapping": {
+        "reached": "final_realign_2",
+        "blocked": "abort"
+      }
+    },
+    "final_realign_2": {
+      "router_field": "exit",
+      "mapping": {
+        "registered": "final_remate_2",
+        "lost": "abort"
+      }
+    },
+    "final_remate_2": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "final_placement_plan_2",
+        "infeasible": "abort"
+      }
+    },
+    "final_placement_plan_2": {
+      "router_field": "exit",
+      "mapping": {
+        "planned": "insert_2",
+        "blocked": "abort"
+      }
+    },
+    "insert_2": {
+      "router_field": "exit",
+      "mapping": {
+        "seated": "release_2",
+        "blocked": "abort"
+      }
+    },
+    "release_2": {
+      "router_field": "exit",
+      "mapping": {
+        "released": "done",
+        "failed": "abort"
+      }
+    },
+    "container_drop_2": {
+      "router_field": "exit",
+      "mapping": {
+        "placed": "done",
+        "blocked": "abort"
+      }
+    }
+  },
+  "subgraphs": {
+    "target_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "instruction": "string",
+        "selected_mask": "Mask"
+      },
+      "outputs": {
+        "target_kind": {
+          "$ref": "perceive.target_kind"
+        },
+        "relation": {
+          "$ref": "perceive.relation"
+        },
+        "target_obb": {
+          "$ref": "perceive.target_obb"
+        },
+        "target_mask": {
+          "$ref": "perceive.target_mask"
+        },
+        "reference_cloud": {
+          "$ref": "perceive.target_cloud"
+        },
+        "functional_feature": {
+          "$ref": "perceive.functional_feature"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "perceive": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_target.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "instruction": {
+              "$ref": "in.instruction"
+            },
+            "selected_mask": {
+              "$ref": "in.selected_mask"
+            },
+            "feature_profiles": [
+              {
+                "kind": "wrench",
+                "aliases": [
+                  "wrench"
+                ],
+                "object_query": "adjustable wrench",
+                "feature_query": "circular ring end of adjustable wrench",
+                "feature_queries": [
+                  "circular ring end of adjustable wrench",
+                  "closed ring end of wrench",
+                  "box end of wrench",
+                  "wrench ring hole"
+                ],
+                "feature_threshold": 0.25,
+                "feature_type": "loop",
+                "strategy": "distal_planar_loop",
+                "relation": "loop_over_shaft",
+                "grasp_toward_feature_m": 0.025,
+                "grasp_toward_feature_axes": [
+                  "x",
+                  "y"
+                ],
+                "minimum_grasp_feature_separation_m": 0.05,
+                "registration_profile": {
+                  "strategy": "cad_distal_loop",
+                  "query": "adjustable wrench",
+                  "model_path": "tasks/tool_hanging/assets/wrenches/wrench_2/wrench_2.obj",
+                  "model_scale": 1.3,
+                  "feature_local": [
+                    0.169995878,
+                    0.0,
+                    0.0
+                  ],
+                  "normal_local": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "normal_axis_index": 1,
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "scissors",
+                "aliases": [
+                  "scissors",
+                  "scissor"
+                ],
+                "object_query": "scissors",
+                "feature_query": "finger hole of scissors",
+                "feature_threshold": 0.05,
+                "feature_type": "loop",
+                "strategy": "planar_cad_loop",
+                "relation": "loop_over_shaft",
+                "model_path": "tasks/tool_hanging/assets/scissors/scissor_1/scissor_1.obj",
+                "feature_landmarks_xy": [
+                  [
+                    0.0217,
+                    -0.0385
+                  ],
+                  [
+                    -0.02183,
+                    -0.03853
+                  ]
+                ],
+                "radius_inner": 0.024,
+                "registration_profile": {
+                  "strategy": "planar_cad_landmark",
+                  "query": "scissors",
+                  "model_path": "tasks/tool_hanging/assets/scissors/scissor_1/scissor_1.obj",
+                  "model_scale": 1.0,
+                  "normal_local": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "pliers",
+                "aliases": [
+                  "pliers",
+                  "plier"
+                ],
+                "object_query": "pliers",
+                "feature_query": "pliers handle gap",
+                "feature_threshold": 0.08,
+                "feature_type": "loop",
+                "strategy": "landmark_offsets",
+                "relation": "loop_over_shaft",
+                "feature_offset": [
+                  -0.01,
+                  0.0009,
+                  0.004
+                ],
+                "grasp_offset": [
+                  0.02,
+                  0.0009,
+                  0.004
+                ],
+                "grasp_extent_max": {
+                  "x": 0.025,
+                  "y": 0.016
+                },
+                "registration_profile": {
+                  "strategy": "semantic_feature",
+                  "query": "pliers",
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "screwdriver",
+                "aliases": [
+                  "screwdriver"
+                ],
+                "object_query": "screwdriver",
+                "feature_query": "tip of screwdriver",
+                "feature_threshold": 0.12,
+                "feature_type": "tip",
+                "strategy": "distal_tip",
+                "relation": "shaft_into_aperture",
+                "reference_query": "screwdriver handle",
+                "reference_threshold": 0.05,
+                "distal_percentile": 97.0,
+                "minimum_axis_length": 0.03,
+                "registration_profile": {
+                  "strategy": "semantic_feature",
+                  "query": "screwdriver",
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              }
+            ]
+          }
+        },
+        "found": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "perceive"
+        ],
+        [
+          "perceive",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "not_found"
+    },
+    "fixture_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "target_kind": "string",
+        "destination_anchor_y": "float"
+      },
+      "outputs": {
+        "fixture_mask": {
+          "$ref": "perceive.fixture_mask"
+        },
+        "hook_tip": {
+          "$ref": "perceive.hook_tip"
+        },
+        "fixture_axis": {
+          "$ref": "perceive.fixture_axis"
+        },
+        "fixture_feature": {
+          "$ref": "perceive.fixture_feature"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "perceive": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_fixture.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "fixture_description": "small yellow hook on the pegboard",
+            "feature_type": "shaft",
+            "destination_anchor_y": {
+              "$ref": "in.destination_anchor_y"
+            },
+            "fixture_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "thin_projection",
+                "fixture_description": "small yellow hook on the pegboard",
+                "feature_type": "shaft",
+                "required_label_token": "hook",
+                "box_threshold": 0.18,
+                "text_threshold": 0.18,
+                "minimum_aspect_ratio": 2.5,
+                "minimum_mask_score": 0.5,
+                "foreground_margin": 0.003,
+                "length_bounds": [
+                  0.025,
+                  0.15
+                ],
+                "transverse_extent_max": 0.04,
+                "seating_margin": 0.015,
+                "mating_profile": {
+                  "settling_axis": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "crossing_offsets_m": {
+                    "approach_pose": 0.008,
+                    "engaged_pose": 0.018
+                  },
+                  "seated_radial_offset_m": 0.0,
+                  "mate_settling_offset_m": 0.01
+                }
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "thin_projection",
+                "fixture_description": "small yellow hook on the pegboard",
+                "feature_type": "shaft",
+                "required_label_token": "hook",
+                "box_threshold": 0.18,
+                "text_threshold": 0.18,
+                "minimum_aspect_ratio": 2.5,
+                "minimum_mask_score": 0.5,
+                "foreground_margin": 0.003,
+                "length_bounds": [
+                  0.025,
+                  0.15
+                ],
+                "transverse_extent_max": 0.04,
+                "seating_margin": 0.015
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "depth_support",
+                "fixture_description": "triangular support",
+                "feature_type": "shaft",
+                "workspace": {
+                  "x_min": 0.72,
+                  "x_max": 0.9,
+                  "y_min": -0.12,
+                  "y_max": 0.12,
+                  "z_min": 0.9,
+                  "z_max": 1.3
+                },
+                "anchor_tolerance": 0.065,
+                "anchor_fallback_partition": true,
+                "partition_axis": "y",
+                "partition_split": 0.0,
+                "board_percentile": 85,
+                "foreground_margin": 0.004,
+                "tip_percentile": 3,
+                "tip_axis_offset": 0.003,
+                "top_clearance": 0.018,
+                "axis": [
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                "seating_margin": 0.015
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "parent_inferred_aperture",
+                "fixture_description": "small beige screwdriver box mounted on pegboard",
+                "feature_description": "open interior of screwdriver box",
+                "feature_type": "aperture",
+                "max_results": 3,
+                "span_max": [
+                  0.2,
+                  0.22,
+                  0.3
+                ],
+                "rim_percentiles": [
+                  85,
+                  90
+                ],
+                "lateral_percentiles": [
+                  2,
+                  98
+                ],
+                "lateral_offset_max": 0.012,
+                "lateral_offset_fraction": 0.25,
+                "radius_inner": 0.025,
+                "insertion_depth_radius_scale": 0.8
+              }
+            ]
+          }
+        },
+        "found": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "perceive"
+        ],
+        [
+          "perceive",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "not_found"
+    },
+    "collision_world_sg_1": {
+      "skill": "constructing-collision-worlds",
+      "inputs": {
+        "target_mask": "Mask",
+        "fixture_mask": "Mask",
+        "hook_tip": "Vec3",
+        "fixture_axis": "Vec3",
+        "target_kind": "string"
+      },
+      "outputs": {
+        "world_config": {
+          "$ref": "build.world_config"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "build": {
+          "type": "script",
+          "script": "../gap_perception/scripts/build_collision_world.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "target_mask": {
+              "$ref": "in.target_mask"
+            },
+            "fixture_mask": {
+              "$ref": "in.fixture_mask"
+            },
+            "hook_tip": {
+              "$ref": "in.hook_tip"
+            },
+            "fixture_axis": {
+              "$ref": "in.fixture_axis"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "collision_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              }
+            ]
+          }
+        },
+        "built": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "build"
+        ],
+        [
+          "build",
+          "built"
+        ],
+        [
+          "built",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "built"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "grasp_sg_1": {
+      "skill": "grasping-direct-ik",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox",
+        "target_kind": "string",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 40,
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "compute_grasp": {
+          "type": "tool",
+          "tool": "geometry.top_down_grasp_candidates",
+          "inputs": {
+            "obb": {
+              "$ref": "in.target_obb"
+            }
+          }
+        },
+        "compute_align": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_align_pose.py",
+          "inputs": {
+            "grasp_pose": {
+              "$ref": "compute_grasp.candidates.poses.0"
+            },
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grasp_profiles": [
+              {
+                "source_kind": "wrench",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 18.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "scissors",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "pliers",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "screwdriver",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 16.0,
+                "cartesian_recovery_threshold_m": 0.03
+              }
+            ]
+          }
+        },
+        "rotate_align": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_grasp_align.py",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_align.align_pose"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grasp_profiles": [
+              {
+                "source_kind": "wrench",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 18.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "scissors",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "pliers",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "screwdriver",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 16.0,
+                "cartesian_recovery_threshold_m": 0.03
+              }
+            ]
+          }
+        },
+        "descend": {
+          "type": "tool",
+          "tool": "robot.go_to_pose_cartesian",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_align.grasp_pose"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "close": {
+          "type": "tool",
+          "tool": "robot.close_gripper",
+          "inputs": {
+            "settle_steps": 60,
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "grasped": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "compute_grasp"
+        ],
+        [
+          "compute_grasp",
+          "compute_align"
+        ],
+        [
+          "compute_align",
+          "rotate_align"
+        ],
+        [
+          "rotate_align",
+          "descend"
+        ],
+        [
+          "descend",
+          "close"
+        ],
+        [
+          "close",
+          "grasped"
+        ],
+        [
+          "grasped",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "grasped"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "register_sg_1": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "arm_id": "int"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "disengage_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "attached_object": "AttachedObject",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "tool",
+          "tool": "motion.plan_support_disengagement",
+          "inputs": {
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "execute": {
+          "type": "tool",
+          "tool": "robot.execute_trajectory",
+          "inputs": {
+            "trajectory": {
+              "$ref": "plan.trajectory"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "cleared": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "execute"
+        ],
+        [
+          "execute",
+          "cleared"
+        ],
+        [
+          "cleared",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "cleared"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "realign_sg_1": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "held_feature_in_tcp": "Se3Pose",
+        "held_object_in_tcp": "Se3Pose",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "prior_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "prior_object_in_tcp": {
+              "$ref": "in.held_object_in_tcp"
+            },
+            "prior_attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "mate_sg_1": {
+      "skill": "computing-feature-mating-poses",
+      "inputs": {
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "target_pose": {
+          "$ref": "compute.mate_pose"
+        },
+        "approach_pose": {
+          "$ref": "compute.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "compute.engaged_pose"
+        }
+      },
+      "nodes": {
+        "compute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_mate.py",
+          "inputs": {
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "computed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "compute"
+        ],
+        [
+          "compute",
+          "computed"
+        ],
+        [
+          "computed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "computed"
+        ]
+      },
+      "on_error": "infeasible"
+    },
+    "motion_plan_sg_1": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "target_kind": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "reorientation_plan": {
+          "$ref": "plan.reorientation_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_clearance_motion.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "motion_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "direct_cartesian",
+                "escape_distance_m": 0.06,
+                "time_scale": 1.25,
+                "lift_speed_scale": 1.0,
+                "transit_speed_scale": 1.0,
+                "use_attachment": false,
+                "use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "direct_cartesian",
+                "escape_distance_m": 0.06,
+                "time_scale": 1.25,
+                "lift_speed_scale": 0.6,
+                "transit_speed_scale": 0.5,
+                "use_attachment": false,
+                "use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "staged_alignment",
+                "time_scale": 1.25,
+                "validate_symmetry_with_planner": true,
+                "cartesian_reorient": true,
+                "cartesian_transit": true,
+                "reorient_use_attachment": false,
+                "reorient_use_world": false,
+                "transit_use_attachment": false,
+                "transit_use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "staged_alignment",
+                "time_scale": 1.25,
+                "horizontal_staging_offset_m": 0.03,
+                "validate_symmetry_with_planner": false,
+                "lift_speed_scale": 0.55,
+                "reorient_speed_scale": 0.4,
+                "transit_speed_scale": 0.55,
+                "cartesian_reorient": true,
+                "cartesian_transit": true,
+                "reorient_use_attachment": false,
+                "reorient_use_world": false,
+                "transit_use_attachment": false,
+                "transit_use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              }
+            ]
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "carry_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "reorientation_plan": "PoseSequence"
+      },
+      "outputs": {},
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_reorientation.py",
+          "inputs": {
+            "reorientation_plan": {
+              "$ref": "in.reorientation_plan"
+            }
+          }
+        },
+        "reoriented": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "reoriented"
+        ],
+        [
+          "reoriented",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "reoriented"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "placement_plan_sg_1": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "engaged_pose": "Se3Pose",
+        "target_pose": "Se3Pose",
+        "relation": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "placement_plan": {
+          "$ref": "plan.placement_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_feature_engagement.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "engaged_pose": {
+              "$ref": "in.engaged_pose"
+            },
+            "mate_pose": {
+              "$ref": "in.target_pose"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "placement_choice_sg_1": {
+      "skill": "routing-manipulation-relations",
+      "inputs": {
+        "relation": "string"
+      },
+      "outputs": {},
+      "nodes": {
+        "choose": {
+          "type": "script",
+          "script": "../gap_perception/scripts/choose_placement_mode.py",
+          "inputs": {
+            "relation": {
+              "$ref": "in.relation"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "choose"
+        ],
+        [
+          "choose",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "mode",
+        "success_values": [
+          "drop",
+          "fixture"
+        ]
+      },
+      "on_error": "unsupported"
+    },
+    "container_drop_sg_1": {
+      "skill": "transporting-objects",
+      "inputs": {
+        "engaged_pose": "Se3Pose",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "drop": {
+          "type": "script",
+          "script": "../gap_perception/scripts/descend_release_linear.py",
+          "inputs": {
+            "drop_position": {
+              "$ref": "in.engaged_pose.position"
+            },
+            "drop_rotation": {
+              "$ref": "in.engaged_pose.rotation"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "placed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "drop"
+        ],
+        [
+          "drop",
+          "placed"
+        ],
+        [
+          "placed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "placed"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "insert_sg_1": {
+      "skill": "executing-feature-mating",
+      "inputs": {
+        "placement_plan": "PoseSequence"
+      },
+      "outputs": {},
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_placement_plan.py",
+          "inputs": {
+            "placement_plan": {
+              "$ref": "in.placement_plan"
+            },
+            "contact_profile": {
+              "skip_position_tolerance_m": 0.0015,
+              "skip_rotation_tolerance_deg": 2.0,
+              "cartesian_position_tolerance_m": 0.015,
+              "cartesian_rotation_tolerance_deg": 7.25,
+              "cartesian_attempts": 2,
+              "planner_attempts": 3,
+              "local_cartesian_max_distance_m": 0.03,
+              "local_cartesian_min_quaternion_dot": 0.995,
+              "local_cartesian_position_tolerance_m": 0.03,
+              "trajectory_tolerance_m": 0.002,
+              "max_steps_per_waypoint": 60,
+              "contact_margin_m": 0.005
+            }
+          }
+        },
+        "settle": {
+          "type": "tool",
+          "tool": "robot.wait_steps",
+          "inputs": {
+            "steps": 30
+          }
+        },
+        "seated": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "settle"
+        ],
+        [
+          "settle",
+          "seated"
+        ],
+        [
+          "seated",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "seated"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "final_realign_sg_1": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "held_feature_in_tcp": "Se3Pose",
+        "held_object_in_tcp": "Se3Pose",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "prior_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "prior_object_in_tcp": {
+              "$ref": "in.held_object_in_tcp"
+            },
+            "prior_attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "final_mate_sg_1": {
+      "skill": "computing-feature-mating-poses",
+      "inputs": {
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "target_pose": {
+          "$ref": "compute.mate_pose"
+        },
+        "approach_pose": {
+          "$ref": "compute.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "compute.engaged_pose"
+        }
+      },
+      "nodes": {
+        "compute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_mate.py",
+          "inputs": {
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "computed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "compute"
+        ],
+        [
+          "compute",
+          "computed"
+        ],
+        [
+          "computed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "computed"
+        ]
+      },
+      "on_error": "infeasible"
+    },
+    "final_placement_plan_sg_1": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "engaged_pose": "Se3Pose",
+        "target_pose": "Se3Pose",
+        "relation": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "placement_plan": {
+          "$ref": "plan.placement_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_feature_engagement.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "engaged_pose": {
+              "$ref": "in.engaged_pose"
+            },
+            "mate_pose": {
+              "$ref": "in.target_pose"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "preapproach_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "placement_plan": "PoseSequence"
+      },
+      "outputs": {
+        "approach_pose": {
+          "$ref": "execute.approach_pose"
+        }
+      },
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_approach_only.py",
+          "inputs": {
+            "placement_plan": {
+              "$ref": "in.placement_plan"
+            }
+          }
+        },
+        "reached": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "reached"
+        ],
+        [
+          "reached",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "reached"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "release_sg_1": {
+      "skill": "executing-feature-mating",
+      "inputs": {
+        "target_pose": "Se3Pose",
+        "fixture_axis": "Vec3",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {},
+      "nodes": {
+        "release": {
+          "type": "script",
+          "script": "../gap_perception/scripts/release_and_retract.py",
+          "inputs": {
+            "final_pose": {
+              "$ref": "in.target_pose"
+            },
+            "retreat_axis": {
+              "$ref": "in.fixture_axis"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "contact_profile": {
+              "release_settle_steps": 80,
+              "retract_m": 0.08,
+              "object_clearance_m": 0.01,
+              "vertical_retreat_fraction": 0.5,
+              "post_release_wait_steps": 120,
+              "reverse_retreat_relations": [
+                "shaft_into_aperture",
+                "tip_through_aperture",
+                "insert_through"
+              ]
+            }
+          }
+        },
+        "released": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "release"
+        ],
+        [
+          "release",
+          "released"
+        ],
+        [
+          "released",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "released"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "pair_sg_1": {
+      "skill": "generic",
+      "inputs": {
+        "instruction": "string"
+      },
+      "outputs": {
+        "target_kind": {
+          "$ref": "select.target_kind"
+        },
+        "destination_anchor_y": {
+          "$ref": "select.destination_anchor_y"
+        },
+        "instruction": {
+          "$ref": "select.instruction"
+        },
+        "selected_mask": {
+          "$ref": "select.target_mask"
+        },
+        "arm_id": {
+          "$ref": "select.arm_id"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "select": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_next_correspondence.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "instruction": {
+              "$ref": "in.instruction"
+            },
+            "source_categories": [
+              {
+                "kind": "wrench",
+                "query": "adjustable wrench",
+                "aliases": [
+                  "wrench"
+                ]
+              },
+              {
+                "kind": "scissors",
+                "query": "scissors",
+                "aliases": [
+                  "scissors",
+                  "scissor"
+                ]
+              },
+              {
+                "kind": "pliers",
+                "query": "pliers",
+                "aliases": [
+                  "pliers",
+                  "plier"
+                ]
+              },
+              {
+                "kind": "screwdriver",
+                "query": "screwdriver",
+                "aliases": [
+                  "screwdriver"
+                ]
+              }
+            ],
+            "source_workspace": {
+              "x_max": 0.73,
+              "z_max": 0.8,
+              "minimum_mask_pixels": 80,
+              "minimum_cloud_points": 20,
+              "id_quantization_m": 0.01
+            },
+            "correspondence_axis": "y",
+            "arm_partition": {
+              "split": 0.0,
+              "positive_arm": 0,
+              "negative_arm": 1
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "select"
+        ],
+        [
+          "select",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "status",
+        "success_values": [
+          "found",
+          "finished"
+        ]
+      },
+      "on_error": "ambiguous"
+    },
+    "target_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "instruction": "string",
+        "selected_mask": "Mask"
+      },
+      "outputs": {
+        "target_kind": {
+          "$ref": "perceive.target_kind"
+        },
+        "relation": {
+          "$ref": "perceive.relation"
+        },
+        "target_obb": {
+          "$ref": "perceive.target_obb"
+        },
+        "target_mask": {
+          "$ref": "perceive.target_mask"
+        },
+        "reference_cloud": {
+          "$ref": "perceive.target_cloud"
+        },
+        "functional_feature": {
+          "$ref": "perceive.functional_feature"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "perceive": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_target.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "instruction": {
+              "$ref": "in.instruction"
+            },
+            "selected_mask": {
+              "$ref": "in.selected_mask"
+            },
+            "feature_profiles": [
+              {
+                "kind": "wrench",
+                "aliases": [
+                  "wrench"
+                ],
+                "object_query": "adjustable wrench",
+                "feature_query": "circular ring end of adjustable wrench",
+                "feature_queries": [
+                  "circular ring end of adjustable wrench",
+                  "closed ring end of wrench",
+                  "box end of wrench",
+                  "wrench ring hole"
+                ],
+                "feature_threshold": 0.25,
+                "feature_type": "loop",
+                "strategy": "distal_planar_loop",
+                "relation": "loop_over_shaft",
+                "grasp_toward_feature_m": 0.025,
+                "grasp_toward_feature_axes": [
+                  "x",
+                  "y"
+                ],
+                "minimum_grasp_feature_separation_m": 0.05,
+                "registration_profile": {
+                  "strategy": "cad_distal_loop",
+                  "query": "adjustable wrench",
+                  "model_path": "tasks/tool_hanging/assets/wrenches/wrench_2/wrench_2.obj",
+                  "model_scale": 1.3,
+                  "feature_local": [
+                    0.169995878,
+                    0.0,
+                    0.0
+                  ],
+                  "normal_local": [
+                    0.0,
+                    1.0,
+                    0.0
+                  ],
+                  "normal_axis_index": 1,
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "scissors",
+                "aliases": [
+                  "scissors",
+                  "scissor"
+                ],
+                "object_query": "scissors",
+                "feature_query": "finger hole of scissors",
+                "feature_threshold": 0.05,
+                "feature_type": "loop",
+                "strategy": "planar_cad_loop",
+                "relation": "loop_over_shaft",
+                "model_path": "tasks/tool_hanging/assets/scissors/scissor_1/scissor_1.obj",
+                "feature_landmarks_xy": [
+                  [
+                    0.0217,
+                    -0.0385
+                  ],
+                  [
+                    -0.02183,
+                    -0.03853
+                  ]
+                ],
+                "radius_inner": 0.024,
+                "registration_profile": {
+                  "strategy": "planar_cad_landmark",
+                  "query": "scissors",
+                  "model_path": "tasks/tool_hanging/assets/scissors/scissor_1/scissor_1.obj",
+                  "model_scale": 1.0,
+                  "normal_local": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "pliers",
+                "aliases": [
+                  "pliers",
+                  "plier"
+                ],
+                "object_query": "pliers",
+                "feature_query": "pliers handle gap",
+                "feature_threshold": 0.08,
+                "feature_type": "loop",
+                "strategy": "landmark_offsets",
+                "relation": "loop_over_shaft",
+                "feature_offset": [
+                  -0.01,
+                  0.0009,
+                  0.004
+                ],
+                "grasp_offset": [
+                  0.02,
+                  0.0009,
+                  0.004
+                ],
+                "grasp_extent_max": {
+                  "x": 0.025,
+                  "y": 0.016
+                },
+                "registration_profile": {
+                  "strategy": "semantic_feature",
+                  "query": "pliers",
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              },
+              {
+                "kind": "screwdriver",
+                "aliases": [
+                  "screwdriver"
+                ],
+                "object_query": "screwdriver",
+                "feature_query": "tip of screwdriver",
+                "feature_threshold": 0.12,
+                "feature_type": "tip",
+                "strategy": "distal_tip",
+                "relation": "shaft_into_aperture",
+                "reference_query": "screwdriver handle",
+                "reference_threshold": 0.05,
+                "distal_percentile": 97.0,
+                "minimum_axis_length": 0.03,
+                "registration_profile": {
+                  "strategy": "semantic_feature",
+                  "query": "screwdriver",
+                  "maximum_translation_jump_m": 0.025,
+                  "maximum_rotation_jump_deg": 20.0,
+                  "measurement_uncertainty_m": 0.004,
+                  "fallback_uncertainty_m": 0.01
+                }
+              }
+            ]
+          }
+        },
+        "found": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "perceive"
+        ],
+        [
+          "perceive",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "not_found"
+    },
+    "fixture_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "target_kind": "string",
+        "destination_anchor_y": "float"
+      },
+      "outputs": {
+        "fixture_mask": {
+          "$ref": "perceive.fixture_mask"
+        },
+        "hook_tip": {
+          "$ref": "perceive.hook_tip"
+        },
+        "fixture_axis": {
+          "$ref": "perceive.fixture_axis"
+        },
+        "fixture_feature": {
+          "$ref": "perceive.fixture_feature"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "perceive": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_fixture.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "fixture_description": "small yellow hook on the pegboard",
+            "feature_type": "shaft",
+            "destination_anchor_y": {
+              "$ref": "in.destination_anchor_y"
+            },
+            "fixture_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "thin_projection",
+                "fixture_description": "small yellow hook on the pegboard",
+                "feature_type": "shaft",
+                "required_label_token": "hook",
+                "box_threshold": 0.18,
+                "text_threshold": 0.18,
+                "minimum_aspect_ratio": 2.5,
+                "minimum_mask_score": 0.5,
+                "foreground_margin": 0.003,
+                "length_bounds": [
+                  0.025,
+                  0.15
+                ],
+                "transverse_extent_max": 0.04,
+                "seating_margin": 0.015,
+                "mating_profile": {
+                  "settling_axis": [
+                    0.0,
+                    0.0,
+                    1.0
+                  ],
+                  "crossing_offsets_m": {
+                    "approach_pose": 0.008,
+                    "engaged_pose": 0.018
+                  },
+                  "seated_radial_offset_m": 0.0,
+                  "mate_settling_offset_m": 0.01
+                }
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "thin_projection",
+                "fixture_description": "small yellow hook on the pegboard",
+                "feature_type": "shaft",
+                "required_label_token": "hook",
+                "box_threshold": 0.18,
+                "text_threshold": 0.18,
+                "minimum_aspect_ratio": 2.5,
+                "minimum_mask_score": 0.5,
+                "foreground_margin": 0.003,
+                "length_bounds": [
+                  0.025,
+                  0.15
+                ],
+                "transverse_extent_max": 0.04,
+                "seating_margin": 0.015
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "depth_support",
+                "fixture_description": "triangular support",
+                "feature_type": "shaft",
+                "workspace": {
+                  "x_min": 0.72,
+                  "x_max": 0.9,
+                  "y_min": -0.12,
+                  "y_max": 0.12,
+                  "z_min": 0.9,
+                  "z_max": 1.3
+                },
+                "anchor_tolerance": 0.065,
+                "anchor_fallback_partition": true,
+                "partition_axis": "y",
+                "partition_split": 0.0,
+                "board_percentile": 85,
+                "foreground_margin": 0.004,
+                "tip_percentile": 3,
+                "tip_axis_offset": 0.003,
+                "top_clearance": 0.018,
+                "axis": [
+                  -1.0,
+                  0.0,
+                  0.0
+                ],
+                "seating_margin": 0.015
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "parent_inferred_aperture",
+                "fixture_description": "small beige screwdriver box mounted on pegboard",
+                "feature_description": "open interior of screwdriver box",
+                "feature_type": "aperture",
+                "max_results": 3,
+                "span_max": [
+                  0.2,
+                  0.22,
+                  0.3
+                ],
+                "rim_percentiles": [
+                  85,
+                  90
+                ],
+                "lateral_percentiles": [
+                  2,
+                  98
+                ],
+                "lateral_offset_max": 0.012,
+                "lateral_offset_fraction": 0.25,
+                "radius_inner": 0.025,
+                "insertion_depth_radius_scale": 0.8
+              }
+            ]
+          }
+        },
+        "found": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "perceive"
+        ],
+        [
+          "perceive",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "not_found"
+    },
+    "collision_world_sg_2": {
+      "skill": "constructing-collision-worlds",
+      "inputs": {
+        "target_mask": "Mask",
+        "fixture_mask": "Mask",
+        "hook_tip": "Vec3",
+        "fixture_axis": "Vec3",
+        "target_kind": "string"
+      },
+      "outputs": {
+        "world_config": {
+          "$ref": "build.world_config"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "build": {
+          "type": "script",
+          "script": "../gap_perception/scripts/build_collision_world.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "target_mask": {
+              "$ref": "in.target_mask"
+            },
+            "fixture_mask": {
+              "$ref": "in.fixture_mask"
+            },
+            "hook_tip": {
+              "$ref": "in.hook_tip"
+            },
+            "fixture_axis": {
+              "$ref": "in.fixture_axis"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "collision_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "disabled",
+                "excluded_masks": {
+                  "target": true,
+                  "fixture": true,
+                  "cross_view_target": true,
+                  "robot": true
+                },
+                "fixture_keep_out": {
+                  "use_robot_model": true
+                },
+                "approach_corridor": {
+                  "enabled": false
+                },
+                "allowed_contact_surfaces": [
+                  "fixture_mask"
+                ],
+                "obstacle_filter": {}
+              }
+            ]
+          }
+        },
+        "built": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "build"
+        ],
+        [
+          "build",
+          "built"
+        ],
+        [
+          "built",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "built"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "grasp_sg_2": {
+      "skill": "grasping-direct-ik",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox",
+        "target_kind": "string",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 40,
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "compute_grasp": {
+          "type": "tool",
+          "tool": "geometry.top_down_grasp_candidates",
+          "inputs": {
+            "obb": {
+              "$ref": "in.target_obb"
+            }
+          }
+        },
+        "compute_align": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_align_pose.py",
+          "inputs": {
+            "grasp_pose": {
+              "$ref": "compute_grasp.candidates.poses.0"
+            },
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grasp_profiles": [
+              {
+                "source_kind": "wrench",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 18.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "scissors",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "pliers",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "screwdriver",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 16.0,
+                "cartesian_recovery_threshold_m": 0.03
+              }
+            ]
+          }
+        },
+        "rotate_align": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_grasp_align.py",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_align.align_pose"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grasp_profiles": [
+              {
+                "source_kind": "wrench",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 18.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "scissors",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "pliers",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 30.0,
+                "cartesian_recovery_threshold_m": 0.03
+              },
+              {
+                "source_kind": "screwdriver",
+                "approach_clearance_m": 0.12,
+                "position_tolerance_m": 0.015,
+                "angular_tolerance_deg": 16.0,
+                "cartesian_recovery_threshold_m": 0.03
+              }
+            ]
+          }
+        },
+        "descend": {
+          "type": "tool",
+          "tool": "robot.go_to_pose_cartesian",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_align.grasp_pose"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "close": {
+          "type": "tool",
+          "tool": "robot.close_gripper",
+          "inputs": {
+            "settle_steps": 60,
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "grasped": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "compute_grasp"
+        ],
+        [
+          "compute_grasp",
+          "compute_align"
+        ],
+        [
+          "compute_align",
+          "rotate_align"
+        ],
+        [
+          "rotate_align",
+          "descend"
+        ],
+        [
+          "descend",
+          "close"
+        ],
+        [
+          "close",
+          "grasped"
+        ],
+        [
+          "grasped",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "grasped"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "register_sg_2": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "arm_id": "int"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "disengage_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "attached_object": "AttachedObject",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "tool",
+          "tool": "motion.plan_support_disengagement",
+          "inputs": {
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "execute": {
+          "type": "tool",
+          "tool": "robot.execute_trajectory",
+          "inputs": {
+            "trajectory": {
+              "$ref": "plan.trajectory"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "cleared": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "execute"
+        ],
+        [
+          "execute",
+          "cleared"
+        ],
+        [
+          "cleared",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "cleared"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "realign_sg_2": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "held_feature_in_tcp": "Se3Pose",
+        "held_object_in_tcp": "Se3Pose",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "prior_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "prior_object_in_tcp": {
+              "$ref": "in.held_object_in_tcp"
+            },
+            "prior_attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "mate_sg_2": {
+      "skill": "computing-feature-mating-poses",
+      "inputs": {
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "target_pose": {
+          "$ref": "compute.mate_pose"
+        },
+        "approach_pose": {
+          "$ref": "compute.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "compute.engaged_pose"
+        }
+      },
+      "nodes": {
+        "compute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_mate.py",
+          "inputs": {
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "computed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "compute"
+        ],
+        [
+          "compute",
+          "computed"
+        ],
+        [
+          "computed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "computed"
+        ]
+      },
+      "on_error": "infeasible"
+    },
+    "motion_plan_sg_2": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "target_kind": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "reorientation_plan": {
+          "$ref": "plan.reorientation_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_clearance_motion.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "target_kind": {
+              "$ref": "in.target_kind"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "motion_profiles": [
+              {
+                "source_kind": "wrench",
+                "strategy": "direct_cartesian",
+                "escape_distance_m": 0.06,
+                "time_scale": 1.25,
+                "lift_speed_scale": 1.0,
+                "transit_speed_scale": 1.0,
+                "use_attachment": false,
+                "use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "scissors",
+                "strategy": "direct_cartesian",
+                "escape_distance_m": 0.06,
+                "time_scale": 1.25,
+                "lift_speed_scale": 0.6,
+                "transit_speed_scale": 0.5,
+                "use_attachment": false,
+                "use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "pliers",
+                "strategy": "staged_alignment",
+                "time_scale": 1.25,
+                "validate_symmetry_with_planner": true,
+                "cartesian_reorient": true,
+                "cartesian_transit": true,
+                "reorient_use_attachment": false,
+                "reorient_use_world": false,
+                "transit_use_attachment": false,
+                "transit_use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              },
+              {
+                "source_kind": "screwdriver",
+                "strategy": "staged_alignment",
+                "time_scale": 1.25,
+                "horizontal_staging_offset_m": 0.03,
+                "validate_symmetry_with_planner": false,
+                "lift_speed_scale": 0.55,
+                "reorient_speed_scale": 0.4,
+                "transit_speed_scale": 0.55,
+                "cartesian_reorient": true,
+                "cartesian_transit": true,
+                "reorient_use_attachment": false,
+                "reorient_use_world": false,
+                "transit_use_attachment": false,
+                "transit_use_world": false,
+                "max_attempts": 3,
+                "cartesian_fallback": true
+              }
+            ]
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "carry_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "reorientation_plan": "PoseSequence"
+      },
+      "outputs": {},
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_reorientation.py",
+          "inputs": {
+            "reorientation_plan": {
+              "$ref": "in.reorientation_plan"
+            }
+          }
+        },
+        "reoriented": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "reoriented"
+        ],
+        [
+          "reoriented",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "reoriented"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "placement_plan_sg_2": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "engaged_pose": "Se3Pose",
+        "target_pose": "Se3Pose",
+        "relation": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "placement_plan": {
+          "$ref": "plan.placement_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_feature_engagement.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "engaged_pose": {
+              "$ref": "in.engaged_pose"
+            },
+            "mate_pose": {
+              "$ref": "in.target_pose"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "placement_choice_sg_2": {
+      "skill": "routing-manipulation-relations",
+      "inputs": {
+        "relation": "string"
+      },
+      "outputs": {},
+      "nodes": {
+        "choose": {
+          "type": "script",
+          "script": "../gap_perception/scripts/choose_placement_mode.py",
+          "inputs": {
+            "relation": {
+              "$ref": "in.relation"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "choose"
+        ],
+        [
+          "choose",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "mode",
+        "success_values": [
+          "drop",
+          "fixture"
+        ]
+      },
+      "on_error": "unsupported"
+    },
+    "container_drop_sg_2": {
+      "skill": "transporting-objects",
+      "inputs": {
+        "engaged_pose": "Se3Pose",
+        "arm_id": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "drop": {
+          "type": "script",
+          "script": "../gap_perception/scripts/descend_release_linear.py",
+          "inputs": {
+            "drop_position": {
+              "$ref": "in.engaged_pose.position"
+            },
+            "drop_rotation": {
+              "$ref": "in.engaged_pose.rotation"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            }
+          }
+        },
+        "placed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "drop"
+        ],
+        [
+          "drop",
+          "placed"
+        ],
+        [
+          "placed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "placed"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "insert_sg_2": {
+      "skill": "executing-feature-mating",
+      "inputs": {
+        "placement_plan": "PoseSequence"
+      },
+      "outputs": {},
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_placement_plan.py",
+          "inputs": {
+            "placement_plan": {
+              "$ref": "in.placement_plan"
+            },
+            "contact_profile": {
+              "skip_position_tolerance_m": 0.0015,
+              "skip_rotation_tolerance_deg": 2.0,
+              "cartesian_position_tolerance_m": 0.015,
+              "cartesian_rotation_tolerance_deg": 7.25,
+              "cartesian_attempts": 2,
+              "planner_attempts": 3,
+              "local_cartesian_max_distance_m": 0.03,
+              "local_cartesian_min_quaternion_dot": 0.995,
+              "local_cartesian_position_tolerance_m": 0.03,
+              "trajectory_tolerance_m": 0.002,
+              "max_steps_per_waypoint": 60,
+              "contact_margin_m": 0.005
+            }
+          }
+        },
+        "settle": {
+          "type": "tool",
+          "tool": "robot.wait_steps",
+          "inputs": {
+            "steps": 30
+          }
+        },
+        "seated": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "settle"
+        ],
+        [
+          "settle",
+          "seated"
+        ],
+        [
+          "seated",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "seated"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "final_realign_sg_2": {
+      "skill": "registering-held-objects",
+      "inputs": {
+        "reference_cloud": "PointCloud",
+        "functional_feature": "Se3Pose",
+        "target_kind": "string",
+        "held_feature_in_tcp": "Se3Pose",
+        "held_object_in_tcp": "Se3Pose",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "held_feature_in_tcp": {
+          "$ref": "register.feature_in_tcp"
+        },
+        "held_object_in_tcp": {
+          "$ref": "register.object_in_tcp"
+        },
+        "attached_object": {
+          "$ref": "register.attached_object"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "register": {
+          "type": "script",
+          "script": "../gap_perception/scripts/register_held.py",
+          "inputs": {
+            "cameras": {
+              "$ref": "observe.cameras"
+            },
+            "reference_cloud": {
+              "$ref": "in.reference_cloud"
+            },
+            "functional_feature": {
+              "$ref": "in.functional_feature"
+            },
+            "object_description": {
+              "$ref": "in.target_kind"
+            },
+            "prior_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "prior_object_in_tcp": {
+              "$ref": "in.held_object_in_tcp"
+            },
+            "prior_attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "registered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "register"
+        ],
+        [
+          "register",
+          "registered"
+        ],
+        [
+          "registered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "registered"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "final_mate_sg_2": {
+      "skill": "computing-feature-mating-poses",
+      "inputs": {
+        "held_feature_in_tcp": "Se3Pose",
+        "fixture_feature": "Se3Pose",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "target_pose": {
+          "$ref": "compute.mate_pose"
+        },
+        "approach_pose": {
+          "$ref": "compute.approach_pose"
+        },
+        "engaged_pose": {
+          "$ref": "compute.engaged_pose"
+        }
+      },
+      "nodes": {
+        "compute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/compute_mate.py",
+          "inputs": {
+            "held_feature_in_tcp": {
+              "$ref": "in.held_feature_in_tcp"
+            },
+            "fixture_feature": {
+              "$ref": "in.fixture_feature"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "computed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "compute"
+        ],
+        [
+          "compute",
+          "computed"
+        ],
+        [
+          "computed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "computed"
+        ]
+      },
+      "on_error": "infeasible"
+    },
+    "final_placement_plan_sg_2": {
+      "skill": "planning-held-object-motion",
+      "inputs": {
+        "approach_pose": "Se3Pose",
+        "engaged_pose": "Se3Pose",
+        "target_pose": "Se3Pose",
+        "relation": "string",
+        "world_config": "WorldConfig",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {
+        "placement_plan": {
+          "$ref": "plan.placement_plan"
+        }
+      },
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "../gap_perception/scripts/plan_feature_engagement.py",
+          "inputs": {
+            "approach_pose": {
+              "$ref": "in.approach_pose"
+            },
+            "engaged_pose": {
+              "$ref": "in.engaged_pose"
+            },
+            "mate_pose": {
+              "$ref": "in.target_pose"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "world_config": {
+              "$ref": "in.world_config"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            }
+          }
+        },
+        "planned": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "planned"
+        ],
+        [
+          "planned",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "planned"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "preapproach_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "placement_plan": "PoseSequence"
+      },
+      "outputs": {
+        "approach_pose": {
+          "$ref": "execute.approach_pose"
+        }
+      },
+      "nodes": {
+        "execute": {
+          "type": "script",
+          "script": "../gap_perception/scripts/execute_approach_only.py",
+          "inputs": {
+            "placement_plan": {
+              "$ref": "in.placement_plan"
+            }
+          }
+        },
+        "reached": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "execute"
+        ],
+        [
+          "execute",
+          "reached"
+        ],
+        [
+          "reached",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "reached"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "release_sg_2": {
+      "skill": "executing-feature-mating",
+      "inputs": {
+        "target_pose": "Se3Pose",
+        "fixture_axis": "Vec3",
+        "relation": "string",
+        "attached_object": "AttachedObject"
+      },
+      "outputs": {},
+      "nodes": {
+        "release": {
+          "type": "script",
+          "script": "../gap_perception/scripts/release_and_retract.py",
+          "inputs": {
+            "final_pose": {
+              "$ref": "in.target_pose"
+            },
+            "retreat_axis": {
+              "$ref": "in.fixture_axis"
+            },
+            "relation": {
+              "$ref": "in.relation"
+            },
+            "attached_object": {
+              "$ref": "in.attached_object"
+            },
+            "contact_profile": {
+              "release_settle_steps": 80,
+              "retract_m": 0.08,
+              "object_clearance_m": 0.01,
+              "vertical_retreat_fraction": 0.5,
+              "post_release_wait_steps": 120,
+              "reverse_retreat_relations": [
+                "shaft_into_aperture",
+                "tip_through_aperture",
+                "insert_through"
+              ]
+            }
+          }
+        },
+        "released": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "release"
+        ],
+        [
+          "release",
+          "released"
+        ],
+        [
+          "released",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "released"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "pair_sg_2": {
+      "skill": "generic",
+      "inputs": {
+        "instruction": "string"
+      },
+      "outputs": {
+        "target_kind": {
+          "$ref": "select.target_kind"
+        },
+        "destination_anchor_y": {
+          "$ref": "select.destination_anchor_y"
+        },
+        "instruction": {
+          "$ref": "select.instruction"
+        },
+        "selected_mask": {
+          "$ref": "select.target_mask"
+        },
+        "arm_id": {
+          "$ref": "select.arm_id"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "select": {
+          "type": "script",
+          "script": "../gap_perception/scripts/perceive_next_correspondence.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "instruction": {
+              "$ref": "in.instruction"
+            },
+            "source_categories": [
+              {
+                "kind": "wrench",
+                "query": "adjustable wrench",
+                "aliases": [
+                  "wrench"
+                ]
+              },
+              {
+                "kind": "scissors",
+                "query": "scissors",
+                "aliases": [
+                  "scissors",
+                  "scissor"
+                ]
+              },
+              {
+                "kind": "pliers",
+                "query": "pliers",
+                "aliases": [
+                  "pliers",
+                  "plier"
+                ]
+              },
+              {
+                "kind": "screwdriver",
+                "query": "screwdriver",
+                "aliases": [
+                  "screwdriver"
+                ]
+              }
+            ],
+            "source_workspace": {
+              "x_max": 0.73,
+              "z_max": 0.8,
+              "minimum_mask_pixels": 80,
+              "minimum_cloud_points": 20,
+              "id_quantization_m": 0.01
+            },
+            "correspondence_axis": "y",
+            "arm_partition": {
+              "split": 0.0,
+              "positive_arm": 0,
+              "negative_arm": 1
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "select"
+        ],
+        [
+          "select",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "status",
+        "success_values": [
+          "found",
+          "finished"
+        ]
+      },
+      "on_error": "ambiguous"
+    }
+  }
+}

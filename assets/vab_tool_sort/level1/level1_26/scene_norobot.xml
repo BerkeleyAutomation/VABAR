@@ -1,0 +1,121 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+  <asset>
+    <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    <texture file="../../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    <texture file="../../assets/light-wood.png" type="2d" name="tex-light-wood" />
+    <texture file="../../assets/dark-wood.png" type="2d" name="tex-dark-wood" />
+    <material name="light-wood" reflectance="0" texrepeat="15 15" texture="tex-light-wood" texuniform="true" />
+    <material name="dark-wood" reflectance="0" texrepeat="5 5" texture="tex-dark-wood" texuniform="true" />
+    <texture name="tex-concrete" type="2d" file="../../assets/gray-plaster.png" />
+    <texture name="tex-steel-plate" type="2d" file="../../assets/steel-scratched.png" />
+    <material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" />
+    <texture name="bin2_label0_tex" type="2d" file="../../assets/bin2_0_tactical_flashlight.png" />
+    <material name="bin2_label0_mat" texture="bin2_label0_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label1_tex" type="2d" file="../../assets/bin2_1_spur_gear_20t.png" />
+    <material name="bin2_label1_mat" texture="bin2_label1_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label2_tex" type="2d" file="../../assets/bin2_2_d_battery.png" />
+    <material name="bin2_label2_mat" texture="bin2_label2_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label3_tex" type="2d" file="../../assets/bin2_3_multimeter.png" />
+    <material name="bin2_label3_mat" texture="bin2_label3_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="industrial_d_battery_0_d_battery_tex" type="2d" file="../../assets/diffuse_3.png" />
+    <material name="industrial_d_battery_0_d_battery_mat" texture="industrial_d_battery_0_d_battery_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_d_battery_0_d_battery_mesh" file="../../assets/d_battery.obj" />
+    <texture name="industrial_d_battery_1_d_battery_tex" type="2d" file="../../assets/diffuse_3.png" />
+    <material name="industrial_d_battery_1_d_battery_mat" texture="industrial_d_battery_1_d_battery_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_d_battery_1_d_battery_mesh" file="../../assets/d_battery.obj" />
+    <texture name="industrial_multimeter_0_multimeter_tex" type="2d" file="../../assets/diffuse_4.png" />
+    <material name="industrial_multimeter_0_multimeter_mat" texture="industrial_multimeter_0_multimeter_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_multimeter_0_multimeter_mesh" file="../../assets/multimeter_1.obj" />
+    <mesh name="industrial_spur_gear_20t_0_spur_gear_20t_mesh" file="../../assets/spur_gear_20t.obj" />
+    <texture name="industrial_tactical_flashlight_0_tactical_flashlight_tex" type="2d" file="../../assets/diffuse_5.png" />
+    <material name="industrial_tactical_flashlight_0_tactical_flashlight_mat" texture="industrial_tactical_flashlight_0_tactical_flashlight_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_tactical_flashlight_0_tactical_flashlight_mesh" file="../../assets/tactical_flashlight.obj" />
+  </asset>
+  <visual>
+    <map znear="0.001" />
+  </visual>
+  <worldbody>
+    <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" material="light-wood" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+    </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom name="bin2_label0" type="box" pos="-0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label0_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label1" type="box" pos="0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label1_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label2" type="box" pos="-0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label2_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label3" type="box" pos="0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label3_mat" contype="0" conaffinity="0" group="1" />
+    </body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+    <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" />
+    <geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" />
+    <geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <body name="industrial_d_battery_0_main">
+      <geom name="industrial_d_battery_0_g0" type="box" pos="-8.59898251e-10 -1.260118e-10 -8.91940213e-11" quat="0.5 0.5 0.5 0.5" size="0.0165350009 0.016415 0.0305429995" mass="0.135000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_d_battery_0_g0_visual" type="mesh" mesh="industrial_d_battery_0_d_battery_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_d_battery_0_d_battery_mat" />
+      <joint type="free" name="industrial_d_battery_0_joint0" />
+      <site name="industrial_d_battery_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_d_battery_1_main">
+      <geom name="industrial_d_battery_1_g0" type="box" pos="-8.59898251e-10 -1.260118e-10 -8.91940213e-11" quat="0.5 0.5 0.5 0.5" size="0.0165350009 0.016415 0.0305429995" mass="0.135000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_d_battery_1_g0_visual" type="mesh" mesh="industrial_d_battery_1_d_battery_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_d_battery_1_d_battery_mat" />
+      <joint type="free" name="industrial_d_battery_1_joint0" />
+      <site name="industrial_d_battery_1_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_multimeter_0_main">
+      <geom name="industrial_multimeter_0_g0" type="box" pos="0.000108287142 -1.08074384e-05 -1.4734476e-05" quat="0.499487791 0.49983005 -0.499771469 0.500909521" size="0.0220350996 0.0362798497 0.0759113058" mass="0.227783" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_multimeter_0_g0_visual" type="mesh" mesh="industrial_multimeter_0_multimeter_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_multimeter_0_multimeter_mat" />
+      <joint type="free" name="industrial_multimeter_0_joint0" />
+      <site name="industrial_multimeter_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_spur_gear_20t_0_main">
+      <geom name="industrial_spur_gear_20t_0_g0" type="box" pos="-2.70246835e-11 1.0181213e-11 -1.79011616e-10" quat="0.5 0.5 -0.5 0.5" size="0.0136590004 0.0299999993 0.0299999993" mass="0.410432" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_spur_gear_20t_0_g0_visual" type="mesh" mesh="industrial_spur_gear_20t_0_spur_gear_20t_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" rgba="0.62 0.63 0.66 1" />
+      <joint type="free" name="industrial_spur_gear_20t_0_joint0" />
+      <site name="industrial_spur_gear_20t_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_tactical_flashlight_0_main">
+      <geom name="industrial_tactical_flashlight_0_g0" type="box" pos="-1.52760625e-06 -3.64246167e-05 3.83749034e-10" quat="0.50027588 0.50027588 0.499723967 0.499723967" size="0.0149963023 0.0138560003 0.0600119382" mass="0.122178" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_tactical_flashlight_0_g0_visual" type="mesh" mesh="industrial_tactical_flashlight_0_tactical_flashlight_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_tactical_flashlight_0_tactical_flashlight_mat" />
+      <joint type="free" name="industrial_tactical_flashlight_0_joint0" />
+      <site name="industrial_tactical_flashlight_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+  </worldbody>
+  <equality>
+  </equality>
+  <tendon />
+  <contact />
+</mujoco>

@@ -1,0 +1,101 @@
+{
+  "version": 3,
+  "requires": {"tools": ["sam3.segment_text"]},
+  "meta": {
+    "name": "gear_mesh/gap_perception",
+    "description": "Mesh the gears from the overhead RGB-D camera alone (scripts/sight.py): SAM3 segments the gears and the pinion by the word `gear`, the button by `red circle`, the peg tips by `pin`, and the back-projected masks say where each is and -- by tip radius, colour agreeing -- which tooth class a gear is; peg spacing says which class each station wants, the peg line says which way the chain runs, and the heights of the plate and the mat are read in rings around what stands on them. Seating is a disc at the peg one face above the plate; the held gear is the disc under the hand at carry height. Runs with --perception vision --no-privileged --renderer tiled. Only the cursor publishes `index`: a subgraph input binds to the LAST subgraph that ever produced that name, so no other subgraph may echo it.",
+    "variants": ["gear_mesh/*"]
+  },
+  "nodes": {
+    "next_station": {"type": "subgraph", "ref": "next_station_sg"},
+    "pick": {"type": "subgraph", "ref": "pick_sg"},
+    "carry": {"type": "subgraph", "ref": "carry_sg"},
+    "seat": {"type": "subgraph", "ref": "seat_sg"},
+    "clear": {"type": "subgraph", "ref": "clear_sg"},
+    "press": {"type": "subgraph", "ref": "press_sg"},
+    "watch": {"type": "subgraph", "ref": "watch_sg"},
+    "done": {"type": "end", "status": "success"},
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {"tool": "robot.open_gripper", "inputs": {}},
+        {"tool": "robot.go_home", "inputs": {}}
+      ]
+    }
+  },
+  "edges": [["START", "next_station"]],
+  "conditional_edges": {
+    "next_station": {"router_field": "exit", "mapping": {"more": "pick", "done": "press"}},
+    "pick": {"router_field": "exit", "mapping": {"grasped": "carry", "missed": "clear", "errored": "clear"}},
+    "carry": {"router_field": "exit", "mapping": {"carried": "seat", "lost": "clear", "errored": "clear"}},
+    "seat": {"router_field": "exit", "mapping": {"seated": "clear", "lost": "clear", "errored": "clear"}},
+    "clear": {"router_field": "exit", "mapping": {"cleared": "next_station", "errored": "next_station"}},
+    "press": {"router_field": "exit", "mapping": {"pressed": "watch", "not_started": "watch", "errored": "watch"}},
+    "watch": {"router_field": "exit", "mapping": {"running": "done", "stalled": "abort", "errored": "abort"}}
+  },
+  "subgraphs": {
+    "next_station_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {"index": {"$ref": "cursor.index"}},
+      "nodes": {"cursor": {"type": "script", "script": "scripts/next_station.py", "inputs": {"count_attempt": true}}},
+      "edges": [["START", "cursor"], ["cursor", "END"]],
+      "exit": {"router_field": "route", "success_values": ["more", "done"]}
+    },
+    "pick_sg": {
+      "skill": "generic",
+      "inputs": {"index": "int"},
+      "outputs": {},
+      "nodes": {"grasp": {"type": "script", "script": "scripts/pick.py", "inputs": {"index": {"$ref": "in.index"}}}},
+      "edges": [["START", "grasp"], ["grasp", "END"]],
+      "exit": {"router_field": "route", "success_values": ["grasped", "missed"]},
+      "on_error": "errored"
+    },
+    "carry_sg": {
+      "skill": "generic",
+      "inputs": {"index": "int"},
+      "outputs": {},
+      "nodes": {"move": {"type": "script", "script": "scripts/carry.py", "inputs": {"index": {"$ref": "in.index"}}}},
+      "edges": [["START", "move"], ["move", "END"]],
+      "exit": {"router_field": "route", "success_values": ["carried", "lost"]},
+      "on_error": "errored"
+    },
+    "seat_sg": {
+      "skill": "generic",
+      "inputs": {"index": "int"},
+      "outputs": {},
+      "nodes": {"rock": {"type": "script", "script": "scripts/seat.py", "inputs": {"index": {"$ref": "in.index"}}}},
+      "edges": [["START", "rock"], ["rock", "END"]],
+      "exit": {"router_field": "route", "success_values": ["seated", "lost"]},
+      "on_error": "errored"
+    },
+    "clear_sg": {
+      "skill": "generic",
+      "inputs": {"index": "int"},
+      "outputs": {},
+      "nodes": {"lift": {"type": "script", "script": "scripts/clear.py", "inputs": {"index": {"$ref": "in.index"}}}},
+      "edges": [["START", "lift"], ["lift", "END"]],
+      "exit": {"router_field": "route", "success_values": ["cleared"]},
+      "on_error": "errored"
+    },
+    "press_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {"push": {"type": "script", "script": "scripts/press.py", "inputs": {}}},
+      "edges": [["START", "push"], ["push", "END"]],
+      "exit": {"router_field": "route", "success_values": ["pressed", "not_started"]},
+      "on_error": "errored"
+    },
+    "watch_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {"wait": {"type": "script", "script": "scripts/watch.py", "inputs": {"rounds": 10, "steps": 30}}},
+      "edges": [["START", "wait"], ["wait", "END"]],
+      "exit": {"router_field": "route", "success_values": ["running", "stalled"]},
+      "on_error": "errored"
+    }
+  }
+}

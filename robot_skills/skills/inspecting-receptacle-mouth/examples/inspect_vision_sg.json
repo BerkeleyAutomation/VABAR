@@ -1,0 +1,73 @@
+{
+  "skill": "inspecting-receptacle-mouth",
+  "inputs": {
+    "scene_mouth_point": "Vec3",
+    "scene_bore_axis": "Vec3",
+    "scene_receptacle_held": "bool"
+  },
+  "outputs": {
+    "inspect_body": {
+      "$ref": "read.inspect_body"
+    },
+    "scene_mouth_point": {
+      "$ref": "read.scene_mouth_point"
+    },
+    "scene_bore_axis": {
+      "$ref": "read.scene_bore_axis"
+    },
+    "inspect_mouth_point": {
+      "$ref": "read.inspect_mouth_point"
+    },
+    "inspect_bore_axis": {
+      "$ref": "read.inspect_bore_axis"
+    },
+    "inspect_moved_mm": {
+      "$ref": "read.inspect_moved_mm"
+    }
+  },
+  "nodes": {
+    "read": {
+      "type": "script",
+      "script": "scripts/inspect_vision.py",
+      "inputs": {
+        "scene_mouth_point": {
+          "$ref": "in.scene_mouth_point"
+        },
+        "scene_bore_axis": {
+          "$ref": "in.scene_bore_axis"
+        },
+        "scene_receptacle_held": {
+          "$ref": "in.scene_receptacle_held"
+        }
+      }
+    },
+    "found": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "read"
+    ],
+    [
+      "found",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "read": {
+      "router_field": "route",
+      "mapping": {
+        "found": "found"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "found"
+    ]
+  },
+  "on_error": "errored"
+}

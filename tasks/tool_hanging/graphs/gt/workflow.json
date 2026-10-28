@@ -1,0 +1,559 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "tool_hanging_gt",
+    "description": "Hang or stand each tool the variant's document still wants, one job at a time, using ground truth. A per-job cursor loop: sim.next_job reads which of the goal's threaded clauses is still unsatisfied, and the back edges from release and give_up re-enter it, so the same eight subgraphs serve two tools per episode and three variants -- wrenches and scissors onto hooks, screwdrivers into a rack -- without unrolling either. The one thing the scripted routine cannot do is in carry: the place is re-planned from the tool's measured pose in the jaws after the lift and the turn, rather than from the pose the pick measured before the fingers ever touched it. The second is in grasp, which reads the jaw gap and refuses to fly an empty hand to a hook.",
+    "variants": [
+      "tool_hanging/wrenches",
+      "tool_hanging/scissors",
+      "tool_hanging/screwdrivers",
+      "tool_hanging/wrenches_level1",
+      "tool_hanging/scissors_level1",
+      "tool_hanging/screwdrivers_level1",
+      "tool_hanging/pliers_level1"
+    ]
+  },
+  "nodes": {
+    "next_job": {
+      "type": "subgraph",
+      "ref": "next_job_sg"
+    },
+    "perceive": {
+      "type": "subgraph",
+      "ref": "perceive_sg"
+    },
+    "grasp": {
+      "type": "subgraph",
+      "ref": "grasp_sg"
+    },
+    "carry": {
+      "type": "subgraph",
+      "ref": "carry_sg"
+    },
+    "place": {
+      "type": "subgraph",
+      "ref": "place_sg"
+    },
+    "release": {
+      "type": "subgraph",
+      "ref": "release_sg"
+    },
+    "give_up": {
+      "type": "subgraph",
+      "ref": "give_up_sg"
+    },
+    "verify": {
+      "type": "subgraph",
+      "ref": "verify_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "robot.open_gripper",
+          "inputs": {}
+        },
+        {
+          "tool": "robot.go_home",
+          "inputs": {}
+        }
+      ]
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "next_job"
+    ]
+  ],
+  "conditional_edges": {
+    "next_job": {
+      "router_field": "exit",
+      "mapping": {
+        "more": "perceive",
+        "done": "verify"
+      }
+    },
+    "perceive": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "grasp",
+        "unreachable": "give_up"
+      }
+    },
+    "grasp": {
+      "router_field": "exit",
+      "mapping": {
+        "grasped": "carry",
+        "missed": "give_up",
+        "errored": "give_up"
+      }
+    },
+    "carry": {
+      "router_field": "exit",
+      "mapping": {
+        "carried": "place",
+        "lost": "give_up",
+        "errored": "give_up"
+      }
+    },
+    "place": {
+      "router_field": "exit",
+      "mapping": {
+        "seated": "release",
+        "short": "release",
+        "errored": "give_up"
+      }
+    },
+    "release": {
+      "router_field": "exit",
+      "mapping": {
+        "released": "next_job",
+        "errored": "give_up"
+      }
+    },
+    "give_up": {
+      "router_field": "exit",
+      "mapping": {
+        "skipped": "next_job"
+      }
+    },
+    "verify": {
+      "router_field": "exit",
+      "mapping": {
+        "hung": "done",
+        "none": "abort"
+      }
+    }
+  },
+  "subgraphs": {
+    "next_job_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "cursor": {
+          "type": "script",
+          "script": "scripts/next_job.py",
+          "inputs": {
+            "count_attempt": true
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "cursor"
+        ],
+        [
+          "cursor",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "more",
+          "done"
+        ]
+      }
+    },
+    "perceive_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "scripts/plan_pick.py",
+          "inputs": {}
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "plan",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "unreachable"
+    },
+    "grasp_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "script",
+          "script": "scripts/grip.py",
+          "inputs": {
+            "preset": "open",
+            "ramp_steps": 18,
+            "settle_steps": 4
+          }
+        },
+        "reach": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "phase": "reach"
+          }
+        },
+        "close": {
+          "type": "script",
+          "script": "scripts/grip.py",
+          "inputs": {
+            "preset": "close",
+            "ramp_steps": 24,
+            "settle_steps": 14
+          }
+        },
+        "check": {
+          "type": "script",
+          "script": "scripts/check_grasp.py",
+          "inputs": {}
+        },
+        "grasped": {
+          "type": "noop"
+        },
+        "missed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "reach"
+        ],
+        [
+          "reach",
+          "close"
+        ],
+        [
+          "close",
+          "check"
+        ],
+        [
+          "grasped",
+          "END"
+        ],
+        [
+          "missed",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "check": {
+          "router_field": "route",
+          "mapping": {
+            "grasped": "grasped",
+            "missed": "missed"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "grasped",
+          "missed"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "carry_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "lift": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "phase": "carry"
+          }
+        },
+        "replan": {
+          "type": "script",
+          "script": "scripts/plan_place.py",
+          "inputs": {}
+        },
+        "carried": {
+          "type": "noop"
+        },
+        "lost": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "lift"
+        ],
+        [
+          "lift",
+          "replan"
+        ],
+        [
+          "carried",
+          "END"
+        ],
+        [
+          "lost",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "replan": {
+          "router_field": "route",
+          "mapping": {
+            "carried": "carried",
+            "lost": "lost"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "carried",
+          "lost"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "place_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "hang": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "phase": "place"
+          }
+        },
+        "check": {
+          "type": "script",
+          "script": "scripts/seat_check.py",
+          "inputs": {
+            "allow_retry": true
+          }
+        },
+        "replan": {
+          "type": "script",
+          "script": "scripts/plan_place.py",
+          "inputs": {}
+        },
+        "hang_again": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "phase": "place"
+          }
+        },
+        "check_again": {
+          "type": "script",
+          "script": "scripts/seat_check.py",
+          "inputs": {
+            "allow_retry": false
+          }
+        },
+        "seated": {
+          "type": "noop"
+        },
+        "short": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "hang"
+        ],
+        [
+          "hang",
+          "check"
+        ],
+        [
+          "hang_again",
+          "check_again"
+        ],
+        [
+          "seated",
+          "END"
+        ],
+        [
+          "short",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "check": {
+          "router_field": "route",
+          "mapping": {
+            "seated": "seated",
+            "again": "replan",
+            "short": "short"
+          }
+        },
+        "replan": {
+          "router_field": "route",
+          "mapping": {
+            "carried": "hang_again",
+            "lost": "short"
+          }
+        },
+        "check_again": {
+          "router_field": "route",
+          "mapping": {
+            "seated": "seated",
+            "short": "short"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "seated",
+          "short"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "release_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "script",
+          "script": "scripts/grip.py",
+          "inputs": {
+            "preset": "open",
+            "ramp_steps": 24,
+            "settle_steps": 10
+          }
+        },
+        "retreat": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "phase": "retreat"
+          }
+        },
+        "released": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "retreat"
+        ],
+        [
+          "retreat",
+          "released"
+        ],
+        [
+          "released",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "released"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "give_up_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "skip": {
+          "type": "script",
+          "script": "scripts/give_up.py",
+          "inputs": {}
+        },
+        "skipped": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "skip"
+        ],
+        [
+          "skip",
+          "skipped"
+        ],
+        [
+          "skipped",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "skipped"
+        ]
+      }
+    },
+    "verify_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "score": {
+          "type": "script",
+          "script": "scripts/verify.py",
+          "inputs": {
+            "settle_steps": 60
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "score"
+        ],
+        [
+          "score",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "hung",
+          "none"
+        ]
+      }
+    }
+  }
+}

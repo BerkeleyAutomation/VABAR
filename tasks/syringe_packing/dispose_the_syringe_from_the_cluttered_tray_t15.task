@@ -1,0 +1,118 @@
+; -*- mode: lisp -*-
+; TRIAL 15 of 30 in the tray_clutter layout sweep: 7 syringes
+; packed into the tray (see tools/make_tray_clutter_trials.py for the placement
+; rule), the sharps box shifted by (-0.0127, -0.0146) m. Drawn from numpy
+; default_rng(seed=5), one draw per trial in sequence -- box shift
+; uniform(+-0.03) m.
+; Written by tools/make_tray_clutter_trials.py from dispose_the_syringe_from_the_cluttered_tray.task; the
+; layout is start_poses/tray_clutter_t15.json. Everything else is the base document's.
+; AUTHORED, over the `syringe` export, as `dispose_the_syringe_from_the_tray`
+; with its scene made hard the other way `tray_pair`'s header warned against:
+; VAB-industrial's own ten-syringe rack "defeated the perception graph", so
+; that document kept one spare and 90 mm of clear air. Level 2 asks the
+; question the level-0/1 documents deliberately ducked -- can the graph
+; still find, grasp and post EVERY syringe once the tray is genuinely
+; cluttered, 3-8 near-identical barrels laid down at uneven spacing and a
+; few degrees of skew rather than one clean neighbour. The goal is every
+; syringe object this trial declares In the box (the same all-of-them
+; predicate `dispose_both_syringes_from_the_tray` uses for two, extended
+; here to however many a layout holds), exercising the graph's own
+; count_remaining loop over more iterations and a shrinking, still-cluttered
+; scene rather than the one second syringe that task validated. The fixtures
+; and regions are unchanged from `dispose_the_syringe_from_the_tray`; only
+; the tray's population, the goal's width and each trial's layout are this
+; document's own.
+;
+; WHERE THINGS ARE. Same rule as `tray_pair`: BDDL has no coordinates, and
+; `start_poses/tray_clutter.json` is the layout `_layout()` reads for the
+; bare variant. The 30-trial sweep (`tools/make_tray_clutter_trials.py`)
+; writes its own `start_poses/tray_clutter_tNN.json` per trial, each a
+; fresh 5-8 syringe packing rather than a rigid transform of one template --
+; see that tool's own header for the placement rule and why.
+;
+; THE TRAY DOES NOT COLLIDE AS DRAWN. Same fixture, same stand-in floor
+; slab; see `tray_pair`'s header and task.py.
+; ---------------------------------------------------------------------------
+
+(define (problem DISPOSE_THE_SYRINGE_FROM_THE_CLUTTERED_TRAY_T15)
+  (:domain robosuite)
+
+  (:language pick up every syringe from the cluttered instrument tray, one at a
+             time, and drop it through the hole in the top of the yellow sharps
+             disposal box, until the tray is empty)
+
+  (:staging
+    (:profile vab_industrial@v2)
+    (:export vab_tool_sort/syringe)
+    ; Level 2: every syringe in the tray is now a goal (the loader-loop
+    ; the graph shares with tray_pair_both routes back through target_sg
+    ; after each post until count_remaining finds none left), so the
+    ; budget scales with how many are in this layout: 7 x tray_pair's
+    ; own 11400 (2400 for one goal plus a flat 9000 container retry) = 79800.
+    (:max-steps 79800)
+  )
+
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    syringe_box - sharps_box
+    syringe_tray - instrument_tray
+  )
+
+  (:objects
+    syringe_0 syringe_pack_0 syringe_pack_1 syringe_pack_2 syringe_pack_3 syringe_pack_4 syringe_pack_5 - syringe
+  )
+
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        (:ranges ((-0.0445 -0.083 0.0445 0.083)))
+    )
+  )
+
+  (:init)
+
+  ; One goal, over the goal syringe only -- every other instance in the tray
+  ; is a distractor the graph must not grab instead, not a second target.
+  (:goal
+    (and
+      (In syringe_0 syringe_box_region)
+      (In syringe_pack_0 syringe_box_region)
+      (In syringe_pack_1 syringe_box_region)
+      (In syringe_pack_2 syringe_box_region)
+      (In syringe_pack_3 syringe_box_region)
+      (In syringe_pack_4 syringe_box_region)
+      (In syringe_pack_5 syringe_box_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSharpsDisposal")
+    (:tools   "tools:register_sharps_disposal_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus over the 
+              VAB-industrial ToolSortPickPlace `syringe` export (robosuite 1.4.0,
+              MuJoCo 3.3.3, seed 0). The goal and regions restate
+              dispose_the_syringe_from_the_tray's; the clutter restates the
+              scale of VAB-industrial's own put_ten_syringes_in_the_sharps_box
+              without its all-ten goal.")
+    (:note "Level 2 of the packing work: dispose_the_syringe_from_the_tray was
+            level 0 (one spare), dispose_both_syringes_from_the_tray level 1
+            (both asked for). This document keeps level 0's single-syringe
+            goal and instead widens the scene -- 5-8 syringes per trial,
+            tools/make_tray_clutter_trials.py.")
+  )
+)

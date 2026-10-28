@@ -1,0 +1,123 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+
+  <asset>
+  <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    
+    <texture file="../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    
+    <texture file="../assets/light-wood.png" type="2d" name="tex-light-wood" />
+    <texture file="../assets/dark-wood.png" type="2d" name="tex-dark-wood" />
+    <material name="light-wood" reflectance="0" texrepeat="15 15" texture="tex-light-wood" texuniform="true" />
+    <material name="dark-wood" reflectance="0" texrepeat="5 5" texture="tex-dark-wood" texuniform="true" />
+  <texture name="tex-concrete" type="2d" file="../assets/gray-plaster.png" /><texture name="tex-steel-plate" type="2d" file="../assets/steel-scratched.png" /><material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" /><mesh name="syringe_box_mesh" file="../assets/sealed_syringe_disposal_box.obj" /><texture name="bin2_label0_tex" type="2d" file="../assets/bin2_0_drill.png" /><material name="bin2_label0_mat" texture="bin2_label0_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label2_tex" type="2d" file="../assets/bin2_2_clamp.png" /><material name="bin2_label2_mat" texture="bin2_label2_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="drill_0_cordless_drill_tex" type="2d" file="../assets/obj_000015.png" />
+    <material name="drill_0_cordless_drill_mat" texture="drill_0_cordless_drill_tex" specular="0.2" shininess="0.1" />
+    <mesh name="drill_0_cordless_drill_mesh" file="../assets/cordless_drill.obj" />
+  <texture name="drill_1_cordless_drill_tex" type="2d" file="../assets/obj_000015.png" />
+    <material name="drill_1_cordless_drill_mat" texture="drill_1_cordless_drill_tex" specular="0.2" shininess="0.1" />
+    <mesh name="drill_1_cordless_drill_mesh" file="../assets/cordless_drill.obj" />
+  <texture name="syringe_0_syringe_tex" type="2d" file="../assets/diffuse_2.png" />
+    <material name="syringe_0_syringe_mat" texture="syringe_0_syringe_tex" specular="0.2" shininess="0.1" />
+    <mesh name="syringe_0_syringe_mesh" file="../assets/syringe.obj" />
+  <texture name="syringe_1_syringe_tex" type="2d" file="../assets/diffuse_2.png" />
+    <material name="syringe_1_syringe_mat" texture="syringe_1_syringe_tex" specular="0.2" shininess="0.1" />
+    <mesh name="syringe_1_syringe_mesh" file="../assets/syringe.obj" />
+  <texture name="clamp_0_clamp_tex" type="2d" file="../assets/obj_000019.png" />
+    <material name="clamp_0_clamp_mat" texture="clamp_0_clamp_tex" specular="0.2" shininess="0.1" />
+    <mesh name="clamp_0_clamp_mesh" file="../assets/clamp.obj" />
+  <texture name="clamp_1_clamp_tex" type="2d" file="../assets/obj_000019.png" />
+    <material name="clamp_1_clamp_mat" texture="clamp_1_clamp_tex" specular="0.2" shininess="0.1" />
+    <mesh name="clamp_1_clamp_mesh" file="../assets/clamp.obj" />
+  <texture name="distractor_flathead_screwdriver_0_flathead_screwdriver_tex" type="2d" file="../assets/diffuse_1.png" />
+    <material name="distractor_flathead_screwdriver_0_flathead_screwdriver_mat" texture="distractor_flathead_screwdriver_0_flathead_screwdriver_tex" specular="0.2" shininess="0.1" />
+    <mesh name="distractor_flathead_screwdriver_0_flathead_screwdriver_mesh" file="../assets/flathead_screwdriver.obj" />
+  <texture name="distractor_pliers_0_pliers_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="distractor_pliers_0_pliers_mat" texture="distractor_pliers_0_pliers_tex" specular="0.2" shininess="0.1" />
+    <mesh name="distractor_pliers_0_pliers_mesh" file="../assets/pliers.obj" />
+  </asset>
+
+  <visual>
+    <map znear="0.001" />
+  </visual>
+
+  <worldbody>
+  <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" material="light-wood" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        
+        </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        
+        <geom name="syringe_box_c0" type="box" pos="0.097500 -0.122500 0.022000" size="0.048498 0.087033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c1" type="box" pos="0.051002 -0.122500 0.110000" size="0.002000 0.087033 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c2" type="box" pos="0.143998 -0.122500 0.110000" size="0.002000 0.087033 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c3" type="box" pos="0.097500 -0.207533 0.110000" size="0.044498 0.002000 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c4" type="box" pos="0.097500 -0.037467 0.110000" size="0.044498 0.002000 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c5" type="box" pos="0.061501 -0.122500 0.198000" size="0.008499 0.083033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c6" type="box" pos="0.133499 -0.122500 0.198000" size="0.008499 0.083033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c7" type="box" pos="0.097500 -0.177766 0.198000" size="0.027500 0.027766 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c8" type="box" pos="0.097500 -0.067234 0.198000" size="0.027500 0.027766 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c9" type="box" pos="0.120973 -0.099027 0.198000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="0.923880 0.000000 0.000000 0.382683" /><geom name="syringe_box_c10" type="box" pos="0.074027 -0.099027 0.198000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="0.382683 0.000000 0.000000 0.923880" /><geom name="syringe_box_c11" type="box" pos="0.074027 -0.145973 0.198000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="-0.382683 0.000000 0.000000 0.923880" /><geom name="syringe_box_c12" type="box" pos="0.120973 -0.145973 0.198000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="-0.923880 0.000000 0.000000 0.382683" /><geom name="syringe_box_visual" type="mesh" mesh="syringe_box_mesh" pos="0.097500 -0.122500 0.110000" rgba="0.950 0.800 0.100 1" contype="0" conaffinity="0" group="1" /><geom name="bin2_label0" type="box" pos="-0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label0_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label2" type="box" pos="-0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label2_mat" contype="0" conaffinity="0" group="1" /></body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+  <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" /><geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" /><geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><body name="drill_0_main">
+        <geom pos="0.0100436225 0.000660817222 -0.00114655989" type="box" mass="1.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="drill_0_g0" rgba="0.5 0 0 1" size="0.0284592586 0.0916015227 0.097689719" quat="0.4758805 0.537306752 -0.449664577 0.531639889" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="drill_0_cordless_drill_mesh" material="drill_0_cordless_drill_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="drill_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="drill_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="drill_0_default_site" /></body>
+      <body name="drill_1_main">
+        <geom pos="0.0100436225 0.000660817222 -0.00114655989" type="box" mass="1.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="drill_1_g0" rgba="0.5 0 0 1" size="0.0284592586 0.0916015227 0.097689719" quat="0.4758805 0.537306752 -0.449664577 0.531639889" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="drill_1_cordless_drill_mesh" material="drill_1_cordless_drill_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="drill_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="drill_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="drill_1_default_site" /></body>
+      <body name="syringe_0_main">
+        <geom pos="-5.93676114e-15 9.36953917e-10 9.36959898e-10" type="box" mass="0.030000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="syringe_0_g0" rgba="0.5 0 0 1" size="0.00680099986 0.0117830001 0.075000003" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="syringe_0_syringe_mesh" material="syringe_0_syringe_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="syringe_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="syringe_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="syringe_0_default_site" /></body>
+      <body name="syringe_1_main">
+        <geom pos="-5.93676114e-15 9.36953917e-10 9.36959898e-10" type="box" mass="0.030000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="syringe_1_g0" rgba="0.5 0 0 1" size="0.00680099986 0.0117830001 0.075000003" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="syringe_1_syringe_mesh" material="syringe_1_syringe_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="syringe_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="syringe_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="syringe_1_default_site" /></body>
+      <body name="clamp_0_main">
+        <geom pos="0.00960650698 -0.00380854656 -0.0012250063" type="box" mass="0.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="clamp_0_g0" rgba="0.5 0 0 1" size="0.0182219236 0.0607859307 0.0828273989" quat="0.476014504 0.571182322 -0.44902229 0.495519857" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="clamp_0_clamp_mesh" material="clamp_0_clamp_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="clamp_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="clamp_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="clamp_0_default_site" /></body>
+      <body name="clamp_1_main">
+        <geom pos="0.00960650698 -0.00380854656 -0.0012250063" type="box" mass="0.500000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="clamp_1_g0" rgba="0.5 0 0 1" size="0.0182219236 0.0607859307 0.0828273989" quat="0.476014504 0.571182322 -0.44902229 0.495519857" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="clamp_1_clamp_mesh" material="clamp_1_clamp_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="clamp_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="clamp_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="clamp_1_default_site" /></body>
+      <body name="distractor_flathead_screwdriver_0_main">
+        <geom pos="2.73747076e-09 8.08639261e-12 -2.74555727e-09" type="box" mass="0.120000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="distractor_flathead_screwdriver_0_g0" rgba="0.5 0 0 1" size="0.0125719998 0.0121339997 0.0989999995" quat="0.5 0.5 0.5 0.5" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="distractor_flathead_screwdriver_0_flathead_screwdriver_mesh" material="distractor_flathead_screwdriver_0_flathead_screwdriver_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="distractor_flathead_screwdriver_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="distractor_flathead_screwdriver_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="distractor_flathead_screwdriver_0_default_site" /></body>
+      <body name="distractor_pliers_0_main">
+        <geom pos="0.00253425615 0.000416470981 1.07481716e-08" type="box" mass="0.300000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="distractor_pliers_0_g0" rgba="0.5 0 0 1" size="0.00600764917 0.0337455207 0.106462242" quat="0.515880362 0.494534916 -0.505405992 0.483598441" />
+      <geom pos="-0.000000 -0.000000 0.000000" type="mesh" mesh="distractor_pliers_0_pliers_mesh" material="distractor_pliers_0_pliers_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="distractor_pliers_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="distractor_pliers_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="distractor_pliers_0_default_site" /></body>
+      </worldbody>
+
+  <equality>
+  </equality>
+<tendon /><contact /></mujoco>

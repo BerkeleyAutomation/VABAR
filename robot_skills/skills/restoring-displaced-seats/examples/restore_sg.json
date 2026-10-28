@@ -1,0 +1,40 @@
+{
+  "skill": "restoring-displaced-seats",
+  "inputs": {
+    "scene": "str"
+  },
+  "outputs": {
+    "repairs": {
+      "$ref": "repair.repairs"
+    }
+  },
+  "nodes": {
+    "repair": {
+      "type": "script",
+      "script": "scripts/restore_seats.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "repair"
+    ],
+    [
+      "repair",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "exit",
+    "success_values": [
+      "checked"
+    ]
+  },
+  "on_error": "unobserved"
+}

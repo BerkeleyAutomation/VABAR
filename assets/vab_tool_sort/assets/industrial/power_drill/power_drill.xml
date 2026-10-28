@@ -1,0 +1,23 @@
+<mujoco model="power_drill">
+  <!-- Author: Francesco Coldesina -->
+  <!-- Source: https://sketchfab.com/3d-models/drill-retopo-8fd5608b449f4cde81a8d924cdaed416 -->
+  <asset>
+    <texture name="power_drill_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="power_drill_mat" texture="power_drill_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="power_drill_mesh" file="meshes/power_drill.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="power_drill_mesh"
+              material="power_drill_mat" mass="1.500000" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.036085" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.036085" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.145081 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

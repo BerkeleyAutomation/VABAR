@@ -1,0 +1,95 @@
+; robosimstudio-base-task: usbc_insert/insert_medium
+; Single frozen sampler draw; run episode 0.
+; Medium: a free bulkhead held by the support arm during insertion.
+; Same 240 mm attached plug cable and plug pose variation as Easy.
+; Bulkhead starts within 4 mm and 3 degrees of its cradle pose.
+; Full manipulation, release, retreat and settling precede evaluation.
+
+(define (problem usbcinsertion-medium-insertplug-71)
+
+  (:suite usbc_insert)
+
+  (:language insert the USB-C plug into the bulkhead the other hand is holding)
+
+  (:staging
+    (:scene bench_075)
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left) (:arms-solid true))
+    (:control-mode ee_pose_abs)
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    (:physics usbc_bulkhead_960hz@v1)
+    (:cameras yam_station_usbc@v1)
+    (:episodes (:count 1) (:seed 10070) (:sampler staging:USBC_MEDIUM))
+    (:max-steps 9000)
+    (:arms 2)
+    (:terminate-on-success false)
+  )
+
+  (:objects
+    bulkhead - usb_c_bulkhead
+    plug     - usb_c_plug
+    rig      - usbc_contact_rig
+    cables   - usbc_evaluation_cables
+  )
+
+  (:fixtures
+    bench        - usbc_bench
+    cradle_front - usbc_cradle_front
+    cradle_rear  - usbc_cradle_rear
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (>= (insertion plug bulkhead.bore) 0.0104)
+      (<= (insertion:lat plug bulkhead.bore) 0.0087931792)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+      (> (tcp-distance plug) 0.05)
+    )
+  )
+
+  (:reward
+    (progress (insertion plug bulkhead.bore)
+              (:gate 0.0104)
+              (:gated-by (<= (insertion:lat plug bulkhead.bore) 0.0087931792))))
+
+  (:observe
+    (gripped plug.body)
+    ; STILL MEASURED, no longer a gate. A seated plug settles under its own
+    ; cable the moment the jaws open -- 0.99 to 10.9 degrees within eighteen
+    ; frames of the release, per the insertion measure's own provenance -- so
+    ; this number reports post-release droop rather than whether the mate was
+    ; made. It is kept because it is the one number that says how steadily the
+    ; support arm held the receptacle, which is what this tier is for; it is out
+    ; of the goal because a plug 12.7 mm into a 13 mm bore is in the socket
+    ; whatever angle its tail hangs at. Dropped from the goal 2026-09-10 at the
+    ; user's decision; under it the tier scored 3/29 where depth and lateral
+    ; alone score 5/29.
+    (insertion:tilt plug bulkhead.bore)
+    (insertion:mate_gap plug bulkhead.bore)
+    (speed bulkhead)
+  )
+
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus, from a pre-port _bulkhead Python suite that never
+              shipped in this repository; thresholds are the retired usbc_insert/insert
+              document's, verbatim, and the mate line is the reference block port's.")
+    (:note "Bulkhead.stl at scale 2, pre-placed so its slot axis spawns on the block port's
+            bore line, carrying the reference sim's 90 g ground-truth mass, resting in a
+            two-step cradle that is a rest and nothing more. The cradle has deliberately no
+            side cheeks and no axial stop: cheeks stand exactly where the support jaws close
+            across the 42 mm barrel, and reacting the insertion push is the support arm's job,
+            which is what makes this bimanual rather than scenery. The part measures 0.05
+            degrees of tilt over a settle without them. Thresholds are the block variant's
+            throughout -- same plug, coplanar mouths, one mate line.")
+  )
+)

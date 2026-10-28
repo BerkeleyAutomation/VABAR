@@ -1,0 +1,85 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; LEVEL 1 -- one hook, one object. See wrenches.task for the family's design
+; (what `encloses`/`contact-force`/`speed`/`hold-for` mean) and
+; tasks/tool_hanging/task.py's LEVEL1_Y for the centring. Does not touch
+; wrenches.task or any other existing document.
+;
+; The single object is a uniformly enlarged (1.30x) version of the task's
+; 200 mm wrench. Its visual mesh, collision hulls and declared ring feature use
+; the same scale; the graph continues to estimate its manipulation geometry
+; from camera observations.
+; ---------------------------------------------------------------------------
+
+(define (problem TOOLHANGING-EASY-HANGWRENCH-019)
+
+  (:domain tool_hanging)
+
+  (:language hang the wrench on the hook)
+
+  (:staging
+    (:scene tool_hanging_bench)
+    (:embodiment yam_tool_hanging (:work-arm left) (:support-arm right))
+    (:physics tool_hanging_480hz@v1)
+    (:cameras tool_hanging_views_level1@v2)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 73) (:sampler fixed))
+    ; Learned multi-camera graph calls and closed-loop Cartesian moves are
+    ; slower than the scripted routine; 6200 lets gap_perception release and
+    ; retract (measured completion: 5796) without changing either policy.
+    (:max-steps 6200)
+  )
+
+  (:objects
+    wrench_1 - wrench_adjustable_260
+  )
+
+  (:fixtures
+    wrench_hook_1 - pegboard_hook
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (And
+        (encloses wrench_1.ring wrench_hook_1.shank)
+        (>= (contact-force wrench_1 wrench_hook_1) 0.2)
+        (<= (speed wrench_1) 0.15)
+      )
+    )
+  )
+
+  (:reward (fraction))
+
+  (:observe
+    (encloses wrench_1.ring wrench_hook_1.shank)
+  )
+
+  (:artifacts
+    (:routine "routine:HangWrenchRoutineLevel1")
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_gt "graphs/gap_gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "A one-object, one-holder reduction of wrenches.task, authored
+              for GaP graph testing. The Level-1 wrench is uniformly enlarged;
+              the scene and holder remain unchanged.")
+    (:note "HangWrenchRoutineLevel1 (tasks/tool_hanging/routine.py) is
+            HangWrenchRoutine trimmed to one job -- wrench_1, left arm,
+            hook_center_world_y=LEVEL1_Y -- carrying uniformly scaled grasp
+            and ring landmarks for the enlarged wrench.")
+  )
+
+
+  (:instance-layout
+    (:source-task tool_hanging/wrenches_level1)
+    (:source-episode 73)
+    (:seed 73)
+    (:object-xform wrench_1 -0.00029455242847228544 -0.007865298485542791 0.009099999999999997 0.7071067811865476 0.0 0.0 0.7071067811865476)
+  )
+)

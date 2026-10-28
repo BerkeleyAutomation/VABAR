@@ -1,0 +1,844 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "cable_route_weave_gt",
+    "perception_mode": "vision_only",
+    "observation_mode": "on_demand",
+    "description": "Vision-driven cable routing with declared skill contracts, explicit crossing loop, friction grasping, support feed, observed seating, terminal insertion, and independent visual verification.",
+    "variants": [
+      "cable_route/port_easy",
+      "cable_route/port_medium"
+    ],
+    "routing_cases": [
+      {
+        "task": "cable_route/port_easy",
+        "difficulty": "Easy",
+        "graph": "gt",
+        "pegs": 2,
+        "cables": 1,
+        "fixed_end": "end_a",
+        "free_end": "end_b",
+        "anchor": "anchor",
+        "port": "port"
+      },
+      {
+        "task": "cable_route/port_medium",
+        "difficulty": "Medium",
+        "graph": "gt",
+        "pegs": 4,
+        "cables": 1,
+        "fixed_end": "end_a",
+        "free_end": "end_b",
+        "anchor": "anchor",
+        "port": "port"
+      }
+    ]
+  },
+  "nodes": {
+    "posts": {
+      "type": "subgraph",
+      "ref": "perceive_vision_sg"
+    },
+    "anchor": {
+      "type": "subgraph",
+      "ref": "anchor_sg"
+    },
+    "station": {
+      "type": "subgraph",
+      "ref": "station_sg"
+    },
+    "track": {
+      "type": "subgraph",
+      "ref": "rod_sg"
+    },
+    "retrack": {
+      "type": "subgraph",
+      "ref": "rod_sg"
+    },
+    "mate": {
+      "type": "subgraph",
+      "ref": "mate_sg"
+    },
+    "take": {
+      "type": "subgraph",
+      "ref": "take_sg"
+    },
+    "carry": {
+      "type": "subgraph",
+      "ref": "carry_sg"
+    },
+    "seat": {
+      "type": "subgraph",
+      "ref": "seat_sg"
+    },
+    "release": {
+      "type": "subgraph",
+      "ref": "release_sg"
+    },
+    "plug": {
+      "type": "subgraph",
+      "ref": "plug_sg"
+    },
+    "verify": {
+      "type": "subgraph",
+      "ref": "verify_vision_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "cable.set_gripper",
+          "inputs": {
+            "width": 0.0475
+          }
+        }
+      ]
+    },
+    "restore": {
+      "type": "subgraph",
+      "ref": "restore_sg"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "posts"
+    ]
+  ],
+  "conditional_edges": {
+    "posts": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "anchor",
+        "not_found": "abort",
+        "errored": "abort"
+      }
+    },
+    "anchor": {
+      "router_field": "exit",
+      "mapping": {
+        "anchored": "station",
+        "unanchored": "abort",
+        "errored": "abort"
+      }
+    },
+    "station": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "track",
+        "finished": "retrack",
+        "errored": "abort"
+      }
+    },
+    "track": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "mate",
+        "lost": "abort",
+        "errored": "abort"
+      }
+    },
+    "retrack": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "plug",
+        "lost": "plug",
+        "errored": "plug"
+      }
+    },
+    "mate": {
+      "router_field": "exit",
+      "mapping": {
+        "computed": "take",
+        "infeasible": "station",
+        "errored": "abort"
+      }
+    },
+    "take": {
+      "router_field": "exit",
+      "mapping": {
+        "done": "carry",
+        "missed": "abort",
+        "errored": "abort"
+      }
+    },
+    "carry": {
+      "router_field": "exit",
+      "mapping": {
+        "done": "seat",
+        "blocked": "abort",
+        "errored": "abort"
+      }
+    },
+    "seat": {
+      "router_field": "exit",
+      "mapping": {
+        "done": "release",
+        "blocked": "abort",
+        "errored": "abort"
+      }
+    },
+    "release": {
+      "router_field": "exit",
+      "mapping": {
+        "done": "station",
+        "blocked": "abort",
+        "errored": "abort"
+      }
+    },
+    "verify": {
+      "router_field": "exit",
+      "mapping": {
+        "woven": "done",
+        "short": "abort",
+        "errored": "abort"
+      }
+    },
+    "plug": {
+      "router_field": "exit",
+      "mapping": {
+        "plugged": "restore",
+        "unplugged": "restore",
+        "errored": "restore"
+      }
+    },
+    "restore": {
+      "router_field": "exit",
+      "mapping": {
+        "checked": "verify",
+        "unobserved": "verify",
+        "errored": "verify"
+      }
+    }
+  },
+  "subgraphs": {
+    "perceive_vision_sg": {
+      "skill": "perceiving-routing-fixtures",
+      "inputs": {},
+      "outputs": {
+        "scene": {
+          "$ref": "read.scene"
+        },
+        "stations": {
+          "$ref": "read.stations"
+        },
+        "body": {
+          "$ref": "read.body"
+        }
+      },
+      "nodes": {
+        "read": {
+          "type": "script",
+          "script": "scripts/perceive_weave_vision.py",
+          "inputs": {}
+        },
+        "found": {
+          "type": "noop"
+        },
+        "not_found": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "read"
+        ],
+        [
+          "found",
+          "END"
+        ],
+        [
+          "not_found",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "read": {
+          "router_field": "route",
+          "mapping": {
+            "found": "found",
+            "not_found": "not_found"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found",
+          "not_found"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "station_sg": {
+      "skill": "sequencing-crossings",
+      "inputs": {
+        "scene": "str"
+      },
+      "outputs": {
+        "index": {
+          "$ref": "next_crossing.index"
+        },
+        "remaining": {
+          "$ref": "next_crossing.remaining"
+        }
+      },
+      "nodes": {
+        "next_crossing": {
+          "type": "script",
+          "script": "scripts/next_station.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "next_crossing"
+        ],
+        [
+          "next_crossing",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "found",
+          "finished"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "rod_sg": {
+      "skill": "perceiving-deformable-linear-objects",
+      "inputs": {
+        "scene": "str",
+        "index": "int"
+      },
+      "outputs": {
+        "rod": {
+          "$ref": "fit_centreline.rod"
+        },
+        "arclength_m": {
+          "$ref": "fit_centreline.arclength_m"
+        },
+        "source": {
+          "$ref": "fit_centreline.source"
+        },
+        "used_camera": {
+          "$ref": "fit_centreline.camera"
+        },
+        "visible": {
+          "$ref": "fit_centreline.visible"
+        }
+      },
+      "nodes": {
+        "fit_centreline": {
+          "type": "script",
+          "script": "scripts/perceive_rod.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            },
+            "index": {
+              "$ref": "in.index"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "fit_centreline"
+        ],
+        [
+          "fit_centreline",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "lost"
+    },
+    "mate_sg": {
+      "skill": "computing-routing-waypoints",
+      "inputs": {
+        "index": "int",
+        "scene": "str",
+        "rod": "str"
+      },
+      "outputs": {
+        "plan": {
+          "$ref": "plan_crossing.plan"
+        },
+        "arm_id": {
+          "$ref": "plan_crossing.arm_id"
+        },
+        "grip_open_m": {
+          "$ref": "plan_crossing.grip_open_m"
+        },
+        "grip_close_m": {
+          "$ref": "plan_crossing.grip_close_m"
+        },
+        "worst_error_m": {
+          "$ref": "plan_crossing.worst_error_m"
+        }
+      },
+      "nodes": {
+        "plan_crossing": {
+          "type": "script",
+          "script": "scripts/plan_crossing.py",
+          "inputs": {
+            "index": {
+              "$ref": "in.index"
+            },
+            "scene": {
+              "$ref": "in.scene"
+            },
+            "rod": {
+              "$ref": "in.rod"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan_crossing"
+        ],
+        [
+          "plan_crossing",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "computed",
+          "infeasible"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "take_sg": {
+      "skill": "grasping-curve-point",
+      "inputs": {
+        "plan": "str",
+        "arm_id": "int",
+        "grip_open_m": "float",
+        "grip_close_m": "float"
+      },
+      "outputs": {},
+      "nodes": {
+        "close_on_cable": {
+          "type": "script",
+          "script": "scripts/run_legs.py",
+          "inputs": {
+            "plan": {
+              "$ref": "in.plan"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "legs": "enter,reach,take",
+            "open_before": false,
+            "close_after": true,
+            "grip_open_m": {
+              "$ref": "in.grip_open_m"
+            },
+            "grip_close_m": {
+              "$ref": "in.grip_close_m"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "close_on_cable"
+        ],
+        [
+          "close_on_cable",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "done"
+        ]
+      },
+      "on_error": "missed"
+    },
+    "carry_sg": {
+      "skill": "executing-held-object-motion",
+      "inputs": {
+        "plan": "str",
+        "arm_id": "int",
+        "grip_open_m": "float",
+        "grip_close_m": "float",
+        "q_support": "str",
+        "quat": "str",
+        "segment": "int"
+      },
+      "outputs": {},
+      "nodes": {
+        "stream_with_feed": {
+          "type": "script",
+          "script": "scripts/run_legs.py",
+          "inputs": {
+            "plan": {
+              "$ref": "in.plan"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "legs": "move,cross",
+            "open_before": false,
+            "close_after": false,
+            "grip_open_m": {
+              "$ref": "in.grip_open_m"
+            },
+            "grip_close_m": {
+              "$ref": "in.grip_close_m"
+            },
+            "q_support": {
+              "$ref": "in.q_support"
+            },
+            "quat": {
+              "$ref": "in.quat"
+            },
+            "segment": {
+              "$ref": "in.segment"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "stream_with_feed"
+        ],
+        [
+          "stream_with_feed",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "done"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "seat_sg": {
+      "skill": "seating-and-checking",
+      "inputs": {
+        "plan": "str",
+        "scene": "str",
+        "index": "int",
+        "arm_id": "int",
+        "grip_open_m": "float",
+        "grip_close_m": "float"
+      },
+      "outputs": {
+        "seated": {
+          "$ref": "press_to_seat.seated"
+        },
+        "fraction": {
+          "$ref": "press_to_seat.fraction"
+        }
+      },
+      "nodes": {
+        "press_to_seat": {
+          "type": "script",
+          "script": "scripts/seat_station.py",
+          "inputs": {
+            "plan": {
+              "$ref": "in.plan"
+            },
+            "scene": {
+              "$ref": "in.scene"
+            },
+            "index": {
+              "$ref": "in.index"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grip_open_m": {
+              "$ref": "in.grip_open_m"
+            },
+            "grip_close_m": {
+              "$ref": "in.grip_close_m"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "press_to_seat"
+        ],
+        [
+          "press_to_seat",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "done"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "release_sg": {
+      "skill": "releasing-routed-cable",
+      "inputs": {
+        "plan": "str",
+        "arm_id": "int",
+        "grip_open_m": "float",
+        "grip_close_m": "float"
+      },
+      "outputs": {},
+      "nodes": {
+        "open_and_clear": {
+          "type": "script",
+          "script": "scripts/run_legs.py",
+          "inputs": {
+            "plan": {
+              "$ref": "in.plan"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "legs": "clear,retreat",
+            "open_before": true,
+            "close_after": false,
+            "grip_open_m": {
+              "$ref": "in.grip_open_m"
+            },
+            "grip_close_m": {
+              "$ref": "in.grip_close_m"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open_and_clear"
+        ],
+        [
+          "open_and_clear",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "done"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "verify_vision_sg": {
+      "skill": "verifying-routing-state",
+      "inputs": {
+        "scene": "str"
+      },
+      "outputs": {},
+      "nodes": {
+        "measure_route": {
+          "type": "script",
+          "script": "scripts/verify_weave_vision.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "measure_route"
+        ],
+        [
+          "measure_route",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "exit",
+        "success_values": [
+          "woven",
+          "short"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "anchor_sg": {
+      "skill": "supporting-cable-run",
+      "inputs": {
+        "scene": "str"
+      },
+      "outputs": {
+        "segment": {
+          "$ref": "take_far_end.segment"
+        },
+        "q_support": {
+          "$ref": "take_far_end.q_support"
+        },
+        "quat": {
+          "$ref": "take_far_end.quat"
+        }
+      },
+      "nodes": {
+        "take_far_end": {
+          "type": "script",
+          "script": "scripts/anchor_far_end.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "take_far_end"
+        ],
+        [
+          "take_far_end",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "anchored"
+        ]
+      },
+      "on_error": "unanchored"
+    },
+    "plug_sg": {
+      "skill": "terminating-the-run",
+      "inputs": {
+        "scene": "str",
+        "arm_id": "int",
+        "grip_open_m": "float",
+        "grip_close_m": "float"
+      },
+      "outputs": {
+        "port": {
+          "$ref": "carry_into_port.port"
+        }
+      },
+      "nodes": {
+        "carry_into_port": {
+          "type": "script",
+          "script": "scripts/plug_port.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            },
+            "arm_id": {
+              "$ref": "in.arm_id"
+            },
+            "grip_open_m": {
+              "$ref": "in.grip_open_m"
+            },
+            "grip_close_m": {
+              "$ref": "in.grip_close_m"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "carry_into_port"
+        ],
+        [
+          "carry_into_port",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "exit",
+        "success_values": [
+          "plugged"
+        ]
+      },
+      "on_error": "unplugged"
+    },
+    "restore_sg": {
+      "skill": "restoring-displaced-seats",
+      "inputs": {
+        "scene": "str"
+      },
+      "outputs": {
+        "repairs": {
+          "$ref": "repair.repairs"
+        }
+      },
+      "nodes": {
+        "repair": {
+          "type": "script",
+          "script": "scripts/restore_seats.py",
+          "inputs": {
+            "scene": {
+              "$ref": "in.scene"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "repair"
+        ],
+        [
+          "repair",
+          "END"
+        ]
+      ],
+      "conditional_edges": {},
+      "exit": {
+        "router_field": "exit",
+        "success_values": [
+          "checked"
+        ]
+      },
+      "on_error": "unobserved"
+    }
+  }
+}

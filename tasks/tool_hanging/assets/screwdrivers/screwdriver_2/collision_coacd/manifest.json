@@ -1,0 +1,92 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "assets/tool_hanging/screwdrivers/screwdriver_2/screwdriver_2.obj",
+  "source_vertices": 75173,
+  "source_triangles": 117074,
+  "source_watertight": false,
+  "parameters": {
+    "threshold": 0.04,
+    "max_convex_hull": 24,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 50,
+    "resolution": 800,
+    "mcts_nodes": 10,
+    "mcts_iterations": 60,
+    "mcts_max_depth": 3,
+    "merge": true,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "holder_opening_clearance_validation": null,
+  "hulls": [
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_2/collision_coacd/hull_00.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.09947737455368043,
+          -0.008530423045158386,
+          -0.002579915523529053
+        ],
+        [
+          -0.00921459197998047,
+          0.000246201828122139,
+          0.007318808138370514
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_2/collision_coacd/hull_01.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          -0.00920182764530182,
+          -0.015168303251266481,
+          -0.012710724771022797
+        ],
+        [
+          0.030953532457351687,
+          0.011925392597913743,
+          0.013248516619205475
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_2/collision_coacd/hull_02.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.030962210893630982,
+          -0.0178823858499527,
+          -0.017253264784812927
+        ],
+        [
+          0.07971658110618592,
+          0.018054676055908204,
+          0.017128989100456238
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/screwdrivers/screwdriver_2/collision_coacd/hull_03.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds": [
+        [
+          0.08034582138061525,
+          -0.015086588263511658,
+          -0.0163487583398819
+        ],
+        [
+          0.10083731412887574,
+          0.01645292341709137,
+          0.016147741675376893
+        ]
+      ]
+    }
+  ]
+}

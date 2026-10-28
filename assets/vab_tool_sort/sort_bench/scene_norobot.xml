@@ -1,0 +1,137 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+
+  <asset>
+  <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    
+    <texture file="../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    
+    <texture file="../assets/light-wood.png" type="2d" name="tex-light-wood" />
+    <texture file="../assets/dark-wood.png" type="2d" name="tex-dark-wood" />
+    <material name="light-wood" reflectance="0" texrepeat="15 15" texture="tex-light-wood" texuniform="true" />
+    <material name="dark-wood" reflectance="0" texrepeat="5 5" texture="tex-dark-wood" texuniform="true" />
+  <texture name="tex-concrete" type="2d" file="../assets/gray-plaster.png" /><texture name="tex-steel-plate" type="2d" file="../assets/steel-scratched.png" /><material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" /><texture name="bin2_label0_tex" type="2d" file="../assets/bin2_0_adjustable_wrench.png" /><material name="bin2_label0_mat" texture="bin2_label0_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label1_tex" type="2d" file="../assets/bin2_1_slotted_screwdriver.png" /><material name="bin2_label1_mat" texture="bin2_label1_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label2_tex" type="2d" file="../assets/bin2_2_tape_measure.png" /><material name="bin2_label2_mat" texture="bin2_label2_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="bin2_label3_tex" type="2d" file="../assets/bin2_3_insulating_tape.png" /><material name="bin2_label3_mat" texture="bin2_label3_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" /><texture name="adjustable_wrench_0_adjustable_wrench_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="adjustable_wrench_0_adjustable_wrench_mat" texture="adjustable_wrench_0_adjustable_wrench_tex" specular="0.2" shininess="0.1" />
+    <mesh name="adjustable_wrench_0_adjustable_wrench_mesh" file="../assets/adjustable_wrench.obj" />
+  <texture name="adjustable_wrench_1_adjustable_wrench_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="adjustable_wrench_1_adjustable_wrench_mat" texture="adjustable_wrench_1_adjustable_wrench_tex" specular="0.2" shininess="0.1" />
+    <mesh name="adjustable_wrench_1_adjustable_wrench_mesh" file="../assets/adjustable_wrench.obj" />
+  <texture name="slotted_screwdriver_0_slotted_screwdriver_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="slotted_screwdriver_0_slotted_screwdriver_mat" texture="slotted_screwdriver_0_slotted_screwdriver_tex" specular="0.2" shininess="0.1" />
+    <mesh name="slotted_screwdriver_0_slotted_screwdriver_mesh" file="../assets/slotted_screwdriver.obj" />
+  <texture name="slotted_screwdriver_1_slotted_screwdriver_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="slotted_screwdriver_1_slotted_screwdriver_mat" texture="slotted_screwdriver_1_slotted_screwdriver_tex" specular="0.2" shininess="0.1" />
+    <mesh name="slotted_screwdriver_1_slotted_screwdriver_mesh" file="../assets/slotted_screwdriver.obj" />
+  <texture name="tape_measure_0_tape_measure_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="tape_measure_0_tape_measure_mat" texture="tape_measure_0_tape_measure_tex" specular="0.2" shininess="0.1" />
+    <mesh name="tape_measure_0_tape_measure_mesh" file="../assets/tape_measure.obj" />
+  <texture name="tape_measure_1_tape_measure_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="tape_measure_1_tape_measure_mat" texture="tape_measure_1_tape_measure_tex" specular="0.2" shininess="0.1" />
+    <mesh name="tape_measure_1_tape_measure_mesh" file="../assets/tape_measure.obj" />
+  <texture name="insulating_tape_0_insulating_tape_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="insulating_tape_0_insulating_tape_mat" texture="insulating_tape_0_insulating_tape_tex" specular="0.2" shininess="0.1" />
+    <mesh name="insulating_tape_0_insulating_tape_mesh" file="../assets/insulating_tape.obj" />
+  <texture name="insulating_tape_1_insulating_tape_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="insulating_tape_1_insulating_tape_mat" texture="insulating_tape_1_insulating_tape_tex" specular="0.2" shininess="0.1" />
+    <mesh name="insulating_tape_1_insulating_tape_mesh" file="../assets/insulating_tape.obj" />
+  <texture name="distractor_phillips_screwdriver_0_phillips_screwdriver_tex" type="2d" file="../assets/diffuse.png" />
+    <material name="distractor_phillips_screwdriver_0_phillips_screwdriver_mat" texture="distractor_phillips_screwdriver_0_phillips_screwdriver_tex" specular="0.2" shininess="0.1" />
+    <mesh name="distractor_phillips_screwdriver_0_phillips_screwdriver_mesh" file="../assets/phillips_screwdriver.obj" />
+  <texture name="distractor_syringe_0_syringe_tex" type="2d" file="../assets/diffuse_2.png" />
+    <material name="distractor_syringe_0_syringe_mat" texture="distractor_syringe_0_syringe_tex" specular="0.2" shininess="0.1" />
+    <mesh name="distractor_syringe_0_syringe_mesh" file="../assets/syringe.obj" />
+  </asset>
+
+  <visual>
+    <map znear="0.001" />
+  </visual>
+
+  <worldbody>
+  <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" material="light-wood" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+        
+        </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+        <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+        
+        <geom name="bin2_label0" type="box" pos="-0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label0_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label1" type="box" pos="0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label1_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label2" type="box" pos="-0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label2_mat" contype="0" conaffinity="0" group="1" /><geom name="bin2_label3" type="box" pos="0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label3_mat" contype="0" conaffinity="0" group="1" /></body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+  <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" /><geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" /><geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><body name="adjustable_wrench_0_main">
+        <geom pos="-0.00853420838 0.000256980898 -9.24226536e-05" type="box" mass="0.450000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="adjustable_wrench_0_g0" rgba="0.5 0 0 1" size="0.0063957444 0.0321355179 0.139194082" quat="0.546719862 0.454744408 -0.541942135 0.447887975" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="adjustable_wrench_0_adjustable_wrench_mesh" material="adjustable_wrench_0_adjustable_wrench_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="adjustable_wrench_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="adjustable_wrench_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="adjustable_wrench_0_default_site" /></body>
+      <body name="adjustable_wrench_1_main">
+        <geom pos="-0.00853420838 0.000256980898 -9.24226536e-05" type="box" mass="0.450000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="adjustable_wrench_1_g0" rgba="0.5 0 0 1" size="0.0063957444 0.0321355179 0.139194082" quat="0.546719862 0.454744408 -0.541942135 0.447887975" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="adjustable_wrench_1_adjustable_wrench_mesh" material="adjustable_wrench_1_adjustable_wrench_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="adjustable_wrench_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="adjustable_wrench_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="adjustable_wrench_1_default_site" /></body>
+      <body name="slotted_screwdriver_0_main">
+        <geom pos="6.03515938e-19 -6.9388939e-17 -2.52578773e-19" type="box" mass="0.100000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="slotted_screwdriver_0_g0" rgba="0.5 0 0 1" size="0.0122520002 0.0122520002 0.0918240026" quat="0.707106781 0.707106781 0 0" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="slotted_screwdriver_0_slotted_screwdriver_mesh" material="slotted_screwdriver_0_slotted_screwdriver_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="slotted_screwdriver_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="slotted_screwdriver_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="slotted_screwdriver_0_default_site" /></body>
+      <body name="slotted_screwdriver_1_main">
+        <geom pos="6.03515938e-19 -6.9388939e-17 -2.52578773e-19" type="box" mass="0.100000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="slotted_screwdriver_1_g0" rgba="0.5 0 0 1" size="0.0122520002 0.0122520002 0.0918240026" quat="0.707106781 0.707106781 0 0" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="slotted_screwdriver_1_slotted_screwdriver_mesh" material="slotted_screwdriver_1_slotted_screwdriver_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="slotted_screwdriver_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="slotted_screwdriver_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="slotted_screwdriver_1_default_site" /></body>
+      <body name="tape_measure_0_main">
+        <geom pos="-0.00185265638 -0.0192717161 -5.99556458e-05" type="box" mass="0.250000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="tape_measure_0_g0" rgba="0.5 0 0 1" size="0.0200050279 0.0513879949 0.0760189712" quat="0.166102545 0.687073258 -0.167736143 0.687171644" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="tape_measure_0_tape_measure_mesh" material="tape_measure_0_tape_measure_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="tape_measure_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="tape_measure_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="tape_measure_0_default_site" /></body>
+      <body name="tape_measure_1_main">
+        <geom pos="-0.00185265638 -0.0192717161 -5.99556458e-05" type="box" mass="0.250000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="tape_measure_1_g0" rgba="0.5 0 0 1" size="0.0200050279 0.0513879949 0.0760189712" quat="0.166102545 0.687073258 -0.167736143 0.687171644" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="tape_measure_1_tape_measure_mesh" material="tape_measure_1_tape_measure_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="tape_measure_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="tape_measure_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="tape_measure_1_default_site" /></body>
+      <body name="insulating_tape_0_main">
+        <geom pos="1.47305699e-18 1.42274727e-19 2.57305731e-20" type="box" mass="0.050000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="insulating_tape_0_g0" rgba="0.5 0 0 1" size="0.00655499985 0.0269590002 0.0269590002" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 0.000000 -0.000000" type="mesh" mesh="insulating_tape_0_insulating_tape_mesh" material="insulating_tape_0_insulating_tape_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="insulating_tape_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="insulating_tape_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="insulating_tape_0_default_site" /></body>
+      <body name="insulating_tape_1_main">
+        <geom pos="1.47305699e-18 1.42274727e-19 2.57305731e-20" type="box" mass="0.050000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="insulating_tape_1_g0" rgba="0.5 0 0 1" size="0.00655499985 0.0269590002 0.0269590002" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 0.000000 -0.000000" type="mesh" mesh="insulating_tape_1_insulating_tape_mesh" material="insulating_tape_1_insulating_tape_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="insulating_tape_1_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="insulating_tape_1_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="insulating_tape_1_default_site" /></body>
+      <body name="distractor_phillips_screwdriver_0_main">
+        <geom pos="7.30235045e-19 5.55111512e-17 -7.22757332e-20" type="box" mass="0.120000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="distractor_phillips_screwdriver_0_g0" rgba="0.5 0 0 1" size="0.0138119999 0.0124669997 0.0999950022" quat="0.707106781 0.707106781 0 0" />
+      <geom pos="0.000000 -0.000000 0.000000" type="mesh" mesh="distractor_phillips_screwdriver_0_phillips_screwdriver_mesh" material="distractor_phillips_screwdriver_0_phillips_screwdriver_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="distractor_phillips_screwdriver_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="distractor_phillips_screwdriver_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="distractor_phillips_screwdriver_0_default_site" /></body>
+      <body name="distractor_syringe_0_main">
+        <geom pos="-5.93676114e-15 9.36953917e-10 9.36959898e-10" type="box" mass="0.030000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="distractor_syringe_0_g0" rgba="0.5 0 0 1" size="0.00680099986 0.0117830001 0.075000003" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="distractor_syringe_0_syringe_mesh" material="distractor_syringe_0_syringe_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="distractor_syringe_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="distractor_syringe_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="distractor_syringe_0_default_site" /></body>
+      </worldbody>
+
+  <equality>
+  </equality>
+<tendon /><contact /></mujoco>

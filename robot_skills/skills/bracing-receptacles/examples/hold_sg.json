@@ -1,0 +1,142 @@
+{
+  "skill": "bracing-receptacles",
+  "inputs": {
+    "scene_receptacle_held": "bool",
+    "scene_barrel_point": "Vec3"
+  },
+  "outputs": {},
+  "nodes": {
+    "plan": {
+      "type": "script",
+      "script": "scripts/hold_plan.py",
+      "inputs": {
+        "receptacle_held": {
+          "$ref": "in.scene_receptacle_held"
+        },
+        "barrel_point": {
+          "$ref": "in.scene_barrel_point"
+        }
+      }
+    },
+    "open": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": 0.0475,
+        "arm": {
+          "$ref": "plan.hold_arm_name"
+        },
+        "settle_steps": 24
+      }
+    },
+    "stage": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "stage",
+        "arm_id": {
+          "$ref": "plan.hold_arm_id"
+        }
+      }
+    },
+    "seat": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "seat",
+        "arm_id": {
+          "$ref": "plan.hold_arm_id"
+        }
+      }
+    },
+    "close": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": {
+          "$ref": "plan.hold_grip_m"
+        },
+        "arm": {
+          "$ref": "plan.hold_arm_name"
+        },
+        "settle_steps": 48
+      }
+    },
+    "braced": {
+      "type": "noop"
+    },
+    "bare": {
+      "type": "noop"
+    },
+    "lift": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "lift",
+        "arm_id": {
+          "$ref": "plan.hold_arm_id"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "open",
+      "stage"
+    ],
+    [
+      "stage",
+      "seat"
+    ],
+    [
+      "seat",
+      "close"
+    ],
+    [
+      "braced",
+      "END"
+    ],
+    [
+      "bare",
+      "END"
+    ],
+    [
+      "START",
+      "plan"
+    ],
+    [
+      "close",
+      "lift"
+    ],
+    [
+      "lift",
+      "braced"
+    ]
+  ],
+  "conditional_edges": {
+    "plan": {
+      "router_field": "route",
+      "mapping": {
+        "held": "open",
+        "fixed": "bare"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "braced",
+      "bare"
+    ]
+  },
+  "on_error": "errored"
+}

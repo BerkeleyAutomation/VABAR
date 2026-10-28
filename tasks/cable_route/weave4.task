@@ -1,0 +1,243 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED -- there is no upstream .bddl for this task.
+;
+; provenance.tier: reproduction
+; source-of-record: VAB-industrial/newton, newton_toolkit/tasks/vab_cable_route/
+;                   {weave.py, suite.py, evaluator.py}
+;
+; THE REFERENCE MEMBER OF THE WEAVE FAMILY. Thirteen weaves ship and they are
+; one problem in thirteen arrangements: same rod material, same goal shape, same
+; seats, different places for the stations to stand and -- on one of them --
+; a different fixture to stand there. The shared design is written out HERE and
+; the other twelve state only what they change, so there is one copy of the
+; reasoning and twelve documents that cannot drift from it.
+;
+; WHAT THE PROBLEM IS. The wrap moves a rod and winds it onto one peg. This is a
+; ROUTE: the cable starts nearly straight and 100 mm short of a four-station
+; line, and must finish threaded between them, alternating sides.
+;
+; The reference ships no success predicate for any cable variant, so the goal is
+; designed -- but its one free number is pinned to geometry rather than tuned. A
+; seated cable rests against the fixture's 4.75 mm shaft, so a 3.5 mm rod sits
+; 8.25 mm from the axis; it starts 100 mm away. A 45 mm seat sits in that gap,
+; nearer the seated end, so "dragged past and abandoned" does not score.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_FOUR_PEGS)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the four pegs, alternating sides)
+
+  ; The cell, the robot, the coupled arrangement wrap stages and the episode
+  ; are the suite's; only what this arrangement changes is stated here.
+  (:staging
+    ; Named like any other rig, and registered in staging.py aimed at the layout
+    ; assets/layout.py holds: the wrap's rig is framed on the other end of this
+    ; bench, and this one looks at this variant's own stations. A rig tracking
+    ; computed coordinates is registered under this name, reading the computation.
+    (:cameras cable_weave4@v1)
+    ; Three crossings at ~200 steps each, plus the settle and the retreat.
+    (:max-steps 6000)
+    ; THE ROD ARRIVES DIFFERENTLY EVERY EPISODE. `staging:CABLE_BOW` draws four
+    ; signed unit fractions -- a bow, a lateral shift, an in-plane yaw and a
+    ; second harmonic -- and the rod's own spec says how many millimetres each
+    ; is worth (assets/cable.py). The board does not move; a rod that arrives
+    ; dead straight in the same place every time lets a policy be right about
+    ; the first grasp by remembering an x, and nothing in the score
+    ; distinguishes that from seeing one until the rod bends.
+    ;
+    ; All four are in the spawn GEOMETRY, so an episode is a rebuild rather than
+    ; a re-pose -- see model_key_fields beside the sampler.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  ; A 0.80 m rod at 3.5 mm in 42 capsules, laid 100 mm short of the stations at
+  ; t = 0 -- `cable_rod` thinned to bend around the F1's shaft and cut to the
+  ; route. The type names the placed record rather than the family's rod: a
+  ; record's factory answers for one rod at one place, and this document's rod
+  ; is 0.80 m where weave6's is 1.15 m.
+  (:objects
+    cable - weave4_cable
+  )
+
+  (:fixtures
+    ; ManipulationNet's F1, and it is a SPOOL rather than a post: 12.5 mm
+    ; flanges top and bottom with a 17 mm groove around a 4.75 mm shaft. That
+    ; choice is the difference between a weave that holds and one that does not.
+    ; A cable laid against a plain post is held there by nothing -- it rides up
+    ; under tension and lifts off the top -- while a cable in a groove is
+    ; captured between two flanges. The task is what happens after the hand lets
+    ; go, so the fixture that retains a route is the fixture this asks for.
+    ;
+    ; All four are load-bearing: the rod is held between each adjacent pair, so
+    ; a document naming only some of them would describe a scene that cannot
+    ; hold a weave.
+    ;
+    ; Each type is `cable_peg_round` placed at one of this layout's stations --
+    ; minted in assets/layout.py from the spool's own declaration, so `peg0.axis`
+    ; is the same feature here as in every sibling. A document names what a thing
+    ; is; where it stands is the asset's arithmetic, and the four layouts differ
+    ; only there.
+    peg0 - weave4_peg0
+    peg1 - weave4_peg1
+    peg2 - weave4_peg2
+    peg3 - weave4_peg3
+  )
+
+  ; -------------------------------------------------------------------------
+  ; THE SEATS, one per station, and they are where this document says what a
+  ; weave IS. Each is a box in its own peg's frame, on the side that station
+  ; requires: -1 (near, robot side) for peg0 and peg2, +1 (far) for peg1 and
+  ; peg3.
+  ;
+  ; ALTERNATING is the whole content. Without the side, a cable dragged into a
+  ; heap against the line scores four out of four -- which is exactly what the
+  ; reference evaluator says its side test exists to prevent.
+  ;
+  ; Each box runs from 3 mm off the axis -- inside the 4.75 mm shaft, so a
+  ; seated rod at 8.25 mm is well within it -- out to 45 mm, and +/- 35 mm along
+  ; the line. The stations stand 155 mm apart, so the boxes are two seat widths
+  ; clear of each other and a segment counted for one station is not also
+  ; counted for its neighbour. That clearance is what set the pitch: at the
+  ; 70 mm this family started on, adjacent boxes met exactly.
+  ;
+  ; A box rather than the reference's radius-and-sign, because a region is the
+  ; vocabulary this stack already has for "here, and not there", and the two
+  ; agree everywhere it matters: the corners a box adds sit beyond the pitch,
+  ; where a neighbouring seat has already claimed the rod.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3 (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+  )
+
+  ; NO INIT CONSTRAINT, and this is a deliberate departure from `wrap`.
+  ;
+  ; `wrap` opens with its second hand already closed on the rod: its start
+  ; state is a robot posture, verified by `anchor-held`. The weaves did the
+  ; same, inherited rather than chosen, and it meant the support arm began
+  ; every episode in a solved contortion that differed with the rod's length.
+  ;
+  ; They start at the embodiment's declared home instead, both arms, touching
+  ; nothing. What that costs is real and is the point: the reference kept its
+  ; anchor because without one the whole rod follows the working hand off the
+  ; first station. Taking the far end is now something a POLICY does on its own
+  ; first move, which is where a choice about how to hold the work belongs.
+  (:init)
+
+  ; -------------------------------------------------------------------------
+  ; TWO GROUPS UNDER worst_of, and the grouping is the reward design.
+  ;
+  ; `worst_of` scores the weaker group and requires both, so:
+  ;
+  ;   * A DO-NOTHING POLICY SCORES ZERO. At t = 0 every station reads the
+  ;     correct side already -- the cable lies on the near side of all four --
+  ;     but none is seated, so the station group is 0/4 while release-and-rest
+  ;     is 2/2. The min is 0. A flat conjunction of these six clauses would have
+  ;     paid 0.333 for standing still, which is the failure adding_a_task.md
+  ;     names.
+  ;
+  ;     AGAINST THE BOW ALONE, which is the term the spawn line was sized
+  ;     against. This layout's near row stands at x = 0.5200, so its near-side
+  ;     seat boxes begin at 0.4750 and a rod bowed 20 mm off a 0.42 spawn
+  ;     reaches 0.440, clear by 35.0 mm. Against the WHOLE spawn envelope --
+  ;     bow, second harmonic and shift, all at an extreme and aligned -- the
+  ;     worst capsule reaches 0.480 and is 5.0 mm inside that box edge, and
+  ;     `staging:CABLE_BOW` has no clearance guard the way `WEAVE_RIGID` does.
+  ;     What that envelope is and is not is written up on WEAVE_CABLE_WAVE in
+  ;     assets/cable.py; eleven of the thirteen layouts are inside it and no
+  ;     rollout has measured an idle score at these constants.
+  ;
+  ;   * At the moment the verdict is READ -- hand off, cable stopped -- the
+  ;     second group is 1.0 and the score reduces to the fraction of stations
+  ;     seated. That is the reference's number exactly: "wove two, dropped it,
+  ;     and the third came off the peg" reads 0.5 rather than nothing.
+  ;
+  ; NOTHING LATCHES, which is `cable_route`'s rule for both existing variants
+  ; and is sharper here than anywhere: this rod stores real bend energy and a
+  ; weave that springs apart is scored where it ends up, not where it once was.
+  ;
+  ; THE 0.047 IS TWO SEGMENTS OF FORTY-TWO, and it is a share because that is
+  ; what `containment` reports for a chain: the fraction of the whole rod inside
+  ; the box, not a count. The reference's predicate is "SOME capsule", which
+  ; would be 1/42 = 0.024. This asks for two, and the reason is not caution --
+  ; one capsule inside a seat is a rod passing the corner of the box, two
+  ; consecutive is a rod bent around the shaft, and the second is the thing
+  ; being scored. The margin either side is real: this rod's segment pitch is
+  ; 19 mm (0.80 m over 42) against a 70 mm seat, so a genuinely seated rod
+  ; presents three or four segments (0.071-0.095) while a graze presents one
+  ; (0.024). Every variant with a rod of its own restates this share against its
+  ; own capsule count rather than copying the number.
+  ;
+  ; Not `> 0.0`, which is what this said first: the goal linter refuses a
+  ; comparison a non-negative measure cannot fail, and it is right to -- the
+  ; clause read as a predicate and evaluated as a satisfied conjunct.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable seat2) 0.047)
+        (>= (containment cable seat3) 0.047)
+      )
+      (And
+        ; Let go. Against the NEAREST segment, because release is a claim about
+        ; the whole rod -- a hand off the middle but closed on one end has not
+        ; released.
+        (> (tcp-distance cable) 0.05)
+        ; Still moving is not woven: it has not chosen a side yet. The mean of
+        ; the segment SPEEDS, not the speed of the mean -- a rod mid-carry has
+        ; segments going opposite ways and its centroid barely moves.
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  ; -------------------------------------------------------------------------
+  ; The share, over the goal above -- so the two groups reach the reward the way
+  ; they reach the verdict, and there is no second opinion about what counts.
+
+  ; -------------------------------------------------------------------------
+  ; Recorded every step, gating nothing.
+  ;
+  ; `straightness` is the one worth watching: these are the only cable variants
+  ; that START straight, so it runs from ~1.0 at t = 0 down as the route is
+  ; taken up, and a run ending near 1.0 wove nothing however the seats read.
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine that runs anywhere the scene builds,
+  ; an oracle graph that runs the same plan through the policy runtime, and a
+  ; vision graph that runs it off the `cable` camera instead -- SAM3 for the rod
+  ; and the spools, TrackDLO for the centreline, the same planner behind them.
+  ; See graphs/weave/README.md for what each has been measured at.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial/newton newton_toolkit/tasks/vab_cable_route at its defaults")
+    (:note "0.80 m 42-capsule rod at 7 mm gauge, four ManipulationNet F1 spools on a 155 mm
+            pitch with alternating required sides, the far end taken by the support arm on the
+            policy's own first move. The reference stood this on 13 mm procedural posts; the
+            vendored F1 replaces them, which moves the seated distance from 18 mm to 8.25 mm
+            and is why the seats reach in to 3 mm. The pitch is set by the seats rather than by
+            the cable: two stations closer than 70 mm have overlapping boxes, and 155 leaves a
+            seat's width either side of that floor. The layout is 60 mm toward the working arm
+            because this task is
+            one-armed by geometry -- the other hand pins the cable -- and a centred four-peg
+            line put its last station 47 mm outside the right arm's envelope. The reference
+            ships no success condition; the seats and their 45 mm reach are designed here,
+            pinned to the 9.75 mm seated / 80 mm at-rest gap rather than fitted to a run. No
+            scripted routine is ported: the reference's own does not reliably solve this
+            scene, retaining 1 and 2 of 4 stations across two runs of the identical seed.")
+  )
+)

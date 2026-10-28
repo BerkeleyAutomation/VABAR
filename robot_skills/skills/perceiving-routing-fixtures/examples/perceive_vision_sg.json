@@ -1,0 +1,59 @@
+{
+  "skill": "perceiving-routing-fixtures",
+  "inputs": {},
+  "outputs": {
+    "scene": {
+      "$ref": "read.scene"
+    },
+    "stations": {
+      "$ref": "read.stations"
+    },
+    "body": {
+      "$ref": "read.body"
+    }
+  },
+  "nodes": {
+    "read": {
+      "type": "script",
+      "script": "scripts/perceive_weave_vision.py",
+      "inputs": {}
+    },
+    "found": {
+      "type": "noop"
+    },
+    "not_found": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "read"
+    ],
+    [
+      "found",
+      "END"
+    ],
+    [
+      "not_found",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "read": {
+      "router_field": "route",
+      "mapping": {
+        "found": "found",
+        "not_found": "not_found"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "found",
+      "not_found"
+    ]
+  },
+  "on_error": "errored"
+}

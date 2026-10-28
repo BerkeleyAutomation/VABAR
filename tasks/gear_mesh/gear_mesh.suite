@@ -1,0 +1,178 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; What every gear_mesh variant shares, stated once: the cell, the arm, the
+; physics, the cameras, the episode count and the routine. Each .task beside
+; this file inherits it and says only what makes it a tier -- its gears, its
+; goal and its step budget.
+;
+; The mat and the board are NOT here, deliberately. Every goal clause names the
+; board, and a document is read on its own by the gauntlet and the exporter --
+; both typecheck the .task alone, without merging this file -- so the fixtures
+; a document's clauses refer to stay declared in the document that refers to
+; them. What is shared is scenery nothing names, and this suite has none.
+; ---------------------------------------------------------------------------
+
+(define (suite gear_mesh)
+
+  (:language Mesh a train of involute spur gears onto an assembly board and
+             press the start button -- the board is scored on whether every
+             gear then turns, on a single-arm Panda.)
+
+  (:staging
+    ; bench_075 with a light-grey top (and the mat is pale too, assets/layout.py):
+    ; the parts are small and metal, and on the palette's dark slab the frame
+    ; read as a dark grey room. Same geometry, same surface height.
+    (:scene bench_075_light)
+    ; The 2F-85, welded on in place of the Franka hand. `panda_robotiq` is the
+    ; same arm at the same pedestal with its own hand cut out, and the hand is
+    ; the Menagerie 2f85.xml as physics: two driven revolutes, two four-bar
+    ; loops closed by <connect> equalities, box pads at mu 0.7 with priority 1
+    ; (so pad-on-tooth contacts take the pad's friction, as MuJoCo does), the
+    ; tooth prisms met under multiccd like every other mesh pair here.
+    ;
+    ; MEASURED ON THIS PAIRING (2026-09-09, gearmesh-easy-single-01):
+    ; * The pads swing on the linkage, so how far they sit past the tool centre
+    ;   is not one number: 5.9 mm at full open, 11.5 mm at the 67 mm pre-open a
+    ;   20-tooth gear gets, 15-16 mm closed on it. `robot.get_gripper` reports
+    ;   the live figure as `tip_reach_m`; the graph reads it rather than a
+    ;   stated constant, and never calibrates by pushing the pads into the mat
+    ;   -- a vertical push at the fingertips folds the passive four-bar (the
+    ;   adaptive mode: coupler and spring link off their stops, follower to its
+    ;   limit) and the tool centre travels 19 mm further before anything stalls.
+    ; * Closed on a gear at the hand's own gains (ke 20, kd 1 per driver) the
+    ;   pads hold it with about 10 N, 0.8 mm into the tooth tips, and an 80 mm
+    ;   lift loses 0.7 mm; at ke 200 the force is 50-60 N and the lift slips
+    ;   9 mm; at ke 1000 it is 380-450 N, the gear tilts 20 degrees and is flung
+    ;   at the lift; at the 4000/100 the Franka hand ran here the jaws slam shut
+    ;   in ten steps and throw the gear across the bench before they touch it.
+    ;   So no gripper-actuation stanza: a torque gain per radian is not a force
+    ;   gain per metre, and the hand's own is what the spec records.
+    (:embodiment panda_robotiq)
+    (:arms 1)
+    (:control-mode joint_position)
+    ; Tooth against tooth is a mesh-mesh contact two millimetres across, so the
+    ; multi-point manifold is the whole task and the contact gap is coupled to
+    ; the tooth profile rather than free. See tasks/gear_mesh/staging.py.
+    (:physics gear_mesh_960hz@v1)
+    (:cameras gear_mesh_views@v2)
+    ; Twelve layouts: where the loose gears wait, and how they are turned. The
+    ; first randomised sampler in this corpus -- assets/layout.py, which also
+    ; says what a sampler structurally cannot vary here (a size, or a count).
+    (:episodes (:count 12) (:seed 0) (:sampler assets.layout:scatter_and_clock))
+    ; usbc's, polish's and box_decant's stiffened servos, for their reason:
+    ; lowering a bore over a peg with 0.3 mm of radial clearance is task-space
+    ; positioning under contact, and at the MJCF's own gain the TCP lags
+    ; further than the fit is wide.
+    (:arm-actuation (:ke 1600) (:kd 70))
+  )
+
+  ; -------------------------------------------------------------------------
+  ; A routine, and one graph. The routine is open-loop by construction -- every
+  ; target is a peg whose position the board derives, so there is nothing to
+  ; poll. The graph is what the routine could not be: it finds the board and the
+  ; gears with the overhead camera alone (SAM3 through the shared tool bundle,
+  ; --perception vision --no-privileged --renderer tiled), and it retries a
+  ; gear that lands on a tooth. Declared here so every variant, drawn or
+  ; hand-written, accepts it.
+  ; The Franka hand this suite was first written against, as a host rather
+  ; than the native pairing. It stands and the graph runs on it, but the finger
+  ; gains it was measured under (ke 4000, kd 100 per metre; the hand's own 1500
+  ; let a carried gear slip 6 mm) cannot be stated on a host row, so its
+  ; numbers recorded for the round-1/2 evaluations are the last taken before the switch.
+  (:hosts
+    (:host (:embodiment panda)
+           (:graphs gap_perception)
+           (:notes "compiles; the round-1/2 evaluation numbers
+                    were taken on it under (:gripper-actuation (:ke 4000) (:kd 100)),
+                    which a host row cannot carry; unmeasured at the hand's own gain")))
+
+  (:artifacts
+    (:routine "routine:RoutineGearMesh")
+    (:graph gap_perception "graphs/gap_perception")
+    ; The house room with the lab panel turned up: the bench and mat are dark
+    ; fixture greys and read dark under a path tracer calibrated to the tiled
+    ; frame. Only the path tracer reads the key. See assets/look.py.
+    (:render "assets.look:GEAR_MESH_LOOK")
+  )
+
+  ; The tiers, easiest first, then the drawn levels. Each document's :objects
+  ; say its stations in order; assets/layout.py's STATIONS table restates them,
+  ; because the poses each document records are written from it.
+  ;
+  ; THE DRAWN LEVELS ARE A DISTRIBUTION, NOT A LAYOUT. gearmesh-<level>-<family>-NN
+  ; is one draw of tools/build_gear_scenes.py: a one-, two- or three-station
+  ; board (difficulty.py says which level that is) whose plate centre, chain
+  ; turn, gear spots and clocks were drawn at the seed the document's header
+  ; states, and kept only if a hand can work the layout. One episode each --
+  ; the recorded draw is the scene -- so a score on the level is a score on the
+  ; draw rather than on a hundred seeds of one arrangement. The rows of record
+  ; are assets/variants.json; the block below is written from them, and the
+  ; loader refuses a tree where the two disagree.
+  (:variants pair train quad quad_seeded
+             gearmesh-easy-single-01 gearmesh-easy-single-02 gearmesh-easy-single-03 gearmesh-easy-single-04
+             gearmesh-easy-single-05 gearmesh-easy-single-06 gearmesh-easy-single-07 gearmesh-easy-single-08
+             gearmesh-easy-single-09 gearmesh-easy-single-10 gearmesh-easy-single-11 gearmesh-easy-single-12
+             gearmesh-easy-single-13 gearmesh-easy-single-14 gearmesh-easy-single-15 gearmesh-easy-single-16
+             gearmesh-easy-single-17 gearmesh-easy-single-18 gearmesh-easy-single-19 gearmesh-easy-single-20
+             gearmesh-easy-single-21 gearmesh-easy-single-22 gearmesh-easy-single-23 gearmesh-easy-single-24
+             gearmesh-easy-single-25 gearmesh-easy-single-26 gearmesh-easy-single-27 gearmesh-easy-single-28
+             gearmesh-easy-single-29 gearmesh-easy-single-30 gearmesh-easy-single-31 gearmesh-easy-single-32
+             gearmesh-easy-single-33 gearmesh-easy-single-34 gearmesh-easy-single-35 gearmesh-easy-single-36
+             gearmesh-easy-single-37 gearmesh-easy-single-38 gearmesh-easy-single-39 gearmesh-easy-single-40
+             gearmesh-easy-pair-01 gearmesh-easy-pair-02 gearmesh-easy-pair-03 gearmesh-easy-pair-04
+             gearmesh-easy-pair-05 gearmesh-easy-pair-06 gearmesh-easy-pair-07 gearmesh-easy-pair-08
+             gearmesh-easy-pair-09 gearmesh-easy-pair-10 gearmesh-easy-pair-11 gearmesh-easy-pair-12
+             gearmesh-easy-pair-13 gearmesh-easy-pair-14 gearmesh-easy-pair-15 gearmesh-easy-pair-16
+             gearmesh-easy-pair-17 gearmesh-easy-pair-18 gearmesh-easy-pair-19 gearmesh-easy-pair-20
+             gearmesh-easy-pair-21 gearmesh-easy-pair-22 gearmesh-easy-pair-23 gearmesh-easy-pair-24
+             gearmesh-easy-pair-25 gearmesh-easy-pair-26 gearmesh-easy-pair-27 gearmesh-easy-pair-28
+             gearmesh-easy-pair-29 gearmesh-easy-pair-30 gearmesh-easy-pair-31 gearmesh-easy-pair-32
+             gearmesh-easy-pair-33 gearmesh-easy-pair-34 gearmesh-easy-pair-35 gearmesh-easy-pair-36
+             gearmesh-easy-pair-37 gearmesh-easy-pair-38 gearmesh-easy-pair-39 gearmesh-easy-pair-40
+             gearmesh-easy-pair-41 gearmesh-easy-pair-42 gearmesh-easy-pair-43 gearmesh-easy-pair-44
+             gearmesh-easy-pair-45 gearmesh-easy-pair-46 gearmesh-easy-pair-47 gearmesh-easy-pair-48
+             gearmesh-easy-pair-49 gearmesh-easy-pair-50 gearmesh-easy-pair-51 gearmesh-easy-pair-52
+             gearmesh-easy-pair-53 gearmesh-easy-pair-54 gearmesh-easy-pair-55 gearmesh-easy-pair-56
+             gearmesh-easy-pair-57 gearmesh-easy-pair-58 gearmesh-easy-pair-59 gearmesh-easy-pair-60
+             gearmesh-medium-train-001 gearmesh-medium-train-002 gearmesh-medium-train-003 gearmesh-medium-train-004
+             gearmesh-medium-train-005 gearmesh-medium-train-006 gearmesh-medium-train-007 gearmesh-medium-train-008
+             gearmesh-medium-train-009 gearmesh-medium-train-010 gearmesh-medium-train-011 gearmesh-medium-train-012
+             gearmesh-medium-train-013 gearmesh-medium-train-014 gearmesh-medium-train-015 gearmesh-medium-train-016
+             gearmesh-medium-train-017 gearmesh-medium-train-018 gearmesh-medium-train-019 gearmesh-medium-train-020
+             gearmesh-medium-train-021 gearmesh-medium-train-022 gearmesh-medium-train-023 gearmesh-medium-train-024
+             gearmesh-medium-train-025 gearmesh-medium-train-026 gearmesh-medium-train-027 gearmesh-medium-train-028
+             gearmesh-medium-train-029 gearmesh-medium-train-030 gearmesh-medium-train-031 gearmesh-medium-train-032
+             gearmesh-medium-train-033 gearmesh-medium-train-034 gearmesh-medium-train-035 gearmesh-medium-train-036
+             gearmesh-medium-train-037 gearmesh-medium-train-038 gearmesh-medium-train-039 gearmesh-medium-train-040
+             gearmesh-medium-train-041 gearmesh-medium-train-042 gearmesh-medium-train-043 gearmesh-medium-train-044
+             gearmesh-medium-train-045 gearmesh-medium-train-046 gearmesh-medium-train-047 gearmesh-medium-train-048
+             gearmesh-medium-train-049 gearmesh-medium-train-050 gearmesh-medium-train-051 gearmesh-medium-train-052
+             gearmesh-medium-train-053 gearmesh-medium-train-054 gearmesh-medium-train-055 gearmesh-medium-train-056
+             gearmesh-medium-train-057 gearmesh-medium-train-058 gearmesh-medium-train-059 gearmesh-medium-train-060
+             gearmesh-medium-train-061 gearmesh-medium-train-062 gearmesh-medium-train-063 gearmesh-medium-train-064
+             gearmesh-medium-train-065 gearmesh-medium-train-066 gearmesh-medium-train-067 gearmesh-medium-train-068
+             gearmesh-medium-train-069 gearmesh-medium-train-070 gearmesh-medium-train-071 gearmesh-medium-train-072
+             gearmesh-medium-train-073 gearmesh-medium-train-074 gearmesh-medium-train-075 gearmesh-medium-train-076
+             gearmesh-medium-train-077 gearmesh-medium-train-078 gearmesh-medium-train-079 gearmesh-medium-train-080
+             gearmesh-medium-train-081 gearmesh-medium-train-082 gearmesh-medium-train-083 gearmesh-medium-train-084
+             gearmesh-medium-train-085 gearmesh-medium-train-086 gearmesh-medium-train-087 gearmesh-medium-train-088
+             gearmesh-medium-train-089 gearmesh-medium-train-090 gearmesh-medium-train-091 gearmesh-medium-train-092
+             gearmesh-medium-train-093 gearmesh-medium-train-094 gearmesh-medium-train-095 gearmesh-medium-train-096
+             gearmesh-medium-train-097 gearmesh-medium-train-098 gearmesh-medium-train-099 gearmesh-medium-train-100)
+
+  (:provenance
+    (:source "Authored for this corpus, after nvidia-isaac/Isaac-cap's
+              `gear_insertion` -- three Factory gears placed on a plate and
+              scored SEATED AND STILL, at post offsets stated as constants. Two
+              things change. The peg spacing is DERIVED from the gears' pitch
+              radii, module * [z_a + z_b] / 2, so a board that does not mesh
+              cannot be authored, and the score is the assembly WORKING -- a
+              motor pinion drives the first station, and success is every gear
+              turning at its own ratio once the button latches, so a gear
+              missing from the middle stops everything downstream of it. Gears
+              are generated involute profiles decomposed into one convex prism
+              per tooth, because MuJoCo collides a mesh as its hull and a gear
+              imported whole is a disc. Physics regime probed before authoring:
+              see tasks/gear_mesh/rigs/gear_bench.py and tests/test_gear_mesh.py.")
+  )
+)

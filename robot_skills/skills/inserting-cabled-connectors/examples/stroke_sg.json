@@ -1,0 +1,317 @@
+{
+  "skill": "inserting-cabled-connectors",
+  "inputs": {
+    "mate_plug_point": "Vec3",
+    "mate_mouth_point": "Vec3",
+    "mate_bore_axis": "Vec3",
+    "scene_plug_yaw_deg": "float",
+    "scene_mouth_point": "Vec3",
+    "scene_bore_axis": "Vec3",
+    "scene_plug_half_h": "float",
+    "relook_body": "str",
+    "scene_receptacle_held": "bool",
+    "mate_plug_axis": "Vec3",
+    "mate_plug_up": "Vec3"
+  },
+  "outputs": {},
+  "nodes": {
+    "replan": {
+      "type": "script",
+      "script": "scripts/plan_stroke.py",
+      "inputs": {
+        "plug_point": {
+          "$ref": "in.mate_plug_point"
+        },
+        "mouth_point": {
+          "$ref": "in.mate_mouth_point"
+        },
+        "bore_axis": {
+          "$ref": "in.mate_bore_axis"
+        },
+        "yaw_deg": {
+          "$ref": "in.scene_plug_yaw_deg"
+        },
+        "label": "stroke",
+        "anchored": true,
+        "receptacle_held": {
+          "$ref": "in.scene_receptacle_held"
+        },
+        "plug_axis": {
+          "$ref": "in.mate_plug_axis"
+        },
+        "plug_up": {
+          "$ref": "in.mate_plug_up"
+        }
+      }
+    },
+    "back": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "replan.stages"
+        },
+        "stage": "back",
+        "arm_id": {
+          "$ref": "replan.arm_id"
+        }
+      }
+    },
+    "ease": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "insert",
+        "settle_steps": 24
+      }
+    },
+    "push": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "replan.stages"
+        },
+        "stage": "insert",
+        "arm_id": {
+          "$ref": "replan.arm_id"
+        }
+      }
+    },
+    "firm": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "insert",
+        "settle_steps": 36
+      }
+    },
+    "pick": {
+      "type": "script",
+      "script": "scripts/route_perception.py",
+      "inputs": {
+        "perception": {
+          "$ref": "in.relook_body"
+        }
+      }
+    },
+    "reseat_oracle": {
+      "type": "script",
+      "script": "scripts/relook_oracle.py",
+      "inputs": {
+        "scene_mouth_point": {
+          "$ref": "in.scene_mouth_point"
+        },
+        "scene_bore_axis": {
+          "$ref": "in.scene_bore_axis"
+        },
+        "scene_plug_half_h": {
+          "$ref": "in.scene_plug_half_h"
+        },
+        "label": "reseat"
+      }
+    },
+    "again_oracle": {
+      "type": "script",
+      "script": "scripts/plan_stroke.py",
+      "inputs": {
+        "plug_point": {
+          "$ref": "reseat_oracle.mate_plug_point"
+        },
+        "mouth_point": {
+          "$ref": "reseat_oracle.mate_mouth_point"
+        },
+        "bore_axis": {
+          "$ref": "reseat_oracle.mate_bore_axis"
+        },
+        "yaw_deg": {
+          "$ref": "in.scene_plug_yaw_deg"
+        },
+        "label": "reseat",
+        "anchored": true,
+        "retry_from": 0.0,
+        "axial_only": true,
+        "receptacle_held": {
+          "$ref": "in.scene_receptacle_held"
+        }
+      }
+    },
+    "seat_oracle": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "again_oracle.stages"
+        },
+        "stage": "insert",
+        "arm_id": {
+          "$ref": "again_oracle.arm_id"
+        }
+      }
+    },
+    "reseat_vision": {
+      "type": "script",
+      "script": "scripts/relook_vision.py",
+      "inputs": {
+        "scene_mouth_point": {
+          "$ref": "in.scene_mouth_point"
+        },
+        "scene_bore_axis": {
+          "$ref": "in.scene_bore_axis"
+        },
+        "scene_plug_half_h": {
+          "$ref": "in.scene_plug_half_h"
+        },
+        "label": "reseat"
+      }
+    },
+    "again_vision": {
+      "type": "script",
+      "script": "scripts/plan_stroke.py",
+      "inputs": {
+        "plug_point": {
+          "$ref": "reseat_vision.mate_plug_point"
+        },
+        "mouth_point": {
+          "$ref": "reseat_vision.mate_mouth_point"
+        },
+        "bore_axis": {
+          "$ref": "reseat_vision.mate_bore_axis"
+        },
+        "yaw_deg": {
+          "$ref": "in.scene_plug_yaw_deg"
+        },
+        "label": "reseat",
+        "anchored": true,
+        "retry_from": 0.0,
+        "axial_only": true,
+        "receptacle_held": {
+          "$ref": "in.scene_receptacle_held"
+        }
+      }
+    },
+    "seat_vision": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "again_vision.stages"
+        },
+        "stage": "insert",
+        "arm_id": {
+          "$ref": "again_vision.arm_id"
+        }
+      }
+    },
+    "release": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "open",
+        "settle_steps": 48
+      }
+    },
+    "retract": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "replan.stages"
+        },
+        "stage": "retract",
+        "arm_id": {
+          "$ref": "replan.arm_id"
+        }
+      }
+    },
+    "released": {
+      "type": "noop"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "replan"
+    ],
+    [
+      "back",
+      "ease"
+    ],
+    [
+      "ease",
+      "push"
+    ],
+    [
+      "push",
+      "firm"
+    ],
+    [
+      "firm",
+      "pick"
+    ],
+    [
+      "again_oracle",
+      "seat_oracle"
+    ],
+    [
+      "seat_oracle",
+      "release"
+    ],
+    [
+      "again_vision",
+      "seat_vision"
+    ],
+    [
+      "seat_vision",
+      "release"
+    ],
+    [
+      "release",
+      "retract"
+    ],
+    [
+      "retract",
+      "released"
+    ],
+    [
+      "released",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "replan": {
+      "router_field": "route",
+      "mapping": {
+        "planned": "back"
+      }
+    },
+    "reseat_oracle": {
+      "router_field": "route",
+      "mapping": {
+        "found": "again_oracle",
+        "lost": "release"
+      }
+    },
+    "reseat_vision": {
+      "router_field": "route",
+      "mapping": {
+        "found": "again_vision",
+        "lost": "release"
+      }
+    },
+    "pick": {
+      "router_field": "route",
+      "mapping": {
+        "oracle": "reseat_oracle",
+        "vision": "reseat_vision"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "released"
+    ]
+  },
+  "on_error": "errored"
+}

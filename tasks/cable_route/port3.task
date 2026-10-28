@@ -1,0 +1,130 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design -- the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor -- and port2.task for what the two ENDS are and why they are drawn
+; as fittings rather than as blocks.
+;
+; WHAT THIS ONE CHANGES against port2: three stations on weave3's irregular
+; board rather than two on a line. The question is still about the two ends;
+; how a LONG weave behaves between them is weave4's, and it is already answered.
+; At 12.6 degrees of turning this is the same shallow L1 board port2 is, which
+; is deliberate -- the pair differ in station count and in nothing else, so a
+; gap between their scores is a gap in how many crossings a plug has to survive.
+;
+; AND THE BOARD MOVES. port2 keeps its stations where the document declares
+; them and varies only the rod; this one is put down somewhere else every
+; episode -- yawed up to 15 degrees about its own centroid, translated, and each
+; station jittered -- with the port following the board and the anchor bracket
+; following the CABLE. That is the generalisation a real cell asks for first:
+; the fixture is bolted together and does not change, and where it gets put down
+; on the bench does.
+;
+; 30 episodes rather than 6 for the same reason. What this samples is placement,
+; and placement is where the variance is: over 30 vision trials `seat0` failed
+; 20 times while every other clause failed at most twice, and what predicted it
+; was one distance -- how far station 0 sits from where the rod spawns. See
+; RIGID_SHIFT_X in staging.py for the fit and for the window it set.
+; ---------------------------------------------------------------------------
+
+(define (problem ROUTE_THE_CABLE_ACROSS_THREE_PEGS_INTO_THE_PORT)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the three pegs and route its free end into the port)
+
+  (:staging
+    (:cameras cable_port3@v1)
+    ; Three crossings and a plug, on port2's per-crossing budget.
+    (:max-steps 6000)
+    ; The board is put down somewhere else every episode and the rod is laid
+    ; differently in front of it. Both change the MODEL -- the stations are
+    ; welded geometry and the four fractions are in the rod's spawn -- so an
+    ; episode is a rebuild rather than a re-pose.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:WEAVE_RIGID))
+  )
+
+  (:objects
+    cable - port3_cable
+  )
+
+  (:fixtures
+    peg0   - port3_peg0
+    peg1   - port3_peg1
+    peg2   - port3_peg2
+    ; Both ends of the run; see port2. The sampler moves these with what they
+    ; terminate -- the port with the board, the bracket with the cable's own
+    ; drawn tip -- through the same function that places them here.
+    anchor - port3_anchor
+    port   - port3_port
+  )
+
+  ; Sides -1, +1, -1: the outer two share a side, which is what makes this a
+  ; weave rather than a single hook. The seat boxes are weave4's, unchanged,
+  ; and being in each station's own frame is what lets the whole board be
+  ; yawed and translated without a number here moving.
+  (:regions
+    (seat0    (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1    (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2    (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (portbox  (:target port) (:ranges ((-0.045 -0.045  0.045 0.045))))
+  )
+
+  ; No init constraint: both arms start at the embodiment's own home, touching
+  ; nothing. Taking the far end is a policy's first move.
+  (:init)
+
+  ; Four clauses under one worst_of, so each station and the port are a quarter
+  ; of the route each. Idle is still 0: at t = 0 the rod lies on the robot's
+  ; side of the station line with its free end nowhere near the socket.
+  ;
+  ; The port asks for 0.071 of the rod where a seat asks 0.047 -- port2's
+  ; numbers on port2's rod, unchanged, because the two variants carry the same
+  ; 0.82 m cable at the same 68 capsules and a share that meant one thing there
+  ; means the same thing here.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable seat2) 0.047)
+        (>= (containment cable portbox) 0.071)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same graphs the weaves run; the port is one more station to them. See
+  ; port2.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "AUTHORED -- no upstream. weave3's irregular three-spool board, with a terminal
+              fitting added at each end of the run.")
+    (:note "Three F1 spools scattered off weave4's 155 mm line by up to 5 mm in x and 10 mm in
+            y, 12.6 deg of accumulated turning (L1) -- weave3's board exactly. The rod is
+            0.82 m at 68 capsules and the whole route, anchor to three seats to the port
+            mouth, measures 696 mm, so 124 mm is left over. The port stands 75 mm past the
+            last station and 61 mm out in x, which makes the final leg a 43 deg lead-out; at
+            70 deg the pull takes the last crossing off its spool, and WEAVE_PORT_STANDOFF
+            carries the four standoffs that was measured over. The support hand takes the rod
+            20 mm in from its own tip rather than at the family's 0.17 constant, which on this
+            rod is the difference between an anchor at the far end and two hands in one place
+            -- see weave_anchor_y. Every draw of the board is checked for reach, for the port
+            being inside the SUPPORT arm's band, for the two hands not crowding and for the
+            route still being a weave; see staging.py.")
+  )
+)

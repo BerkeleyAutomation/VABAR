@@ -1,0 +1,92 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; LEVEL 1 -- one hook, one object. See scissors.task for the family's design
+; (what `encloses`/`contact-force`/`speed` mean, why the goal is an `Or` over
+; both handle bows) and tasks/tool_hanging/task.py's LEVEL1_Y for how the hook
+; comes to be centred on the board instead of split left/right.
+; Does not touch scissors.task or any other existing document.
+;
+; The single object is scissor_pair_1: the original two-scissor task's first
+; object, with its task pose moved to the table centre x=0.600 m, y=0.
+; The shared narrowed YAM places each arm 170 mm from the centre, retaining
+; the original first scissor's arm-to-object distance without a task mount.
+; ---------------------------------------------------------------------------
+
+(define (problem TOOLHANGING-EASY-HANGSCISSORS-018)
+
+  (:domain tool_hanging)
+
+  (:language hang the scissors on the hook)
+
+  (:staging
+    (:scene tool_hanging_bench)
+    (:embodiment yam_tool_hanging (:work-arm left) (:support-arm right))
+    (:physics tool_hanging_480hz@v1)
+    (:cameras tool_hanging_views_level1@v2)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 70) (:sampler fixed))
+    (:max-steps 7000)
+  )
+
+  (:objects
+    scissors_1 - scissor_pair_1
+  )
+
+  (:fixtures
+    scissor_hook_1 - pegboard_hook
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (And
+        (Or
+          (encloses scissors_1.bow scissor_hook_1.shank)
+          (encloses scissors_1.bow_other scissor_hook_1.shank)
+        )
+        (>= (contact-force scissors_1 scissor_hook_1) 0.2)
+        (<= (speed scissors_1) 0.15)
+      )
+    )
+  )
+
+  (:reward (fraction))
+
+  (:observe
+    (encloses scissors_1.bow scissor_hook_1.shank)
+    (encloses scissors_1.bow_other scissor_hook_1.shank)
+  )
+
+  (:artifacts
+    (:routine "routine:HangScissorRoutineLevel1")
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_gt "graphs/gap_gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "A one-object, one-holder reduction of scissors.task, authored for
+              GaP graph testing. Scene, goal shape and features are
+              scissors.task's own -- only the count and the centring differ.")
+    (:note "HangScissorRoutineLevel1 trims HangScissorRoutine's job table to
+            this document's one scissors_1/scissor_hook_1 job. It uses the
+            original first scissor's SCISSOR_1_GRASP_CENTER_LOCAL and
+            SCISSOR_1_HANDLE_CENTER_LOCAL landmarks and inherits the original
+            procedure and 190 mm lift; the object and hook are both
+            at y=0 and the task uses the shared, unshifted YAM mount.
+            graphs/gt's next_job cursor is
+            data-driven off the goal tree (see tasks/tool_hanging/tools.py's
+            Job/jobs()) and needs no edit to run on one job instead of two.")
+  )
+
+
+  (:instance-layout
+    (:source-task tool_hanging/scissors_level1)
+    (:source-episode 70)
+    (:seed 70)
+    (:object-xform scissors_1 -0.004770606191394284 0.008952234036480176 0.009505050000000015 0.0 0.0 0.7071067811865476 0.7071067811865476)
+  )
+)

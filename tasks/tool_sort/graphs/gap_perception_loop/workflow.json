@@ -1,0 +1,862 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "tool_sort_gap_perception_loop",
+    "description": "Perceive a labelled sorting layout, then loop: match one visible source object to its labelled compartment, grasp it, place it, and look again -- until the source bin is empty. Any number of objects, and several may share one label."
+  },
+  "nodes": {
+    "layout": {
+      "type": "subgraph",
+      "ref": "layout_sg"
+    },
+    "pair": {
+      "type": "subgraph",
+      "ref": "pair_sg",
+      "inputs": {
+        "layout_json": {
+          "$ref": "layout.layout_json"
+        },
+        "destination_bounds_json": {
+          "$ref": "layout.destination_bounds_json"
+        },
+        "attempted_json": {
+          "$ref": "layout.attempted_json"
+        }
+      }
+    },
+    "grasp": {
+      "type": "subgraph",
+      "ref": "grasp_sg",
+      "inputs": {
+        "target_obb": {
+          "$ref": "pair.target_obb"
+        },
+        "target_cloud": {
+          "$ref": "pair.target_cloud"
+        },
+        "target_name": {
+          "$ref": "pair.target_name"
+        },
+        "bin_floor_z": {
+          "$ref": "layout.bin_floor_z"
+        }
+      }
+    },
+    "concave_grasp": {
+      "type": "subgraph",
+      "ref": "concave_grasp_sg",
+      "inputs": {
+        "target_obb": {
+          "$ref": "pair.target_obb"
+        },
+        "target_cloud": {
+          "$ref": "pair.target_cloud"
+        },
+        "target_name": {
+          "$ref": "pair.target_name"
+        },
+        "bin_floor_z": {
+          "$ref": "layout.bin_floor_z"
+        }
+      }
+    },
+    "verify": {
+      "type": "subgraph",
+      "ref": "verify_sg",
+      "inputs": {
+        "target_obb": {
+          "$ref": "pair.target_obb"
+        },
+        "target_name": {
+          "$ref": "pair.target_name"
+        },
+        "grasp_pose": {
+          "$ref": "grasp.grasp_pose"
+        },
+        "observed": {
+          "$ref": "grasp.observed"
+        }
+      }
+    },
+    "concave_verify": {
+      "type": "subgraph",
+      "ref": "verify_sg",
+      "inputs": {
+        "target_obb": {
+          "$ref": "pair.target_obb"
+        },
+        "target_name": {
+          "$ref": "pair.target_name"
+        },
+        "grasp_pose": {
+          "$ref": "concave_grasp.grasp_pose"
+        },
+        "observed": {
+          "$ref": "concave_grasp.observed"
+        }
+      }
+    },
+    "transport": {
+      "type": "subgraph",
+      "ref": "transport_sg",
+      "inputs": {
+        "container_obb": {
+          "$ref": "pair.container_obb"
+        },
+        "target_obb": {
+          "$ref": "pair.target_obb"
+        }
+      }
+    },
+    "recover": {
+      "type": "subgraph",
+      "ref": "recover_attempt_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "robot.open_gripper",
+          "inputs": {}
+        },
+        {
+          "tool": "robot.go_home",
+          "inputs": {}
+        }
+      ]
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "layout"
+    ]
+  ],
+  "conditional_edges": {
+    "layout": {
+      "router_field": "exit",
+      "mapping": {
+        "discovered": "pair",
+        "ambiguous": "abort"
+      }
+    },
+    "pair": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "grasp",
+        "finished": "done",
+        "retry": "pair",
+        "ambiguous": "abort"
+      }
+    },
+    "grasp": {
+      "router_field": "exit",
+      "mapping": {
+        "posed": "verify",
+        "failed": "concave_grasp"
+      }
+    },
+    "concave_grasp": {
+      "router_field": "exit",
+      "mapping": {
+        "posed": "concave_verify",
+        "failed": "recover"
+      }
+    },
+    "verify": {
+      "router_field": "exit",
+      "mapping": {
+        "held": "transport",
+        "missed": "recover",
+        "empty": "recover",
+        "failed": "recover"
+      }
+    },
+    "concave_verify": {
+      "router_field": "exit",
+      "mapping": {
+        "held": "transport",
+        "missed": "recover",
+        "empty": "recover",
+        "failed": "recover"
+      }
+    },
+    "transport": {
+      "router_field": "exit",
+      "mapping": {
+        "placed": "pair",
+        "blocked": "recover"
+      }
+    },
+    "recover": {
+      "router_field": "exit",
+      "mapping": {
+        "recovered": "pair",
+        "failed": "abort"
+      }
+    }
+  },
+  "subgraphs": {
+    "layout_sg": {
+      "skill": "perceiving-sorting-pairs",
+      "inputs": {},
+      "outputs": {
+        "layout_json": {
+          "$ref": "discover.layout_json"
+        },
+        "destination_bounds_json": {
+          "$ref": "discover.destination_bounds_json"
+        },
+        "attempted_json": {
+          "$ref": "discover.attempted_json"
+        },
+        "bin_floor_z": {
+          "$ref": "discover.bin_floor_z"
+        }
+      },
+      "nodes": {
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "discover": {
+          "type": "script",
+          "script": "scripts/discover_regions.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "layout_description": "the four-compartment destination sorting bin with printed labels",
+            "camera_name": "overhead",
+            "max_read_attempts": 3,
+            "seed_attempt_log": true
+          }
+        },
+        "discovered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "observe"
+        ],
+        [
+          "observe",
+          "discover"
+        ],
+        [
+          "discover",
+          "discovered"
+        ],
+        [
+          "discovered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "discovered"
+        ]
+      },
+      "on_error": "ambiguous"
+    },
+    "pair_sg": {
+      "skill": "perceiving-sorting-pairs",
+      "inputs": {
+        "layout_json": "string",
+        "destination_bounds_json": "string",
+        "attempted_json": "string"
+      },
+      "outputs": {
+        "target_name": {
+          "$ref": "select.target_name"
+        },
+        "target_label": {
+          "$ref": "select.target_label"
+        },
+        "target_obb": {
+          "$ref": "select.target_obb"
+        },
+        "target_mask": {
+          "$ref": "select.target_mask"
+        },
+        "target_cloud": {
+          "$ref": "select.target_cloud"
+        },
+        "container_obb": {
+          "$ref": "select.destination_obb"
+        },
+        "attempted_json": {
+          "$ref": "select.attempted_json"
+        }
+      },
+      "nodes": {
+        "move_aside": {
+          "type": "script",
+          "script": "scripts/hover_aside.py",
+          "inputs": {}
+        },
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "select": {
+          "type": "script",
+          "script": "scripts/select_pair.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe"
+            },
+            "instruction": "sort every tool out of the source bin into the destination compartment whose printed label names it",
+            "layout_json": {
+              "$ref": "in.layout_json"
+            },
+            "destination_bounds_json": {
+              "$ref": "in.destination_bounds_json"
+            },
+            "attempted_json": {
+              "$ref": "in.attempted_json"
+            },
+            "source_description": "the source bin containing the unsorted tools",
+            "camera_name": "overhead",
+            "exclusion_mode": "instance",
+            "max_attempts_per_instance": 4,
+            "settled_margin_m": 0.01,
+            "min_box_px": 3.0,
+            "min_box_fraction": 0.01
+          }
+        },
+        "found": {
+          "type": "noop"
+        },
+        "finished": {
+          "type": "noop"
+        },
+        "retry": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "move_aside"
+        ],
+        [
+          "move_aside",
+          "observe"
+        ],
+        [
+          "observe",
+          "select"
+        ],
+        [
+          "found",
+          "END"
+        ],
+        [
+          "finished",
+          "END"
+        ],
+        [
+          "retry",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "select": {
+          "router_field": "status",
+          "mapping": {
+            "found": "found",
+            "finished": "finished",
+            "retry": "retry"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found",
+          "finished",
+          "retry"
+        ]
+      },
+      "on_error": "ambiguous"
+    },
+    "grasp_sg": {
+      "skill": "grasping-linear-feature",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox",
+        "target_mask": "Mask",
+        "target_cloud": "PointCloud",
+        "target_name": "string",
+        "bin_floor_z": "float"
+      },
+      "outputs": {
+        "grasp_pose": {
+          "$ref": "compute_grasp.grasp_pose"
+        },
+        "ee_pose_at_grasp": {
+          "$ref": "observe.arms.0.ee_pose"
+        },
+        "observed": {
+          "$ref": "observe.arms.0.ee_pose"
+        }
+      },
+      "nodes": {
+        "home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 40
+          }
+        },
+        "fit_axis": {
+          "type": "tool",
+          "tool": "geometry.fit_linear_feature",
+          "inputs": {
+            "points": {
+              "$ref": "in.target_cloud"
+            }
+          }
+        },
+        "compute_grasp": {
+          "type": "script",
+          "script": "scripts/axis_grasp_top_down.py",
+          "inputs": {
+            "feature_center": {
+              "$ref": "fit_axis.center"
+            },
+            "feature_axis": {
+              "$ref": "fit_axis.axis"
+            },
+            "target_cloud": {
+              "$ref": "in.target_cloud"
+            },
+            "bin_floor_z": {
+              "$ref": "in.bin_floor_z"
+            },
+            "standoff": 0.12,
+            "grasp_z_offset": 0.02
+          }
+        },
+        "rotate_align": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_grasp.pregrasp_pose"
+            }
+          }
+        },
+        "descend": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_grasp.grasp_pose"
+            }
+          }
+        },
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "posed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "home"
+        ],
+        [
+          "home",
+          "open"
+        ],
+        [
+          "open",
+          "fit_axis"
+        ],
+        [
+          "fit_axis",
+          "compute_grasp"
+        ],
+        [
+          "compute_grasp",
+          "rotate_align"
+        ],
+        [
+          "rotate_align",
+          "descend"
+        ],
+        [
+          "descend",
+          "observe"
+        ],
+        [
+          "observe",
+          "posed"
+        ],
+        [
+          "posed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "posed"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "concave_grasp_sg": {
+      "skill": "grasping-concave-contour",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox",
+        "target_cloud": "PointCloud",
+        "target_name": "string",
+        "bin_floor_z": "float"
+      },
+      "outputs": {
+        "grasp_pose": {
+          "$ref": "compute_concave_grasp.grasp_pose"
+        },
+        "ee_pose_at_grasp": {
+          "$ref": "observe.arms.0.ee_pose"
+        },
+        "observed": {
+          "$ref": "observe.arms.0.ee_pose"
+        }
+      },
+      "nodes": {
+        "home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 40
+          }
+        },
+        "compute_concave_grasp": {
+          "type": "script",
+          "script": "scripts/contour_concave_grasp.py",
+          "inputs": {
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "target_cloud": {
+              "$ref": "in.target_cloud"
+            },
+            "object_name": {
+              "$ref": "in.target_name"
+            },
+            "bin_floor_z": {
+              "$ref": "in.bin_floor_z"
+            },
+            "min_concavity": 0.5
+          }
+        },
+        "rotate_align": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_concave_grasp.pregrasp_pose"
+            }
+          }
+        },
+        "descend": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_concave_grasp.grasp_pose"
+            }
+          }
+        },
+        "observe": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "posed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        ["START", "home"],
+        ["home", "open"],
+        ["open", "compute_concave_grasp"],
+        ["compute_concave_grasp", "rotate_align"],
+        ["rotate_align", "descend"],
+        ["descend", "observe"],
+        ["observe", "posed"],
+        ["posed", "END"]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "posed"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "verify_sg": {
+      "skill": "verifying-grasps",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox",
+        "target_name": "string",
+        "grasp_pose": "Se3Pose",
+        "observed": "Se3Pose"
+      },
+      "nodes": {
+        "verify_reach": {
+          "type": "script",
+          "script": "scripts/verify_reach.py",
+          "inputs": {
+            "commanded": {
+              "$ref": "in.grasp_pose"
+            },
+            "observed": {
+              "$ref": "in.observed"
+            },
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "object_name": {
+              "$ref": "in.target_name"
+            }
+          }
+        },
+        "close": {
+          "type": "tool",
+          "tool": "robot.close_gripper",
+          "inputs": {}
+        },
+        "verify_grip": {
+          "type": "script",
+          "script": "scripts/verify_grip.py",
+          "inputs": {
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "object_name": {
+              "$ref": "in.target_name"
+            }
+          }
+        },
+        "held": {
+          "type": "noop"
+        },
+        "missed": {
+          "type": "noop"
+        },
+        "empty": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "verify_reach"
+        ],
+        [
+          "close",
+          "verify_grip"
+        ],
+        [
+          "held",
+          "END"
+        ],
+        [
+          "missed",
+          "END"
+        ],
+        [
+          "empty",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "verify_reach": {
+          "router_field": "route",
+          "mapping": {
+            "reached": "close",
+            "missed": "missed"
+          }
+        },
+        "verify_grip": {
+          "router_field": "route",
+          "mapping": {
+            "held": "held",
+            "empty": "empty",
+            "unknown": "held"
+          }
+        }
+      },
+      "outputs": {
+        "grip_status": {
+          "$ref": "verify_grip.status"
+        },
+        "grip_width_m": {
+          "$ref": "verify_grip.grip_width_m"
+        },
+        "reach_error_m": {
+          "$ref": "verify_reach.error_m"
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "held",
+          "missed",
+          "empty"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "transport_sg": {
+      "skill": "transporting-objects",
+      "inputs": {
+        "container_obb": "OrientedBoundingBox",
+        "target_obb": "OrientedBoundingBox"
+      },
+      "outputs": {
+        "place_position": {
+          "$ref": "transport_move.place_position"
+        }
+      },
+      "nodes": {
+        "transport_move": {
+          "type": "script",
+          "script": "scripts/transport_descend_linear.py",
+          "inputs": {
+            "container_obb": {
+              "$ref": "in.container_obb"
+            },
+            "place_offset": -0.06,
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "align_to_container": true,
+            "level_lift": true,
+            "nearest_first_fallbacks": true,
+            "carry_cap_m": 0.25
+          }
+        },
+        "drop": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 30
+          }
+        },
+        "home_after_drop": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
+        "placed": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "transport_move"
+        ],
+        [
+          "transport_move",
+          "drop"
+        ],
+        [
+          "drop",
+          "home_after_drop"
+        ],
+        [
+          "home_after_drop",
+          "placed"
+        ],
+        [
+          "placed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "placed"
+        ]
+      },
+      "on_error": "blocked"
+    },
+    "recover_attempt_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 30
+          }
+        },
+        "home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
+        "recovered": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "home"
+        ],
+        [
+          "home",
+          "recovered"
+        ],
+        [
+          "recovered",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "recovered"
+        ]
+      },
+      "on_error": "failed"
+    }
+  }
+}

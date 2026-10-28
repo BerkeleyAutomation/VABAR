@@ -1,0 +1,166 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design -- the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor. What is new here is the two ENDS.
+;
+; A TERMINATED RUN. Every other document in this family asks the cable to be
+; woven and stops there: the rod begins wherever the scene laid it and ends
+; wherever the last crossing left it. A real run does neither. It starts at
+; something that holds it and finishes at something it has to be got into, and
+; those two facts are most of what makes routing a cable different from bending
+; one.
+;
+; So this variant adds a fitting at each end. The ANCHOR marks where the run
+; begins -- the end the support hand takes, which the scene was already doing
+; and now says out loud. The PORT is the destination, and it is a GOAL CLAUSE
+; rather than scenery: the route is not finished until the free end is inside
+; it.
+;
+; WHAT THE ANCHOR IS. A fastening, and it did not used to be. This document said
+; the opposite for a release: "It is a stop, not a fastening. Nothing in this
+; scene welds the rod to that block, so what actually holds the far end is still
+; the support arm." The rod's spec declares `anchors`, this variant sets it, and
+; the first capsule is welded to the world where it was built -- so the caution
+; outlived the thing it was cautioning about, which is the worse of the two ways
+; a document can be wrong about its own scene.
+;
+; The bracket is drawn as what it now does: two rails either side of the cable,
+; a hood the run terminates under, and a saddle across it. Nothing in the
+; assembly sits UNDER the cable -- a mounting plate laid across the rod's path
+; puts a welded body inside a static box, which is a contact with no answer --
+; so it straddles, which is also what a real saddle does. See
+; assets/terminals.py.
+;
+; The support arm is still a second hand on the run. What it is no longer is the
+; only thing holding the far end, and it now takes the rod 20 mm in from its own
+; tip rather than at the constant the 0.50 m family was written with -- see
+; weave_anchor_y, which is what stops the two hands standing in one place.
+;
+; TWO STATIONS, not four. The question this document exists to ask is about the
+; two ends; how a long weave behaves between them is weave4's question and it is
+; already answered. Two crossings is the shortest route that still alternates,
+; and at 12.2 degrees of turning it is the shallowest board in the suite -- which
+; is the point: nothing here should be hard except the ends.
+; ---------------------------------------------------------------------------
+
+(define (problem ROUTE_THE_CABLE_FROM_THE_ANCHOR_INTO_THE_PORT)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the two pegs and route its free end into the port)
+
+  (:staging
+    (:cameras cable_port2@v1)
+    ; Two crossings and a plug, on weave4's per-crossing budget.
+    (:max-steps 6000)
+    ; The rod's shape and placement, drawn per episode; the board does not move.
+    ; The anchor bracket DOES, and has to: the shift and the yaw both move the
+    ; end that is welded to the world, and a plate 32 mm across left at a fixed
+    ; pose is one the run visibly does not start at. It is placed from the rod's
+    ; own drawn tip through weave_terminals -- the same function that places the
+    ; declared pose -- so the two are one arithmetic over different inputs.
+    (:episodes (:count 6) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  (:objects
+    cable - port2_cable
+  )
+
+  (:fixtures
+    peg0   - port2_peg0
+    peg1   - port2_peg1
+    ; Both ends of the run. Declared as fixtures because they are THERE -- the
+    ; rod can foul either, and a fitting the physics carries but the document
+    ; does not name is a fitting that silently changes the task. The two are
+    ; one asset (`cable_block`, one 32 x 32 mm footprint) realised by two
+    ; entities: a bracket that clamps and a socket that receives.
+    anchor - port2_anchor
+    port   - port2_port
+  )
+
+  ; Sides -1, +1: one crossing each way, the shortest route that alternates.
+  ; The seat boxes are weave4's, unchanged.
+  ;
+  ; The PORT box is the same 45 mm reach as a seat, measured off the fitting
+  ; instead of a post, and open on the side the run arrives from. A station and
+  ; a port ask the same question of different fixtures -- is the rod where this
+  ; thing wants it -- and scoring them against two different tolerances would
+  ; make the number say which clause failed rather than how well the route ran.
+  (:regions
+    (seat0    (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1    (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (portbox  (:target port) (:ranges ((-0.045 -0.045  0.045 0.045))))
+  )
+
+  ; No init constraint: both arms start at the embodiment's own home, touching
+  ; nothing. Taking the far end is a policy's first move.
+  (:init)
+
+  ; Three clauses under one worst_of, so each station and the port are a third
+  ; of the route each. Idle is still 0: at t = 0 the rod lies on the robot's
+  ; side of the station line with its free end nowhere near the socket, so no
+  ; clause is satisfied by the scene arriving.
+  ;
+  ; AGAINST THE BOW ALONE. This layout's near row stands at x = 0.5200, so its
+  ; near-side seat boxes begin at 0.4750 and a rod bowed 20 mm off a 0.42 spawn
+  ; reaches 0.440, clear by 35.0 mm. Against the WHOLE spawn envelope -- bow,
+  ; second harmonic and shift, all at an extreme and aligned -- the worst
+  ; capsule reaches 0.480 and is 5.0 mm INSIDE that box edge, and
+  ; `staging:CABLE_BOW` has no clearance guard the way `WEAVE_RIGID` does. What
+  ; that envelope is and is not is written up on WEAVE_CABLE_WAVE in
+  ; assets/cable.py; eleven of the thirteen layouts are inside it and no
+  ; rollout has measured an idle score at these constants.
+  ;
+  ; The port asks for 0.071 of the rod where a seat asks 0.047 -- on this 68
+  ; capsule rod, about five bodies against three. A seat holds the cable
+  ; PASSING, so a span abreast of the post is the whole of what it means; a port
+  ; is where the run TERMINATES, and an end that has only just broken the plane
+  ; is not plugged in.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable portbox) 0.071)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same graphs the weaves run. Each reads the stations and the rod -- from
+  ; the simulator on `gt`, from the `cable` camera on `vision` -- and works them
+  ; in turn; the port is one more station to them, which is the point of
+  ; terminating the run with a fixture the perception can already see rather
+  ; than with a special case.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "AUTHORED -- no upstream. weave4's line shortened to two stations, with a
+              terminal fitting added at each end of the run.")
+    (:note "The reference cable scenes end at a peg line; a real run starts at something that
+            holds it and finishes at something it is got into. The anchor is a bracket the rod
+            is WELDED to (RodSpec.anchors, at the first capsule's own build pose), and the
+            port is a goal clause rather than scenery. Both are drawn as fittings rather than
+            as boxes: EntityCableTerminal straddles the cable with a saddle, EntityCablePort is
+            an open channel with a stop at the back. Two F1 spools 155 mm apart at x = 0.52,
+            12.2 deg of accumulated turning (L1). The rod is 0.82 m at 68 capsules; the whole
+            route -- anchor to two seats to the port mouth -- measures 593 mm, so 227 mm is
+            left over. The port stands 75 mm past the last station and 61 mm out in x, a 43 deg
+            lead-out; see WEAVE_PORT_STANDOFF for the four standoffs that angle was measured
+            over.")
+  )
+)

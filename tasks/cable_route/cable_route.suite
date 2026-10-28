@@ -1,0 +1,88 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; What every cable_route variant shares, stated once.
+;
+; Fourteen documents stand in one cell, on one robot, under one coupled solver
+; arrangement, with one tool registrar -- and each of them used to say so.
+; This is the column that is true fourteen times; a variant beside it inherits
+; every clause here and states only what it changes: its cameras, its step
+; budget, its episodes, its routine and its graphs.
+;
+; What is NOT here, and why. The pegs and the rod are named by every variant
+; (`:fixtures` / `:objects`) but placed differently by each -- thirteen layouts
+; of spools and cleats, one row of posts, six rod lengths, two terminated runs
+; and one anchor grasp -- so they are not shared scenery and this file carries
+; no `:fixtures`. Where each stands is `assets/layout.py`'s, which mints one
+; placed record per name a document uses (`weave3_peg0`, `wrap_cable`); the rigs
+; aimed at those layouts and the samplers that redraw them are `staging.py`'s.
+;
+; The EPISODE clause is here as the default and overridden by twelve of the
+; fourteen. `(:count 1) (:sampler fixed)` is what `wrap` wants -- its start
+; state is a robot posture and there is nothing to draw -- and every weave says
+; what it varies instead.
+; ---------------------------------------------------------------------------
+
+(define (suite cable_route)
+
+  (:language move and wind a rod cable with the i2rt YAM under the coupled-proxy MuJoCo+VBD arrangement)
+
+  ; The order is content: the first entry is what a bare `cable_route` resolves
+  ; to. weave3 leads because it is the member with a shipped graph; a default
+  ; that cannot be demonstrated is a poor front door.
+  ;
+  ; Then the ladder in order -- weave4, weave5, weave6, whose station count and
+  ; stagger depth rise together -- then the three arrangements that sit beside a
+  ; rung and change how that level's turning is made, then the two terminated
+  ; runs and the industrial panel, then the four drawn boards whose stations are
+  ; sampled per episode rather than written down. The reference's wrap keeps its
+  ; place at the end. That is the order `difficulty.py` reads them in and the
+  ; order a reader of this suite wants.
+  (:variants weave3 weave4 weave5 weave6 weave_arc weave_stagger
+             port2 port3 port_easy port_medium panel_l2
+             board_l1 board_l2 board_l3 board_l4
+             wrap)
+
+  (:staging
+    (:scene bench_075)
+    ; `right` works and `left` holds. Stated on the pairing rather than left to
+    ; the embodiment's declaration order, which is what the anchor arm and the
+    ; weave's support hand are both read off.
+    ;
+    ; The arms are solid to each other. Both hands work the same rod -- `wrap`
+    ; manipulates with both at once, and a weave hands the cable across the
+    ; stations -- so a plan that streams one forearm through the other is a
+    ; plan that only worked because the model was not looking. Each arm stays
+    ; internally filtered; see EmbodimentSpec.cross_arm_collisions.
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left) (:arms-solid true))
+    ; A named arrangement, never a solver config: MuJoCo owns the arms, rigid
+    ; VBD owns the rod, and the hands mirror into the VBD side as mass-scaled
+    ; proxies. Registered as data in staging.py, with the measurements that set
+    ; every number in it.
+    (:physics cable_coupled_960hz@v1)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 0) (:sampler fixed))
+    ; Two arms: the routine lays out an action vector per arm, and `wrap`
+    ; genuinely manipulates with both. A one-armed robot is refused here
+    ; rather than discovered mid-rollout.
+    (:arms 2)
+  )
+
+  ; The tools every graph in this suite reaches for -- the latch, the settle,
+  ; the route planner, the perception oracle, and the unprivileged half a vision
+  ; graph runs on. One registrar serves the wrap and the thirteen weaves, and
+  ; each entry carries its own tag: `sim.` is the privilege boundary and the
+  ; tags say so per tool rather than wholesale.
+  ;
+  ; The repro hooks: the latch, standalone, so a repro bundle can replay a
+  ; grasp. The solvers need no such twin -- the composer's manifest rebuilds
+  ; them.
+  (:artifacts
+    (:tools "tools:register_cable_tools")
+    (:repro-hooks "staging:CABLE_REPRO_HOOKS")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "newton_tasks/sim/yam_cable_sim.py at defaults: 28-capsule add_rod cable, SolverCoupledProxy mjc+vbd, the reference's keyframe scripts")
+  )
+)

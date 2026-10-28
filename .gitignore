@@ -1,0 +1,19 @@
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.cache/
+.pytest_cache/
+.ruff_cache/
+
+# run output
+outputs/
+out/
+*.mp4
+!media/*.mp4
+
+# layout-sweep caches the syringe suite writes beside its export
+tasks/syringe_packing/assets/vab_tool_sort/syringe/scene_norobot_box*.xml
+
+# Warp / cuRobo kernel caches
+.warp_cache/

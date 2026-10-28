@@ -1,0 +1,80 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED, over a ported scene -- see wrenches.bddl for the family's design.
+;
+; WHAT THIS ONE CHANGES: the loop is on the FIXTURE and the rod on the tool.
+; A screwdriver stood in a rack is the mirror of a ring hung on a hook, and
+; the same `threaded` measure serves both ways round because the atom's
+; arguments are a loop and a rod, not an object and a fixture. The rack's two
+; graduated holes are declared features; the shaft threading one of them is
+; what "inserted" means, and the handle resting on the rack top is what the
+; contact clause reads.
+; ---------------------------------------------------------------------------
+
+(define (problem STAND_THE_TWO_SCREWDRIVERS_IN_THE_RACK)
+
+  (:suite tool_hanging)
+
+  (:language insert screwdriver 1 into the left marked hole, then screwdriver 2
+             into the right marked hole)
+
+  (:staging
+    ; Cell, arms, arrangement and rig are tool_hanging.suite's; the budget is ours.
+    (:physics tool_hanging_480hz@v1)
+    (:max-steps 2600)
+  )
+
+  (:objects
+    screwdriver_1 - screwdriver_slim
+    screwdriver_2 - screwdriver_grip
+  )
+
+  (:fixtures
+    ; The rack. The holes the routine steers by are its own declared features;
+    ; assets/records.py asserts at import that they stand at the marked world
+    ; targets, and assets/decor.py draws those targets for a viewer.
+    rack - screwdriver_rack
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (And
+        (threaded rack.hole_left screwdriver_1.shaft)
+        (>= (contact-force screwdriver_1 rack) 0.2)
+        (<= (speed screwdriver_1) 0.05)
+      )
+      (And
+        (threaded rack.hole_right screwdriver_2.shaft)
+        (>= (contact-force screwdriver_2 rack) 0.2)
+        (<= (speed screwdriver_2) 0.05)
+      )
+    )
+  )
+
+
+  (:observe
+    (threaded rack.hole_left screwdriver_1.shaft)
+    (threaded rack.hole_right screwdriver_2.shaft)
+  )
+
+  (:artifacts
+    (:routine "routine:InsertScrewdriverRoutine")
+    (:tools   "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. Scene, objects and routine ported from the
+              tool-hanging branch's Python suite at 3e20fc7. The goal is new, over
+              the rack holes inverse-mapped from the suite's own marked world
+              targets -- tasks/tool_hanging/assets/records.py.")
+    (:note "The rack mounts at 120% scale with its x=0 back against the board. Its
+            two evaluated target openings use 8.0 mm and 11.6 mm radii, including
+            2 mm alignment tolerance beyond the original declared radii; the rack
+            is a graduated row and each screwdriver gets the hole its shaft was
+            aimed at.")
+  )
+)

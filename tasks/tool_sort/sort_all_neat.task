@@ -1,0 +1,65 @@
+(define (problem SORT_ALL_TOOLS_NEAT_INTO_BINS)
+  (:language sort all four neatly separated tools from the source bin into their labelled destination compartments)
+  (:staging
+    (:profile vab_tool_sort@v2)
+    ; The workcell wearing the materials its MJCF states -- see assets/look.py.
+    (:export vab_tool_sort
+      (:entity tool_sort_workcell))
+    ; Four separated source-bin locations, recorded as the full pose table.
+    ; Every entry is the export sidecar's settled pose -- what every other
+    ; variant over vab_tool_sort starts from -- with the xy of the four tools
+    ; replaced to remove the pile overlap while preserving each one's settled
+    ; height. drill_0 leaves margin from the source-bin walls and from the
+    ; clamp; clamp_0 also takes a quaternion that rotates its long image-plane
+    ; footprint away from the drill. The file IS the arrangement, not a
+    ; derivation of one: edit it to move a tool.
+    (:start-poses poses/sort_all_neat.json)
+    (:max-steps 16000)
+    ; A carried object's centre can enter its destination region before the
+    ; transport subgraph has descended and released it. Keep reporting the
+    ; evaluator result, but let the graph own episode completion so a
+    ; transient in-flight success cannot close the simulation bus early.
+    (:terminate-on-success false)
+  )
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+  (:objects
+    hammer_0 - hammer
+    drill_0 - drill
+    round_nut_0 - round_nut
+    clamp_0 - clamp
+  )
+  (:regions
+    (bin1_region (:target bin1) (:ranges ((-0.18 -0.23 0.18 0.23))))
+    (bin2_hammer_region (:target bin2) (:ranges ((-0.195 -0.245 0.0 0.0))))
+    (bin2_drill_region (:target bin2) (:ranges ((0.0 -0.245 0.195 0.0))))
+    (bin2_round_nut_region (:target bin2) (:ranges ((-0.195 0.0 0.0 0.245))))
+    (bin2_clamp_region (:target bin2) (:ranges ((0.0 0.0 0.195 0.245))))
+  )
+  (:init
+    (In hammer_0 bin1_region)
+    (In drill_0 bin1_region)
+    (In round_nut_0 bin1_region)
+    (In clamp_0 bin1_region)
+  )
+  (:goal
+    (And
+      (In hammer_0 bin2_hammer_region)
+      (In drill_0 bin2_drill_region)
+      (In round_nut_0 bin2_round_nut_region)
+      (In clamp_0 bin2_clamp_region)
+    )
+  )
+  (:artifacts
+    (:routine "routine:RoutineToolSort")
+    (:tools "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+  (:provenance
+    (:tier diagnostic)
+    (:source "four-object low-overlap perception and grasp diagnostic over the vab_tool_sort export")
+  )
+)

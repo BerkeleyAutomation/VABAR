@@ -1,0 +1,90 @@
+cff-version: 1.2.0
+message: "If you use VABAR, please cite it as below."
+title: "VABAR: A Variational Automation Benchmark for Agentic Robotics"
+type: software
+license: Apache-2.0
+url: "https://vabar-benchmark.github.io/"
+repository-code: "https://github.com/BerkeleyAutomation/VABAR-RoboSimStudio"
+authors:
+  - given-names: Shuangyu
+    family-names: Xie
+  - given-names: Kaiyuan
+    family-names: Chen
+  - given-names: Uksang
+    family-names: Yoo
+  - given-names: Xinyue
+    family-names: Zhu
+  - given-names: Meadow
+    family-names: Shen
+  - given-names: Jaimyn
+    family-names: Drake
+  - given-names: Eugen
+    family-names: Solowjow
+  - given-names: Lionel
+    family-names: Gulich
+  - given-names: Alexander
+    family-names: Millane
+  - given-names: Rafael
+    family-names: Cathomen
+  - given-names: Tuur
+    family-names: Stuyck
+  - given-names: Sangeeta
+    family-names: Subramanian
+  - given-names: Yichao
+    family-names: Pan
+  - given-names: Bruce
+    family-names: McGowan
+  - given-names: Michael
+    family-names: Benedict
+  - given-names: Linxi
+    family-names: Fan
+  - given-names: Yuke
+    family-names: Zhu
+  - given-names: Spencer
+    family-names: Huang
+  - given-names: Ken
+    family-names: Goldberg
+preferred-citation:
+  type: conference-paper
+  title: "VABAR: A Variational Automation Benchmark for Agentic Robotics"
+  year: 2027
+  collection-title: "IEEE International Conference on Robotics and Automation (ICRA), under review"
+  authors:
+    - given-names: Shuangyu
+      family-names: Xie
+    - given-names: Kaiyuan
+      family-names: Chen
+    - given-names: Uksang
+      family-names: Yoo
+    - given-names: Xinyue
+      family-names: Zhu
+    - given-names: Meadow
+      family-names: Shen
+    - given-names: Jaimyn
+      family-names: Drake
+    - given-names: Eugen
+      family-names: Solowjow
+    - given-names: Lionel
+      family-names: Gulich
+    - given-names: Alexander
+      family-names: Millane
+    - given-names: Rafael
+      family-names: Cathomen
+    - given-names: Tuur
+      family-names: Stuyck
+    - given-names: Sangeeta
+      family-names: Subramanian
+    - given-names: Yichao
+      family-names: Pan
+    - given-names: Bruce
+      family-names: McGowan
+    - given-names: Michael
+      family-names: Benedict
+    - given-names: Linxi
+      family-names: Fan
+    - given-names: Yuke
+      family-names: Zhu
+    - given-names: Spencer
+      family-names: Huang
+    - given-names: Ken
+      family-names: Goldberg
