@@ -47,7 +47,9 @@
   (:staging
     (:profile vab_industrial_robotiq@v1)
     (:export vab_tool_sort/level1/level1_29
-      (:file scene_norobot.xml))
+      (:file scene_norobot.xml)
+      ; Painted by assets/look.py: the export's wood bins and printed labels.
+      (:entity tool_sort_workcell))
     ; 2400 per goal x 5 goals.
     (:max-steps 12000)
   )

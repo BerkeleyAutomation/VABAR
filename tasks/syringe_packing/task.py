@@ -73,6 +73,7 @@ from robosimstudio_bench.taskdoc.sidecar import wxyz_to_xyzw
 from . import assets as _own_assets  # noqa: F401 -- registers the types this document names
 from . import scenes as _cell  # noqa: F401 -- registers the cell these documents stand in
 from . import staging as _staging  # noqa: F401 -- registers the profile and the arrangements
+from .assets.look import SYRINGE_PACKING_LOOK
 from .assets.records import INSTRUMENT_TRAY
 
 __all__ = ["DOCUMENTS", "SYRINGE_PACKING", "VARIANTS", "build", "build_all"]
@@ -908,7 +909,7 @@ def _finish(
     export: str,
     stripped_file: str = "",
 ) -> TaskSpec:
-    """The spec with container fixtures removed, regions resolved, hosts added.
+    """The spec with container fixtures removed, regions resolved, hosts added, look set.
 
     A container is declared in the document so its region has something to hang
     off and so the typechecker can see the reference resolve -- but it has no
@@ -929,6 +930,9 @@ def _finish(
         # neither axis can be swapped until a binding names the robot-stripped
         # variant.
         requires=TaskRequirements(arms=1, monolithic=True),
+        # The house look with the backdrop on the walls behind the bench; the
+        # path tracer alone draws scenery, so perception is unchanged.
+        render=SYRINGE_PACKING_LOOK,
     )
 
 
