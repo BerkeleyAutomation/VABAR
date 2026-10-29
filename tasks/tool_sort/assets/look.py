@@ -90,12 +90,13 @@ import newton
 
 from robosimstudio.core.render.finish import Finish
 from robosimstudio.core.render.look import STUDIO
-from robosimstudio.core.render.room import house_room
 from robosimstudio.core.render.scenery import register_scenery
 from robosimstudio.core.render.spec import RenderSpec
 from robosimstudio.domains.static import EntityStatic
 from robosimstudio.paths import resolve_path
 from robosimstudio.scene.registry import register_entity
+
+from vabar.backdrop import papered_room
 
 __all__ = [
     "BENCH_GREY",
@@ -356,9 +357,15 @@ def tool_sort_shop(kit) -> None:
     against every camera in the corpus rather than against this suite's two.
     What stays here is the *materials*, which are the export's own tile and
     plaster maps and belong to this cell rather than to rooms in general.
+
+    The ``-x`` wall -- behind the robot from every ``+x`` camera -- carries the
+    warehouse backdrop the project page's clip was rendered with
+    (:mod:`vabar.backdrop`); the other walls stay plaster.
     """
-    house_room(
+    papered_room(
         kit,
+        {"-x": "wall_north.jpg"},
+        walls=("-x", "+y", "-y"),  # house_room's own three: +x stays open for the cameras
         setback=WALL_SETBACK,
         wall_height=WALL_HEIGHT,
         floor_color=CONCRETE,
