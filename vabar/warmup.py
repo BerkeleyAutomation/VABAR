@@ -35,6 +35,7 @@ import json
 import os
 import re
 import shlex
+import signal
 import subprocess
 import sys
 import time
@@ -74,6 +75,30 @@ def cell_scenes(cells: list[str], config: cfg.Config, *, every_instance: bool) -
             name = f"{task}@{episode}" if every_instance else task
             out.setdefault(name, (task, episode))
     return out
+
+
+SCENE_TIMEOUT_S = 900.0
+"""How long one scene may take before its process is killed [s]; the pool watchdog's build budget.
+
+**A build can hang for ever, burning 11 cores with its log silent**, and nothing
+here would otherwise end it: a `vabar bench` sat 35 minutes on one gear scene,
+with the other 29 warmed in 8. The slowest healthy cold compile measured is 713 s."""
+
+SCENE_ATTEMPTS = 2
+"""The pool watchdog's retries have cleared this hang each time so far, so a killed scene gets one more try."""
+
+
+def run_scene(cmd: Sequence[str], log: Path, env: dict[str, str], timeout_s: float) -> bool:
+    """Run one scene's process to its end, or kill it and everything it started; whether it ended by itself."""
+    with open(log, "w") as fh:
+        proc = subprocess.Popen(cmd, cwd=REPO, env=env, stdout=fh, stderr=subprocess.STDOUT, start_new_session=True)
+        try:
+            proc.wait(timeout=timeout_s)
+            return True
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+            return False
 
 
 def stamp_path(cell: str, config: cfg.Config) -> Path | None:
@@ -179,9 +204,14 @@ def main(argv: list[str] | None = None) -> int:
         log = out / f"{name}.log"
         started = time.perf_counter()
         log.parent.mkdir(parents=True, exist_ok=True)
-        with open(log, "w") as fh:
-            env = {**os.environ, "PYTHONUNBUFFERED": "1"}  # a live log, for a step that can take minutes
-            subprocess.run(cmd, cwd=REPO, env=env, stdout=fh, stderr=subprocess.STDOUT, check=False)
+        env = {**os.environ, "PYTHONUNBUFFERED": "1"}  # a live log, for a step that can take minutes
+        for attempt in range(1, SCENE_ATTEMPTS + 1):
+            if run_scene(cmd, log, env, SCENE_TIMEOUT_S):
+                break
+            print(f"[warmup] {label}: killed after {SCENE_TIMEOUT_S:.0f} s (attempt {attempt})", flush=True)
+        else:
+            print(f"[warmup] {label}: FAILED, hung {SCENE_ATTEMPTS} times; see {log}", flush=True)
+            return False
         wall = time.perf_counter() - started
         meta = out / name / "run_meta.json"
         builds = json.loads(meta.read_text()).get("provenance", {}).get("builds", []) if meta.is_file() else []
