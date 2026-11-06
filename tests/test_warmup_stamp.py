@@ -41,6 +41,52 @@ def test_a_failed_warmup_is_tried_again(stamped, monkeypatch) -> None:
     assert not stamp.exists()
 
 
+def test_a_changed_scene_is_warmed_again(stamped, monkeypatch) -> None:
+    calls, _ = stamped
+    config = cfg.resolve("fast", [])
+    monkeypatch.setattr(warmup, "scene_digest", lambda cell: "before")
+    warmup.ensure_warm("tool_hanging/L1", config)
+    warmup.ensure_warm("tool_hanging/L1", config)
+    monkeypatch.setattr(warmup, "scene_digest", lambda cell: "after a git pull")
+    warmup.ensure_warm("tool_hanging/L1", config)
+    assert len(calls) == 2
+
+
+def test_a_stamp_from_before_digests_warms_once_more(stamped) -> None:
+    calls, stamp = stamped
+    config = cfg.resolve("fast", [])
+    stamp.parent.mkdir(parents=True)
+    stamp.touch()
+    warmup.ensure_warm("tool_hanging/L1", config)
+    warmup.ensure_warm("tool_hanging/L1", config)
+    assert len(calls) == 1
+
+
+def test_the_digest_reads_the_suites_own_files() -> None:
+    assert warmup.scene_digest("tool_hanging/L1") == warmup.scene_digest("tool_hanging/L2")
+    assert warmup.scene_digest("tool_hanging/L1") != warmup.scene_digest("syringe_packing/L1")
+
+
+@pytest.mark.parametrize("config", ["default", "fast", "paper"])
+def test_a_suite_that_renders_tiled_is_neither_warmed_nor_stamped(stamped, config) -> None:
+    calls, stamp = stamped
+    warmup.ensure_warm("syringe_packing/L1", cfg.resolve(config, []))
+    assert calls == [] and not stamp.exists()
+
+
+def test_a_tiled_suite_asked_for_rtx_warms_rtx(stamped) -> None:
+    calls, stamp = stamped
+    warmup.ensure_warm("syringe_packing/L1", cfg.resolve("fast", []), ["--renderer", "rtx"])
+    assert calls[0][-2:] == ["--renderer", "rtx"] and stamp.exists()
+
+
+def test_warmup_compiles_each_suite_on_its_own_renderer(capsys) -> None:
+    assert warmup.main(["--cell", "syringe_packing/L1", "--config", "fast", "--print"]) == 0
+    assert "--renderer tiled" in capsys.readouterr().out.splitlines()[0]
+    assert warmup.main(["--cell", "tool_hanging/L1", "--config", "fast", "--print"]) == 0
+    assert "--renderer rtx" in capsys.readouterr().out.splitlines()[0]
+
+
 @pytest.mark.parametrize("extra", [["--renderer", "tiled"], ["--renderer=gl"]])
 def test_another_renderer_is_not_warmed(stamped, extra) -> None:
     calls, _ = stamped

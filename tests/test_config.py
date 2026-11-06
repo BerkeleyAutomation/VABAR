@@ -41,7 +41,8 @@ def test_builtin_configs():
     assert (rt["clock"], rt["obs_render"], rt["renderer"]) == ("free", "per-step", "")
     assert not rt["keep_tool_servers"] and not rt["cache_planner"]
     assert (rt["num_worlds"], rt["workers"], rt["bus_timeout"]) == (1, 1, 0.0)
-    assert paper.env() == {} and paper.suites == {}
+    # Syringe packing's hand and renderer are paper's one departure from v1.0's commands.
+    assert paper.env() == {} and set(paper.suites) == {"syringe_packing"} and not paper.registry_overrides()
     assert paper.ref == "paper" and default.sha256 != paper.sha256
 
 
@@ -103,6 +104,7 @@ def test_inheritance_cycle_is_refused(tmp_path):
         ("[suites.tool_hangin]\nmax_steps = 1\n", "names no suite"),
         ("[suites.tool_hanging]\nphysic = 'x@v1'\n", "unknown key"),
         ("[suites.tool_hanging]\nphysics = 'unversioned'\n", "versioned"),
+        ("[suites.tool_hanging]\nrenderer = 'path_tracer'\n", "renderer"),
         ("[suites.tool_hanging]\nmax_steps = 0\n", "max_steps"),
         ('[suites."tool_hanging/wrenches_level1"]\nvariants = { a = "b" }\n', "renames variants"),
         ("[suites.tool_hanging]\nflags = '--x'\n", "flags"),

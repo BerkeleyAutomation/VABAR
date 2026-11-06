@@ -1,5 +1,5 @@
 {
- "_comment": "What `python -m vabar bench <argv> --print` printed at v1.0 (commit 18b974e), before experiment configs existed. `--config paper` must still print exactly this.",
+ "_comment": "What `python -m vabar bench <argv> --print` printed at v1.0 (commit 18b974e), before experiment configs existed. `--config paper` must still print exactly this, except that syringe packing's two files now state its Robotiq and tiled renderer (vabar/configs/paper.toml).",
  "tool_sorting_L1.txt": ["--cell", "tool_sorting/L1"],
  "tool_hanging_L1.txt": ["--cell", "tool_hanging/L1"],
  "tool_hanging_L2.txt": ["--cell", "tool_hanging/L2"],

@@ -99,14 +99,13 @@ shared_gb = 6.5
 [suites.syringe_packing]
 # The reference pairing: the export's Panda wearing a Robotiq 2F-85, the hand the graph was written and measured on.
 flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq"]
-# The multi-syringe graph (gap_perception_v2; docs/validation/dev_history_merge.md)
-# runs about twice the steps of the graph it replaced. L1, `fast`, full cells:
-# 32.5 min on 4 workers (7/30), 21.6 on 8 (11/30, 54 GB at peak), 21.1 on 12
-# (9/30, 77 GB). L2: 32.3 min on 8 (0/30, mean reward 0.27), 37.5 on 12 with one
-# worker hung and replaced by the pool's watchdog (0/30, 0.32).
+# Tiled scored the same as RTX on this scene, needs no shader warmup and holds
+# less than half the GPU memory (docs/validation/syringe_working_scene.md).
+renderer = "tiled"
+# Peak is 8.6 GB + 1.98 GB per worker, fitted to full L2 cells; 2.2 adds 10%.
 workers = 8
-worker_gb = 6.5
-shared_gb = 6.5
+worker_gb = 2.2
+shared_gb = 8.6
 
 [suites.tool_sort]
 # Most of a tool-sort episode is remote VLM latency, which overlaps across
