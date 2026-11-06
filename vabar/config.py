@@ -149,6 +149,7 @@ SUITE_KEYS = (
     "variants",
     "env",
     "flags",
+    "renderer",
 )
 REGISTRY_KEYS = ("physics", "cameras", "max_steps")
 """The suite keys that rewrite a registered variant, rather than a run's flags or environment."""
@@ -215,6 +216,19 @@ class Config:
     def num_worlds(self, task: str) -> int:
         """Worlds per wave this config allows for ``task``: its suite's override, else the runtime's."""
         return int(self.table(task).get("num_worlds", self.runtime["num_worlds"]))
+
+    def renderer(self, task: str) -> str:
+        """The renderer ``task`` runs on: its suite's, unless ``--set renderer=`` says otherwise, else the runtime's.
+
+        A suite states one when its perception was tuned on it. The command line
+        beats the file, and ``--set suites.<suite>.renderer=`` beats both, as for ``workers``.
+        """
+        suite = task.partition("/")[0]
+        stated = self.table(task).get("renderer", "")
+        overruled = _set_on_command_line(self, "renderer") and not _set_on_command_line(
+            self, f"suites.{suite}.renderer"
+        )
+        return stated if stated and not overruled else self.runtime["renderer"]
 
     def env(self, task: str = "") -> dict[str, str]:
         """The environment this config adds: runtime ``env``, the two switches, then the task's suite."""
@@ -445,6 +459,8 @@ def _validate(where: str, data: dict) -> tuple[dict[str, Any], dict[str, dict[st
             out["variants"] = _check_str_map(f"{where}: suites.{key}.variants", out["variants"])
         if "env" in out:
             out["env"] = _check_str_map(f"{where}: suites.{key}.env", out["env"])
+        if "renderer" in out and out["renderer"] not in RENDERERS:
+            raise ConfigError(f"{where}: suites.{key}.renderer = {out['renderer']!r}; one of {RENDERERS}")
         if "flags" in out:
             flags = out["flags"]
             if not isinstance(flags, list) or not all(isinstance(f, str | int | float) for f in flags):

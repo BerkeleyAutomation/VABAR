@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Compile the RTX shader cache and the Warp kernels once, before anything is timed.
 
-    python -m vabar warmup                                # one task per suite, --renderer rtx
+    python -m vabar warmup                                # one task per suite, on its own renderer, else rtx
     python -m vabar warmup --suites tool_hanging,gear_mesh
     python -m vabar warmup --cell syringe_packing/L1      # every scene the cell renders, 8 at a time
     python -m vabar warmup --cell all --jobs 12           # every scene of every cell
@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import hashlib
 import importlib.util
 import json
 import os
@@ -84,6 +85,9 @@ SCENE_TIMEOUT_S = 900.0
 here would otherwise end it: a `vabar bench` sat 35 minutes on one gear scene,
 with the other 29 warmed in 8. The slowest healthy cold compile measured is 713 s."""
 
+SCENE_SUFFIXES = (".task", ".suite", ".py", ".json", ".xml", ".toml")
+"""What a suite's scenes are built from. Meshes and textures rarely change without one of these changing too."""
+
 SCENE_ATTEMPTS = 2
 """The pool watchdog's retries have cleared this hang each time so far, so a killed scene gets one more try."""
 
@@ -114,14 +118,35 @@ def stamp_path(cell: str, config: cfg.Config) -> Path | None:
     return Path(spec.origin).parent / "bin" / "cache" / "vabar_warm" / name
 
 
-def _renderer(config: cfg.Config, extra: Sequence[str]) -> str:
-    """The renderer a run will use: its own ``--renderer`` flag, else its config's."""
+def _renderer(config: cfg.Config, cell: str, extra: Sequence[str]) -> str:
+    """The renderer a run will use: its own ``--renderer`` flag, else what its config says of its suite."""
+    from .benchmark import load
+
     for index, arg in enumerate(extra):
         if arg == "--renderer" and index + 1 < len(extra):
             return extra[index + 1]
         if arg.startswith("--renderer="):
             return arg.split("=", 1)[1]
-    return str(config.runtime.get("renderer", "rtx"))
+    return config.renderer(load()["cells"][cell]["suite"])
+
+
+def scene_digest(cell: str) -> str:
+    """A hash of the files a cell's suite builds its scenes from, kept in the stamp.
+
+    A stamp alone says a cell was compiled, not which scene. New materials after a
+    ``git pull`` then compile during the first perception, which is the timeout
+    warming exists to prevent. A stamp written before this held nothing, so it
+    warms once more, and a cached scene takes about 20 s.
+    """
+    from .benchmark import load
+
+    root = REPO / "tasks" / load()["cells"][cell]["suite"]
+    digest = hashlib.sha256()
+    for path in sorted(root.rglob("*")):
+        if path.suffix in SCENE_SUFFIXES and path.is_file() and "__pycache__" not in path.parts:
+            digest.update(path.relative_to(root).as_posix().encode())
+            digest.update(path.read_bytes())
+    return digest.hexdigest()
 
 
 def ensure_warm(cell: str, config: cfg.Config, extra: Sequence[str] = ()) -> None:
@@ -135,24 +160,28 @@ def ensure_warm(cell: str, config: cfg.Config, extra: Sequence[str] = ()) -> Non
     The same environment's second run scored 5/6, with no timeouts. A warmup
     that fails is not recorded, so the next run tries again.
     """
-    if _renderer(config, extra) != "rtx":
+    renderer = _renderer(config, cell, extra)
+    if renderer != "rtx":
         return
     stamp = stamp_path(cell, config)
-    if stamp is None or stamp.exists():
+    if stamp is None:
+        return
+    digest = scene_digest(cell)
+    if stamp.exists() and stamp.read_text() == digest:
         return
     print(f"[bench] first run of {cell} on this install: compiling its scenes (once; --no-warmup skips)", flush=True)
     sets = [x for s in config.overrides for x in ("--set", s)]
-    if main(["--cell", cell, "--config", config.ref, *sets]) != 0:
+    if main(["--cell", cell, "--config", config.ref, *sets, "--renderer", renderer]) != 0:
         print(f"[bench] warming {cell} failed for some scenes: its first perception may time out", flush=True)
         return
     stamp.parent.mkdir(parents=True, exist_ok=True)
-    stamp.touch()
+    stamp.write_text(digest)
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="vabar warmup", description=__doc__.splitlines()[0])
     parser.add_argument("--suites", default="", help="comma-separated suites; default every suite in the benchmark")
-    parser.add_argument("--renderer", default="rtx", help="the renderer whose shaders to compile (default rtx)")
+    parser.add_argument("--renderer", default="", help="the renderer to compile for (default: the suite's, else rtx)")
     parser.add_argument("--out", default="outputs/warmup", help="where the throwaway run directories go")
     parser.add_argument("--print", action="store_true", help="print the commands and exit")
     parser.add_argument("--config", default=None, help="experiment config whose physics and cameras to compile for")
@@ -189,7 +218,8 @@ def main(argv: list[str] | None = None) -> int:
         # fails to build does not take the others with it -- and each exits
         # cleanly, which is when the renderer writes what it compiled.
         cmd = [sys.executable, "-m", "vabar", "run", "--config", config.ref, *sets]
-        cmd += ["--task", task, "--episodes", str(episode), "--solve", "idle", "--renderer", args.renderer]
+        renderer = args.renderer or config.renderer(task) or "rtx"
+        cmd += ["--task", task, "--episodes", str(episode), "--solve", "idle", "--renderer", renderer]
         cmd += ["--max-steps", "1", "--out", str(out), "--name", name]
         return name, cmd
 
@@ -221,7 +251,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[warmup] {label}: FAILED after {wall:.0f} s; see {log}", flush=True)
         return False
 
-    print(f"[warmup] {len(scenes)} scene(s), {jobs} at a time, --renderer {args.renderer} (logs: {out})", flush=True)
+    renderer = args.renderer or "each suite's own, else rtx"
+    print(f"[warmup] {len(scenes)} scene(s), {jobs} at a time, renderer: {renderer} (logs: {out})", flush=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, jobs)) as pool:
         results = list(pool.map(warm, scenes))
     return 0 if all(results) else 1

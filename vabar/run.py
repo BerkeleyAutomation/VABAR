@@ -176,8 +176,9 @@ def config_flags(
         add += ["--max-steps", str(table["max_steps"])]
     if runtime["bus_timeout"] > 0 and solve == "graph":
         add += ["--bus-timeout", _number(runtime["bus_timeout"])]
-    if runtime["renderer"] and vision:
-        add += ["--renderer", runtime["renderer"]]
+    renderer = config.renderer(task)
+    if renderer and vision:
+        add += ["--renderer", renderer]
     dropped: list[str] = []
     fields: dict[str, Any] = {}
     for key, flag in RUNTIME_FLAGS.items():
