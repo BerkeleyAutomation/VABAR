@@ -58,6 +58,11 @@
   ; rather than among them because the headline has to stay `sort_all`, and
   ; because the tier is a sweep -- one draw per document -- rather than eleven
   ; scenes each worth an argument.
+  ;
+  ; `level2_N` is the heap tier above it, the same way: the same bench and pool,
+  ; but 8 to 12 objects dropped into a pile rather than laid out, so an object
+  ; can be under another. Ported from RoboSimStudio-dev `tool_perception`
+  ; (7ffc4017, 97309ce3, 067645c6); see docs/validation/tool_sort_l2.md.
   (:variants sort_all sort_all_neat hammer sort_new sort_bench sort_power
              sort_electrical sort_wiring sort_electrical_usd sort_electrical_usd_geom
              syringe
@@ -65,7 +70,12 @@
              level1_7 level1_8 level1_9 level1_10 level1_11 level1_12
              level1_13 level1_14 level1_15 level1_16 level1_17 level1_18
              level1_19 level1_20 level1_21 level1_22 level1_23 level1_24
-             level1_25 level1_26 level1_27 level1_28 level1_29 level1_30)
+             level1_25 level1_26 level1_27 level1_28 level1_29 level1_30
+             level2_1 level2_2 level2_3 level2_4 level2_5 level2_6
+             level2_7 level2_8 level2_9 level2_10 level2_11 level2_12
+             level2_13 level2_14 level2_15 level2_16 level2_17 level2_18
+             level2_19 level2_20 level2_21 level2_22 level2_23 level2_24
+             level2_25 level2_26 level2_27 level2_28 level2_29 level2_30)
 
   (:staging
     (:profile vab_tool_sort@v2)

@@ -161,9 +161,8 @@ def build(n: int = 30) -> dict:
         suite="tool_sort",
         graph="gap_perception_loop",
         flags=[*UNPRIVILEGED, "--max-steps", "20000"],
-        instances=[],
-        selection="not frozen in this release",
-        notes="Level 2 (cluttered tools) instance documents are not part of this release yet.",
+        instances=_variants("tool_sort", [f"level2_{i}" for i in range(1, n + 1)]),
+        selection="benchmark/tool_sort/level2: the 30 frozen documents, each a registered variant (episode 0).",
     )
     # Tool hanging's graphs run past the documents' own budgets (measured
     # completions: about 5,800 steps at Level 1), so the evaluated recipes raise them.

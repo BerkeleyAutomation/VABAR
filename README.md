@@ -231,9 +231,10 @@ the same settings.
 | Gear meshing | 13.7-15.0 min | 8 | 42.3 GB | 21-23/30 | 89-91% of gears | 90.0% |
 | Syringe packing | 32.3 min | 8 | 53.6 GB | 0/30 (mean reward 0.27) | 0% | 63.0% |
 | Cable insertion | 25.7 min | 8 | 43.3 GB | 21/30 | 70% | 30.0% |
+| Tool sorting | 32 min | 15 | 88 GB | 1-2/30 | 57-59% of objects | 33.7% |
 | Cable routing | 32.6 min | 2 x 15-world waves | 11.6 GB | 19-22/30 | 63-73% | 46.7% |
 
-Tool sorting's L2 cell has no instances in this release. Syringe packing is the one task class below the paper: its
+Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing is the one task class below the paper: its
 tray and syringe colliders differ from what the cameras see (`docs/validation/dev_history_merge.md`). Cable routing L2
 is the slowest cell: a repaired episode can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of
 83 successes at the declared servo speed. Gear meshing and cable routing L2 declare the servo speed their graphs were

@@ -72,6 +72,7 @@ cell. The reference graph and its flags are recorded per cell in
 | Cell | Graph | Flags |
 | --- | --- | --- |
 | `tool_sorting/L1` | `gap_perception_loop` | `--no-privileged --perception vision --bus-timeout 180 --max-steps 20000` |
+| `tool_sorting/L2` | `gap_perception_loop` | same |
 | `tool_hanging/L1` | `gap_perception` | `--motion curobo --no-privileged --perception vision --bus-timeout 180 --max-steps 8500` |
 | `tool_hanging/L2` | `gap_perception` | same, with `--max-steps 22000` |
 | `gear_meshing/L1`, `L2` | `gap_perception` | `--motion curobo --no-privileged --perception vision --bus-timeout 180` |

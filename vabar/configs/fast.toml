@@ -41,6 +41,44 @@ max_steps = 14000
 # succeeded 5 of 5. See docs/validation/tool_sort_vlm.md.
 env = { GAP_VLM_MODEL = "gemini-3.1-flash-lite" }
 
+[suites]
+# tool_sorting/L2 (the heap tier): each document's own budget, 2,400 steps per goal,
+# capped at 20,000, instead of the suite's 14,000 above, which was measured on L1's
+# 4 or 5 objects and cuts 8-12 of them off. Full cell, objects sorted of 273, wall
+# time on 15 workers, with the graph's attempt log and stall-stopped descent: this
+# cap 57.1-59.3%, 32 min; uncapped (up to 28,800) 57.9-60.4%, 33-37 min. Physics and
+# VLM are the suite's. See docs/validation/tool_sort_l2.md.
+"tool_sort/level2_1" = { max_steps = 19200 }
+"tool_sort/level2_2" = { max_steps = 19200 }
+"tool_sort/level2_3" = { max_steps = 20000 }
+"tool_sort/level2_4" = { max_steps = 20000 }
+"tool_sort/level2_5" = { max_steps = 20000 }
+"tool_sort/level2_6" = { max_steps = 20000 }
+"tool_sort/level2_7" = { max_steps = 20000 }
+"tool_sort/level2_8" = { max_steps = 19200 }
+"tool_sort/level2_9" = { max_steps = 20000 }
+"tool_sort/level2_10" = { max_steps = 20000 }
+"tool_sort/level2_11" = { max_steps = 20000 }
+"tool_sort/level2_12" = { max_steps = 19200 }
+"tool_sort/level2_13" = { max_steps = 20000 }
+"tool_sort/level2_14" = { max_steps = 20000 }
+"tool_sort/level2_15" = { max_steps = 19200 }
+"tool_sort/level2_16" = { max_steps = 20000 }
+"tool_sort/level2_17" = { max_steps = 20000 }
+"tool_sort/level2_18" = { max_steps = 19200 }
+"tool_sort/level2_19" = { max_steps = 20000 }
+"tool_sort/level2_20" = { max_steps = 20000 }
+"tool_sort/level2_21" = { max_steps = 19200 }
+"tool_sort/level2_22" = { max_steps = 20000 }
+"tool_sort/level2_23" = { max_steps = 19200 }
+"tool_sort/level2_24" = { max_steps = 19200 }
+"tool_sort/level2_25" = { max_steps = 19200 }
+"tool_sort/level2_26" = { max_steps = 19200 }
+"tool_sort/level2_27" = { max_steps = 19200 }
+"tool_sort/level2_28" = { max_steps = 19200 }
+"tool_sort/level2_29" = { max_steps = 19200 }
+"tool_sort/level2_30" = { max_steps = 19200 }
+
 [suites.tool_hanging]
 # Nothing: tool_hanging runs as in `default`. Both tuned knobs failed the
 # full-cell check (L1, 30 instances; docs/validation/fast_tool_hanging.md):

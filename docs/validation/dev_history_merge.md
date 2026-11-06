@@ -106,7 +106,8 @@ the cell.
 - **Wrist limit.** A symmetric gripper allows two jaw orientations. `axis_grasp_top_down.py` now takes the one that
   keeps joint 7 inside its ±2.897 rad limit and nearest to where it is.
 - **Retries per position.** In `select_pair.py`, a detection position is spent after `max_attempts_per_instance` failed
-  attempts (now 3), not after the first.
+  attempts (3 by default; this graph passes 4), not after the first. **This did not run until later:** the graph fed
+  `select_pair` an empty log on every visit. See "The graph's two fixes" in [tool_sort_l2.md](tool_sort_l2.md).
 - **Label prompt.** `select_pair.py` asks the VLM to pick the closest label from the list and always reply with one,
   where it used to accept "none".
 - **Bin filter.** `select_pair.py` drops DINO boxes covering more than 30% of the source crop, since that box is the
@@ -447,7 +448,7 @@ Porting it into VABAR means:
 - a frozen copy under `benchmark/tool_sort/level2`;
 - the `tool_sorting/L2` cell's instance list in `vabar/benchmark.py`, which is empty today.
 
-Adding instances is a benchmark decision, not a fix. Not ported, and fix 1 was not measured on them.
+Adding instances is a benchmark decision, not a fix. Ported and measured since, with fix 1: [tool_sort_l2.md](tool_sort_l2.md).
 
 ## Not tested, ranked
 
@@ -466,7 +467,7 @@ Ranked by expected effect on today's cells. None of these has a measured rate on
    adds a retry when a released tool falls back into the source. Check that `completed_source_ids` is wired first.
 5. **Tool hanging: support-disengagement margin 0.05 m** (a9d680d9 raised the runtime default from 0.04). Port it as a
    graph input on `disengage_sg*.plan`.
-6. **Tool sorting Level 2.** See "Scene-level leads": adding it is a benchmark decision.
+6. **Tool sorting Level 2.** Ported and measured: [tool_sort_l2.md](tool_sort_l2.md).
 
 Porting instructions for 3-5 are in
 `/home/shadeform/speed_ws/agent_scratch/devmerge/notes/three_suites.md`.

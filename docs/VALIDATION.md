@@ -143,7 +143,6 @@ repositories, and installed with a plain `uv sync`. From that clone:
 ## Not validated here
 
 - Full 30-instance runs of each cell (12 × 30 graph episodes).
-- Tool sorting Level 2. No frozen instances ship for it.
 - Cable routing Level 2, the `weave_vision` graph, SAM 3 segmentation for the cable
   graphs, and multi-world Studio fleets.
 - The Isaac Lab Arena implementation, which is not part of this repository.

@@ -1,0 +1,144 @@
+; -----------------------------------------------------------------------
+; MACHINE-DRAFTED by tools/build_sort_scene.py. Read it before it ships:
+; the structure below is generated and the argument is not. Every other
+; document in this directory says why its object set is worth staging,
+; and that is the part a generator cannot write.
+;
+; provenance.tier: derived
+; source-of-record: assets/vab_tool_sort/level2/level2_28/
+;
+; MEASURED ON THE SHIPPED SIDECAR, in metres (longest x middle x shortest):
+;
+;   screwdriver              0.200 x 0.034 x 0.033   0.100 kg
+;   tape_measure             0.094 x 0.072 x 0.032   0.250 kg
+;   painters_tape            0.073 x 0.073 x 0.014   0.023 kg
+;   spur_gear_30t            0.060 x 0.060 x 0.020   0.304 kg
+;
+; THE OBJECTS ARE PILED, NOT LAID OUT, and that is the task rather than a
+; property of it. bin1 is filled by dropping the objects from a tower, so they
+; come to rest ON EACH OTHER: a grasp is often a two-object problem, what is on
+; top changes as the bin is emptied, and an object under another cannot be taken
+; until that one is. Two footprints overlap by up to 111.3 mm (industrial_screwdriver_1 <-> industrial_tape_measure_0);
+; the heap stands 104 mm above the bin1 frame.
+;
+; THERE IS NO PROMISE THE PALM FITS BESIDE ANY GIVEN OBJECT. The singulated
+; variants keep every object's centre 80 mm from the two walls its own jaws
+; close towards, because a 2F-85's coupler is 74.9 mm each side of the tool
+; centre and bin1's walls stand 80 mm proud of its floor. A heap cannot, and
+; none of the shipped piles does: the tightest centre-to-wall here is 59.6 mm,
+; against their 25-87 mm.
+; An object against a wall is reached by first taking what is on top of it. The
+; step budget below is the suite's flat 2400 per goal, which every pile variant
+; also carries -- check it against a run rather than trusting it on a new set.
+;
+; WHAT IS GUARANTEED is that every object starts INSIDE bin1_region -- what
+; `(:init)` below asserts, tested on the object's centre. The tightest margin
+; is 26.9 mm (industrial_painters_tape_0), in a region 0.36 x 0.46 m
+; and 0.15 m tall. A pile that stacked an object out through that ceiling
+; would be a document that was false before a policy acted.
+;
+; DROPPED AT SEED 30, spread 0.5, by this script's own sampler and NOT
+; robosuite's, whose seeds mean something else. Rebuilding this scene means that
+; seed and that script; the poses in the sidecar are the record either way.
+;
+; SETTLED for 3000 steps in the exported model, which is what the poses
+; below are recorded from. The deepest contact is 1.51 mm, and the fastest
+; object is still doing 0.7 mm/s (industrial_tape_measure_0) -- the heap has landed.
+; -----------------------------------------------------------------------
+
+(define (problem LEVEL2/LEVEL2_28)
+  (:domain robosuite)
+
+  (:language sort the 8 items out of bin1 into the compartment of
+             bin2 whose label names each one)
+
+  (:staging
+    (:profile vab_industrial_robotiq@v1)
+    (:export vab_tool_sort/level2/level2_28
+      (:file scene_norobot.xml)
+      ; Painted by assets/look.py: the export's wood bins and printed labels.
+      (:entity tool_sort_workcell))
+    ; 2400 per goal x 8 goals.
+    (:max-steps 19200)
+  )
+
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+
+  (:objects
+    industrial_screwdriver_0 - screwdriver
+    industrial_screwdriver_1 - screwdriver
+    industrial_tape_measure_0 - tape_measure
+    industrial_painters_tape_0 - painters_tape
+    industrial_painters_tape_1 - painters_tape
+    industrial_painters_tape_2 - painters_tape
+    industrial_spur_gear_30t_0 - spur_gear_30t
+    industrial_spur_gear_30t_1 - spur_gear_30t
+    distractor_industrial_d_battery_0 - d_battery
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as (x0 y0 x1 y1).
+  ; bin2's compartments are the quadrants of its floor.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_screwdriver_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (bin2_tape_measure_region
+        (:target bin2)
+        (:ranges ((-0.195 0.0 0.0 0.245)))
+    )
+    (bin2_painters_tape_region
+        (:target bin2)
+        (:ranges ((0.0 0.0 0.195 0.245)))
+    )
+    (bin2_spur_gear_30t_region
+        (:target bin2)
+        (:ranges ((-0.195 -0.245 0.0 0.0)))
+    )
+  )
+
+  (:init
+    (In industrial_screwdriver_0 bin1_region)
+    (In industrial_screwdriver_1 bin1_region)
+    (In industrial_tape_measure_0 bin1_region)
+    (In industrial_painters_tape_0 bin1_region)
+    (In industrial_painters_tape_1 bin1_region)
+    (In industrial_painters_tape_2 bin1_region)
+    (In industrial_spur_gear_30t_0 bin1_region)
+    (In industrial_spur_gear_30t_1 bin1_region)
+    (In distractor_industrial_d_battery_0 bin1_region)
+  )
+
+  (:goal
+    (And
+      (In industrial_screwdriver_0 bin2_screwdriver_region)
+      (In industrial_screwdriver_1 bin2_screwdriver_region)
+      (In industrial_tape_measure_0 bin2_tape_measure_region)
+      (In industrial_painters_tape_0 bin2_painters_tape_region)
+      (In industrial_painters_tape_1 bin2_painters_tape_region)
+      (In industrial_painters_tape_2 bin2_painters_tape_region)
+      (In industrial_spur_gear_30t_0 bin2_spur_gear_30t_region)
+      (In industrial_spur_gear_30t_1 bin2_spur_gear_30t_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSortFaces")
+    (:tools   "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception_loop "graphs/gap_perception_loop")
+  )
+
+  (:provenance
+    (:tier derived)
+    (:source "generated by tools/build_sort_scene.py from assets/vab_tool_sort/scene.xml,
+              mujoco 3.11.0")
+  )
+)

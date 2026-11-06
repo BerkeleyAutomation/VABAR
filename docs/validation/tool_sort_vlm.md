@@ -29,7 +29,8 @@ enough. Against today's `gemini-2.5-flash`:
   an AA battery or a breadboard. It assigned the same label 20 or more times in 16 of 60 episodes, against 7 for 2.5
   Flash (p = 0.06), and those episodes end near reward 0.2-0.4. 2.5 Flash's randomness lets it wander off such an
   object. A label-level exclusion in `select_pair` (stop offering a label after K failed attempts) would fix this.
-  Today's exclusion is by pixel position, and a bumped object moves.
+  Today's exclusion is by pixel position, and a bumped object moves. It did not act at all when this was measured: see
+  "The graph's two fixes" in [tool_sort_l2.md](tool_sort_l2.md), which has since fixed that.
 
 **Runner-up: `gemini-3.6-flash` with thinking at `MINIMAL`.** Its two cells reached 5/30 and 7/30 with the best
 partial credit (0.68), only 4 stuck episodes, and 31.0 / 30.3 min. But it needs the client patch below (the shipped
