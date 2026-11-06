@@ -222,7 +222,7 @@ the same settings.
 | Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | about 14 min | 8 | 41.9 GB | 29/30 | 98% of gears | 100.0% |
 | Syringe packing | hours | 19.5 min (old graph) | 21.6 min | 8 | 54.1 GB | 7-13/30 | 23-43% | 87.0% |
 | Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 39.2 GB | 30/30 | 100% | 86.7% |
-| Tool sorting | hours | not run | 14-16 min | 15 | 86.8 GB | 7-13/30 | 64-75% of objects | 47.1% |
+| Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 9-11/30 | 72-79% of objects | 47.1% |
 | Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 20 min | 2 x 15-world waves | 12.2 GB | 19-20/30 | 63-67% | 46.7% |
 
 | Cell (L2, `fast`) | Wall | Workers | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |

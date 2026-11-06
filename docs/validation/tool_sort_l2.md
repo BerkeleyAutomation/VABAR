@@ -62,10 +62,10 @@ measured on both cells. Raw output is under `/home/shadeform/speed_ws/agent_scra
 | L1 | as found | 64-75% | 7-13/30 | about 11,000-12,000 | 14-16 min |
 | L1 | log only | 79.3% | 9/30 | 11,013 | 19.2 min (slow builds) |
 | L1 | log, 2 s stall | 81.4%, 80.0% | 10/30, 10/30 | 8,277, 8,572 | 11.7 min, 12.5 min |
-| **L1** | **log, 1 s stall (ships)** | **78.6%, 75.7%** | **9/30, 9/30** | **8,718, 8,718** | **28.6 min, 22.1 min (each lost 15 min to a build hang)** |
+| **L1** | **log, 1 s stall (ships)** | **78.6%, 75.7%, 72.1%, 77.1%** | **9/30, 9/30, 11/30, 9/30** | **8,718, 8,718, 8,143, 8,617** | **28.6 and 22.1 min (each lost 15 min to a build hang), 14.2 min (with its warmup), 11.9 min** |
 
-- **1 s or 2 s:** 1 s averages 58.7% on L2 and 77.1% on L1; 2 s averages 54.6% and 80.7%. Neither gap is clearly outside
-  the noise. 1 s ships, with more L2 runs behind it.
+- **1 s or 2 s:** 1 s averages 58.7% on L2 and 75.9% on L1; 2 s averages 54.6% and 80.7%. Neither gap is clearly outside
+  the noise, and they point opposite ways. 1 s ships, with more runs behind it on both cells.
 - **The cost:** empty grips rise (85 against about 33 on L2), because a descent stopped short sometimes passes
   `verify_reach`. Some episodes also end early with the graph reporting itself finished once every spot it can see is
   spent, with objects still unsorted: 12-21 of 30 on L2 and 19-21 of 30 on L1. Scores still rise, so the retries given
