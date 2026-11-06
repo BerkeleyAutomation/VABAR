@@ -276,6 +276,8 @@ uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --g
   process, pool and fleet workers included. See [`vabar/config.py`](vabar/config.py).
 - Every run directory gets a `vabar_config.json`: the resolved config, its sha256 and
   the VABAR commit.
+- A cell's first `vabar bench --solve graph` on an install compiles its RTX scenes first (once per environment;
+  `--no-warmup` skips it). Skipped on a cold install, the first perception times out and the episodes abort.
 - Before timing anything on a new machine, run `uv run python -m vabar warmup`. It takes
   one idle step of each suite with `--renderer rtx`, so the RTX shader cache (about 4
   minutes the first time) and the Warp kernels are compiled once, not inside your first

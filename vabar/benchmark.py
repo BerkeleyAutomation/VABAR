@@ -746,6 +746,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--set", action="append", default=[], metavar="KEY=VALUE", help="override one config key; repeatable"
     )
+    parser.add_argument(
+        "--no-warmup", action="store_true", help="do not compile the cell's scenes on its first run here"
+    )
     parser.add_argument("--build", action="store_true", help=argparse.SUPPRESS)
     args, extra = parser.parse_known_args(argv)
 
@@ -792,6 +795,10 @@ def main(argv: list[str] | None = None) -> int:
         for job in plan.jobs:
             print(plan.line(job))
         return 0
+    if args.solve == "graph" and not args.no_warmup:
+        from .warmup import ensure_warm
+
+        ensure_warm(args.cell, config, extra)
     return run_plan(plan, flags)
 
 

@@ -30,12 +30,15 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import importlib.util
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
 import time
+from collections.abc import Sequence
 from pathlib import Path
 
 from . import REPO
@@ -71,6 +74,54 @@ def cell_scenes(cells: list[str], config: cfg.Config, *, every_instance: bool) -
             name = f"{task}@{episode}" if every_instance else task
             out.setdefault(name, (task, episode))
     return out
+
+
+def stamp_path(cell: str, config: cfg.Config) -> Path | None:
+    """Where this install records that a cell's scenes are compiled; ``None`` without the RTX renderer.
+
+    Beside the renderer's own cache, inside the ``ovrtx`` package: a new
+    environment starts cold, and its stamps start gone with it.
+    """
+    spec = importlib.util.find_spec("ovrtx")
+    if spec is None or not spec.origin:
+        return None
+    name = re.sub(r"[^A-Za-z0-9._-]+", "_", f"{config.ref}__{cell}")
+    return Path(spec.origin).parent / "bin" / "cache" / "vabar_warm" / name
+
+
+def _renderer(config: cfg.Config, extra: Sequence[str]) -> str:
+    """The renderer a run will use: its own ``--renderer`` flag, else its config's."""
+    for index, arg in enumerate(extra):
+        if arg == "--renderer" and index + 1 < len(extra):
+            return extra[index + 1]
+        if arg.startswith("--renderer="):
+            return arg.split("=", 1)[1]
+    return str(config.runtime.get("renderer", "rtx"))
+
+
+def ensure_warm(cell: str, config: cfg.Config, extra: Sequence[str] = ()) -> None:
+    """Compile a cell's scenes the first time this install runs its reference graph.
+
+    **On a cold install a cell's first run does not just run slowly, it fails.**
+    Under the cells' ``--bus-timeout 180`` a graph's first perception asks for a
+    frame the renderer is still compiling for, and the episode aborts. Measured
+    on ``tool_hanging/L1`` with ``--limit 6``, on two new environments: 0/6 both
+    times, 4 episodes with ``BusTimeout: render was not answered within 180 s``.
+    The same environment's second run scored 5/6, with no timeouts. A warmup
+    that fails is not recorded, so the next run tries again.
+    """
+    if _renderer(config, extra) != "rtx":
+        return
+    stamp = stamp_path(cell, config)
+    if stamp is None or stamp.exists():
+        return
+    print(f"[bench] first run of {cell} on this install: compiling its scenes (once; --no-warmup skips)", flush=True)
+    sets = [x for s in config.overrides for x in ("--set", s)]
+    if main(["--cell", cell, "--config", config.ref, *sets]) != 0:
+        print(f"[bench] warming {cell} failed for some scenes: its first perception may time out", flush=True)
+        return
+    stamp.parent.mkdir(parents=True, exist_ok=True)
+    stamp.touch()
 
 
 def main(argv: list[str] | None = None) -> int:
