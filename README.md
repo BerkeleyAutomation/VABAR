@@ -110,8 +110,8 @@ RoboSimStudio, Newton, the GaP runtime and cuRobo are installed from Git at pinn
 revisions (see `pyproject.toml`).
 
 ```bash
-git clone https://github.com/BerkeleyAutomation/VABAR-RoboSimStudio.git
-cd VABAR-RoboSimStudio
+git clone -b speed/default-fast https://github.com/BerkeleyAutomation/VABAR.git
+cd VABAR
 uv sync
 uv run python -m vabar list            # 373 variants across the six suites (v1.0's 371 + two cable-free USB-C documents)
 ```
@@ -124,11 +124,11 @@ also need the skill library. Its bundles resolve the graph runtime from a siblin
 checkout, so all three repositories sit side by side:
 
 ```bash
-cd ..   # the directory holding VABAR-RoboSimStudio/
-git clone https://github.com/graph-robots/open-robot-skills.git
-git -C open-robot-skills checkout 752dfbd96968d4d08379f8111765efbf6457800b
+cd ..   # the directory holding VABAR/
+git clone https://github.com/KeplerC/open-robot-skills.git
+git -C open-robot-skills checkout b15859a244658abc6060f3aa3b6827780746a5fe
 git clone https://github.com/KeplerC/graph-as-policy.git
-git -C graph-as-policy checkout 09e45f8de27bc1a29629382ed7c2b9b4b384b3d6
+git -C graph-as-policy checkout 06dd6193e13eab816123febef1369deda0849d91
 (cd open-robot-skills/tools/curobo && CUDA_HOME=/usr/local/cuda uv sync)   # cuRobo tool bundle, once
 ```
 
