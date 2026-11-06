@@ -1,8 +1,14 @@
 """Execute orientation-locked insertion waypoints with the reusable fixture skill."""
 
+import os
+import sys
 from typing import Any, TypedDict
 
 from gap import NodeContext
+
+# Helpers shared by this graph's scripts live beside them.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from motion_checks import checked_execute  # noqa: E402
 
 
 class Output(TypedDict):
@@ -35,22 +41,12 @@ def run(ctx: NodeContext, placement_plan: dict[str, Any]) -> Output:
         )
         trajectory = result.get("trajectory") if result.get("planned") else None
         if not trajectory or not trajectory.get("waypoints"):
-            # The collision-aware plan was refused, but every insert waypoint
-            # lies inside the aperture corridor this graph itself perceived
-            # and cleared -- the ESDF's own conservatism over the lid is the
-            # usual refuser (the mesh world passed these same poses). An
-            # orientation-locked straight line through that corridor is the
-            # reference baseline's own behaviour there, so it is this node's
-            # deliberate fallback rather than a downgrade the backend would
-            # (rightly) refuse to make on its own.
-            result = ctx.tool(
-                "motion.plan_linear",
-                end=final_pose, orientation="lock",
-                attached_object=attachment,
-                allow_start_contact=True, allow_goal_contact=True,
-            )
-            trajectory = result.get("trajectory") if result.get("planned") else None
-        if not trajectory or not trajectory.get("waypoints"):
             raise RuntimeError("cuRobo refused the aperture approach waypoint")
-        ctx.tool("robot.execute_trajectory", trajectory=trajectory)
+        # Release is forbidden unless proprioception confirms the arm actually
+        # reached the insertion target. One failed episode opened 66 mm high.
+        final_pose = checked_execute(
+            ctx, trajectory, final_pose, scale=3.0,
+            position_tolerance=0.004, angle_tolerance=0.04,
+        )
     return {"final_pose": final_pose}
+

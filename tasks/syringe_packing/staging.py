@@ -23,6 +23,8 @@ machinery and lives in the toolkit; what goes in it is this file.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
 
 import numpy as np
@@ -34,7 +36,7 @@ from robosimstudio.specs import ArrangementSpec, CollisionSpec, backend
 from robosimstudio_bench.taskbuild import register_arrangement, register_camera_rig
 from robosimstudio_bench.taskbuild.staging import Profile, Staging, register_profile
 
-__all__ = ["VAB_CAMERAS", "VAB_INDUSTRIAL_V2", "VAB_PHYSICS"]
+__all__ = ["VAB_CAMERAS", "VAB_INDUSTRIAL_V2", "VAB_PHYSICS", "VAB_SYRINGE_FAST"]
 
 
 def _panda_wrist_mount() -> tuple[float, float, float, float, float, float, float]:
@@ -301,4 +303,40 @@ VAB_CAMERAS = {
 
 The latter two are the minimum perception hardware needed by the non-privileged
 sorting/packing graphs; GT graphs remain compatible and simply ignore them.
+"""
+
+
+# --------------------------------------------------------------- the `fast` config
+# Registered beside, never instead of, what the documents stage: no document names these.
+# A run opts in through vabar/configs/fast.toml (`[suites.syringe_packing]`). Measured in
+# docs/validation/fast_syringe_packing.md with tools/fast_tune/syringe_packing.py.
+
+VAB_SYRINGE_FAST = register_arrangement(
+    "vab_syringe_fast@v1",
+    replace(
+        VAB_PHYSICS["vab_500hz@v1"],
+        # 400 Hz rather than 500, and nothing else: 1.2x on the idle trays, the same
+        # 1,958-step posting by the scripted routine, and no more settle drift over 30 s
+        # than 500 Hz. 300 Hz (1.57x) tripled the clutter tray's worst drift to 2.7 mm and
+        # 12 deg; 200 Hz took it to 7.7 mm and 66 deg. The 4 ms contact timeconst stated
+        # above is below the 5 ms 2*dt floor at 400 Hz, so MuJoCo clamps it there.
+        # Fewer iterations, the pyramidal cone, multiccd off and smaller buffers bought
+        # nothing measurable (and the pyramidal cone dropped the syringe).
+        substeps=8,
+    ),
+)
+
+AGENTVIEW_FAST = register_camera_rig(
+    "agentview_fast@v1",
+    tuple(camera.scaled(800, 600) for camera in VAB_CAMERAS["agentview@v2"]),
+)
+"""``agentview@v2`` at 0.625 of its resolution (3 x 800x600), same poses and fields of view.
+
+Measured with the cell's graph protocol (``gap_perception``, 2-world fleets) on
+``tray_pair_both_t00``, ``t01`` and ``t05``: reward 0.50 in all six worlds, as the
+reference scores on t00 and t05 (docs/validation/fast_resolution.md). 0.75 (960x720)
+scored the same. 0.5 (640x480) is not safe: on t05 it loses the syringe at
+``target_sg.perceive`` in both worlds. Whether ``perceive_target.py`` accepts a SAM 3
+detection is not monotonic in resolution: on t01 it is the 1280x960 reference that cannot
+perceive the syringe (both worlds, twice), while 800x600 and 960x720 do.
 """
