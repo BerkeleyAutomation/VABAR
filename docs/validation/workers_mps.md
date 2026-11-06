@@ -208,7 +208,8 @@ RTX PRO 6000. The stack:
 - cable routing as 15-world fleet waves (`cable_fleet.md`);
 - tool sorting on Gemini 3.1 Flash-Lite.
 
-The host's other tenants kept its load at 82-95 on 240 cores. The fleet is host-bound, and it stepped at 131
+The host's other tenants kept its load at 82-95 on 240 cores. This note read the fleet as host-bound, which
+[fleet_profile.md](fleet_profile.md) later showed wrong: GPU physics is its limit. It stepped at 131
 steps/s here against 163-186 alone, so these are upper bounds. Wall time is launch to exit. Peak is the GPU's
 `memory.used`, sampled every 10 s, minus another tenant's 3.9 GB on the two cards that had one.
 

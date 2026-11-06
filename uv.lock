@@ -3605,7 +3605,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/3d/c3/44b1d1ea4bcb4bbed
 [[package]]
 name = "robosimstudio"
 version = "0.1.0"
-source = { git = "https://github.com/KeplerC/robosimstudio.git?rev=8286fea9b49086500cf177cd1d4d74e06deeaf0b#8286fea9b49086500cf177cd1d4d74e06deeaf0b" }
+source = { git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774#39b7a6e75ddfbd1f68ebb7242caf098804da6774" }
 dependencies = [
     { name = "coacd" },
     { name = "fast-simplification" },
@@ -4610,7 +4610,7 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "opencv-python" },
     { name = "pillow" },
-    { name = "robosimstudio", extras = ["gap", "curobo"], git = "https://github.com/KeplerC/robosimstudio.git?rev=8286fea9b49086500cf177cd1d4d74e06deeaf0b" },
+    { name = "robosimstudio", extras = ["gap", "curobo"], git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774" },
     { name = "rtree" },
     { name = "scikit-image" },
     { name = "trimesh" },
@@ -4621,7 +4621,7 @@ dev = [
     { name = "pytest" },
     { name = "ruff", specifier = "==0.16.1" },
 ]
-rtx = [{ name = "robosimstudio", extras = ["rtx"], marker = "sys_platform == 'linux' or sys_platform == 'win32'", git = "https://github.com/KeplerC/robosimstudio.git?rev=8286fea9b49086500cf177cd1d4d74e06deeaf0b" }]
+rtx = [{ name = "robosimstudio", extras = ["rtx"], marker = "sys_platform == 'linux' or sys_platform == 'win32'", git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774" }]
 
 [[package]]
 name = "vcs-versioning"

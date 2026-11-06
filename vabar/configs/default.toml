@@ -133,8 +133,9 @@ env = { GAP_VLM_MODEL = "gemini-2.5-flash" }
 #   8 x 4: 18.1 min, 16/30. 30 x 1: 24.4 min, 17/30 (its one wave carried a
 #     13,000-step truncation). 8 x 2: 28.7 min, 17/30 (two waves a worker).
 #   Single-world, 1 x 6 with MPS, same stack: 46.5 min, 18/30 (0.817), 32.8 GB.
-# A wave advances at 9-12 steps/s whatever its width (host-bound), so the
-# cell takes about its longest episode: 15-24 min.
+# A wave's GPU cost barely depends on its width, so the cell takes about its
+# longest episode. The times above predate docs/validation/fleet_profile.md,
+# which took L2 from 31 to 23 min; a fleet's limit is GPU physics, not the host.
 num_worlds = 15
 # A fleet cell is held to its wave count, so L1 gets 2 of these; L2 runs its
 # single-world episodes on all 6. Single-world, the cell is physics-bound: one

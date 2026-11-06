@@ -223,7 +223,7 @@ the same settings.
 | Syringe packing | hours | 19.5 min (old graph) | 21.6 min | 8 | 54.1 GB | 7-13/30 | 23-43% | 87.0% |
 | Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 39.2 GB | 30/30 | 100% | 86.7% |
 | Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 9-11/30 | 72-79% of objects | 47.1% |
-| Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 20 min | 2 x 15-world waves | 12.2 GB | 19-20/30 | 63-67% | 46.7% |
+| Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 16 min | 2 x 15-world waves | 12.2 GB | 15-23/30 | 50-77% | 46.7% |
 
 | Cell (L2, `fast`) | Wall | Workers | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -232,12 +232,12 @@ the same settings.
 | Syringe packing | 32.3 min | 8 | 53.6 GB | 0/30 (mean reward 0.27) | 0% | 63.0% |
 | Cable insertion | 25.7 min | 8 | 43.3 GB | 21/30 | 70% | 30.0% |
 | Tool sorting | 32 min | 15 | 88 GB | 1-2/30 | 57-59% of objects | 33.7% |
-| Cable routing | 32.6 min | 2 x 15-world waves | 11.6 GB | 19-22/30 | 63-73% | 46.7% |
+| Cable routing | 23 min | 2 x 15-world waves | 11.6 GB | 14-21/30 | 47-70% | 46.7% |
 
 Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing is the one task class below the paper: its
-tray and syringe colliders differ from what the cameras see (`docs/validation/dev_history_merge.md`). Cable routing L2
-is the slowest cell: a repaired episode can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of
-83 successes at the declared servo speed. Gear meshing and cable routing L2 declare the servo speed their graphs were
+tray and syringe colliders differ from what the cameras see (`docs/validation/dev_history_merge.md`). Cable routing L2's
+repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
+declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
 written at; on the other task classes tested, declaring it did not help.
 
 A worker that stops making progress is killed and its episode re-run, so a rare renderer hang costs a cell up to 15
