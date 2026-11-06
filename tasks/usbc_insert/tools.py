@@ -1108,13 +1108,28 @@ class ToolsUsbc:
         return self.bus.call(read)
 
     def _wait_for_step(self, steps: int, timeout_s: float = 10.0) -> int:
-        """Watch the published step counter advance, off the owner thread."""
+        """Block until the owner has stepped ``steps`` times, through the bus's own wait.
+
+        Polling ``snapshot.step`` in a sleep loop parks nowhere, so under a
+        lockstep clock or a fleet barrier -- which step only while the graph is
+        parked in a bus wait -- the step it spins for never comes and every wait
+        burns its whole deadline. Same shape as upstream's ``robot_tools._wait``.
+        """
         import time  # noqa: PLC0415
 
+        from robosimstudio.core.bus import BusTimeout  # noqa: PLC0415
+
         start = int(self.bus.snapshot.step)
-        deadline = time.monotonic() + timeout_s
-        while int(self.bus.snapshot.step) < start + steps and time.monotonic() < deadline:
-            time.sleep(0.002)
+        target = start + int(steps)
+        deadline = time.monotonic() + float(timeout_s)
+        while int(self.bus.snapshot.step) < target:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                break
+            try:
+                self.bus.wait_for_step(after=int(self.bus.snapshot.step), timeout=remaining)
+            except BusTimeout:
+                break
         return int(self.bus.snapshot.step) - start
 
     # ------------------------------------------------------------------- plan

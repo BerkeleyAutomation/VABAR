@@ -1,0 +1,88 @@
+; Medium, cable-free: insert_medium without its cables (a measured speed variant).
+; Same draw (so the same episode ids are the same layouts), goal, reward,
+; cameras, graphs and budget as insert_medium; the cables, the physics
+; arrangement and the sampler's rebuild declaration differ. Measured against
+; insert_medium in docs/validation/fast_usbc_insert.md, which is the only place
+; this document's claim to "the same task, faster" is made -- and qualified.
+
+(define (problem INSERT_THE_USB_C_PLUG_MEDIUM_NOCABLE)
+
+  (:suite usbc_insert)
+
+  (:language insert the USB-C plug into the bulkhead the other hand is holding)
+
+  (:staging
+    (:scene bench_075)
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left) (:arms-solid true))
+    (:control-mode ee_pose_abs)
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    (:physics usbc_fast@v1)
+    (:cameras yam_station_usbc@v1)
+    ; USBC_MEDIUM's draw, re-posed rather than rebuilt per episode. The rebuild
+    ; existed for the bulkhead's rear cable, whose joint anchor is computed off
+    ; the drawn pose at build; with no cable the draw moves only free bodies,
+    ; which EntityRigid re-places on reset. See staging.USBC_MEDIUM_REPOSE.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:USBC_MEDIUM_REPOSE))
+    (:max-steps 9000)
+    (:arms 2)
+    (:terminate-on-success false)
+  )
+
+  ; insert_medium's objects minus `cables - usbc_evaluation_cables` (the 240 mm
+  ; plug cable and the bulkhead's 8-link rear tail). Nothing else depended on
+  ; the tail: it is a separate entity rooted on the bulkhead body, the bulkhead
+  ; keeps its own 90 g mass, friction, hydroelastic field and cradle.
+  (:objects
+    bulkhead - usb_c_bulkhead
+    plug     - usb_c_plug
+    rig      - usbc_contact_rig
+  )
+
+  (:fixtures
+    bench        - usbc_bench
+    cradle_front - usbc_cradle_front
+    cradle_rear  - usbc_cradle_rear
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (>= (insertion plug bulkhead.bore) 0.0104)
+      (<= (insertion:lat plug bulkhead.bore) 0.0087931792)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+      (> (tcp-distance plug) 0.05)
+    )
+  )
+
+  (:reward
+    (progress (insertion plug bulkhead.bore)
+              (:gate 0.0104)
+              (:gated-by (<= (insertion:lat plug bulkhead.bore) 0.0087931792))))
+
+  (:observe
+    (gripped plug.body)
+    (insertion:tilt plug bulkhead.bore)
+    (insertion:mate_gap plug bulkhead.bore)
+    (speed bulkhead)
+  )
+
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "usbc_insert/insert_medium, minus both cables, on the fast arrangement")
+    (:note "A speed variant, not a benchmark cell of its own, and NOT the one the
+            fast config picked: under the cell protocol it seated 6/10 runs on the
+            first three L2 instances where the cabled scene seated 7/7, so the
+            cable steadies the plug enough to matter here. Episode ids are
+            insert_medium's (same draw, same seed), so a cell instance's episode
+            runs the same layout. Measurements in docs/validation/fast_usbc_insert.md.")
+  )
+)

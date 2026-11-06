@@ -21,6 +21,8 @@ defined below.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
 import vabar.ext.tool_hanging  # noqa: F401 -- registers this suite's robot, yam_tool_hanging
 
@@ -31,9 +33,11 @@ from robosimstudio_bench.taskbuild import register_arrangement, register_camera_
 __all__ = [
     "TOOL_HANGING_LEVEL1_RIG",
     "TOOL_HANGING_PHYSICS_480",
+    "TOOL_HANGING_PHYSICS_FAST",
     "TOOL_HANGING_PHYSICS",
     "TOOL_HANGING_PLAIN_PHYSICS",
     "TOOL_HANGING_RIG",
+    "YAM_STATION_RIG_FAST",
 ]
 
 BOARD_X = 0.880
@@ -240,3 +244,31 @@ YAM_STATION_RIG = register_camera_rig(
         ),
     ),
 )
+
+
+# --------------------------------------------------------------- the `fast` config
+# Registered beside, never instead of, what the documents stage: no document names these.
+# A run opts in through vabar/configs/fast.toml (`[suites.tool_hanging]`). Measured in
+# docs/validation/fast_tool_hanging.md with tools/fast_tune/tool_hanging.py.
+
+TOOL_HANGING_PHYSICS_FAST = register_arrangement(
+    "tool_hanging_fast@v1",
+    replace(
+        TOOL_HANGING_PHYSICS_480,
+        # ``tool_hanging_480hz@v1`` with Newton's narrow phase run every second substep:
+        # MuJoCo still integrates at 480 Hz, contacts are refreshed at 240 Hz. The one
+        # knob that paid (1.49x on a Level-2 idle, where ~1,500 hull contacts rest on the
+        # table; 1.19-1.25x on the routines) and kept every probe: the three Level-1
+        # routines (pliers 5/5), the gt graph on scissors and pliers, and gap_perception.
+        # Rejected on the pliers routine, which they pass only sometimes: 4 substeps and
+        # collide_every 4. Rejected outright: the pyramidal cone. Fewer iterations,
+        # smaller buffers and the SAP / N x N broad phases bought nothing.
+        collision=replace(TOOL_HANGING_PHYSICS_480.collision, collide_every=2),
+    ),
+)
+
+YAM_STATION_RIG_FAST = register_camera_rig(
+    "yam_station_tool_hanging_fast@v1",
+    tuple(camera.scaled(camera.width // 2, camera.height // 2) for camera in YAM_STATION_RIG),
+)
+"""``yam_station_tool_hanging@v1`` at half resolution (4 x 640x360), same poses and fields of view."""
