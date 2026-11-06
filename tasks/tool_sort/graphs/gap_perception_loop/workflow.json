@@ -450,7 +450,7 @@
               "$ref": "in.bin_floor_z"
             },
             "standoff": 0.12,
-            "grasp_z_offset": 0.02
+            "grasp_z_offset": 0.014
           }
         },
         "rotate_align": {
@@ -646,7 +646,8 @@
             },
             "object_name": {
               "$ref": "in.target_name"
-            }
+            },
+            "floor_m": 0.005
           }
         },
         "close": {
@@ -748,6 +749,20 @@
         }
       },
       "nodes": {
+        "lift": {
+          "type": "script",
+          "script": "scripts/lift_grasped.py",
+          "inputs": {
+            "target_obb": {
+              "$ref": "in.target_obb"
+            }
+          }
+        },
+        "go_home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
         "transport_move": {
           "type": "script",
           "script": "scripts/transport_descend_linear.py",
@@ -784,6 +799,14 @@
       "edges": [
         [
           "START",
+          "lift"
+        ],
+        [
+          "lift",
+          "go_home"
+        ],
+        [
+          "go_home",
           "transport_move"
         ],
         [
