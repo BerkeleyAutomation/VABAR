@@ -220,7 +220,7 @@ the same settings.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Tool hanging | 5-7 h (10-14 min/episode) | 5-7 min | 6.8 min | 2 x 8-world waves | 21.5 GB | 29/30 | 98% of tools | 86.7% |
 | Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | about 14 min | 8 | 41.9 GB | 29/30 | 98% of gears | 100.0% |
-| Syringe packing | hours | 19.5 min (old graph) | 21.6 min | 8 | 54.1 GB | 7-13/30 | 23-43% | 87.0% |
+| Syringe packing | hours | 29.5 min (6 workers) | not run | 6 | not measured | 28/30 | 93% | 87.0% |
 | Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 39.2 GB | 30/30 | 100% | 86.7% |
 | Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 9-11/30 | 72-79% of objects | 47.1% |
 | Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 16 min | 2 x 15-world waves | 12.2 GB | 15-23/30 | 50-77% | 46.7% |
@@ -229,12 +229,12 @@ the same settings.
 | --- | --- | --- | --- | --- | --- | --- |
 | Tool hanging | 16.5 min | 2 x 8-world waves | 22.7 GB | 24/30 | 87-90% of tools | 81.7% |
 | Gear meshing | 13.7-15.0 min | 8 | 42.3 GB | 21-23/30 | 89-91% of gears | 90.0% |
-| Syringe packing | 32.3 min | 8 | 53.6 GB | 0/30 (mean reward 0.27) | 0% | 63.0% |
+| Syringe packing | 82 min (`default`, 6 workers) | 6 | not measured | 14/30 (mean reward 0.79) | 47% | 63.0% |
 | Cable insertion | 25.7 min | 8 | 43.3 GB | 21/30 | 70% | 30.0% |
 | Tool sorting | 32 min | 15 | 88 GB | 1-2/30 | 57-59% of objects | 33.7% |
 | Cable routing | 23 min | 2 x 15-world waves | 11.6 GB | 14-21/30 | 47-70% | 46.7% |
 
-Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). The syringe packing rows were measured before the suite took the working scene (61-hull syringes, walled tray, corrected layouts, Robotiq), and are being re-measured; see `docs/validation/syringe_working_scene.md`. Cable routing L2's
+Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). The syringe packing rows are one run each of `default`, on a 48 GB GPU, on the suite's working scene (61-hull syringes, walled tray, corrected layouts, Robotiq), not `fast`; see `docs/validation/syringe_working_scene.md`. Cable routing L2's
 repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
 declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
 written at; on the other task classes tested, declaring it did not help.

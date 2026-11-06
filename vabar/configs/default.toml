@@ -98,7 +98,9 @@ shared_gb = 6.5
 
 [suites.syringe_packing]
 # The reference pairing: the export's Panda wearing a Robotiq 2F-85, the hand the graph was written and measured on.
-flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq"]
+# The bus timeout is the one the cells set: under the lockstep clock, a bare `vabar run` on the default 30 s dies at
+# step 1 while the first SAM 3 call and planner start up.
+flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq", "--bus-timeout", "180"]
 # The multi-syringe graph (gap_perception_v2; docs/validation/dev_history_merge.md)
 # runs about twice the steps of the graph it replaced. L1, `fast`, full cells:
 # 32.5 min on 4 workers (7/30), 21.6 on 8 (11/30, 54 GB at peak), 21.1 on 12
