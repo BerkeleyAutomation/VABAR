@@ -26,9 +26,6 @@ from __future__ import annotations
 from dataclasses import replace
 
 import numpy as np
-
-import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
-
 from robosimstudio.core.cameras import CameraSpec
 from robosimstudio.core.math import look_at_matrix, xform_from_matrix
 from robosimstudio.robots.registry import get_gripper
@@ -36,6 +33,8 @@ from robosimstudio.specs import ArrangementSpec, CollisionSpec, backend
 from robosimstudio_bench.taskbuild import register_arrangement, register_camera_rig
 from robosimstudio_bench.taskbuild.staging import Profile, Staging, register_profile
 from robosimstudio_bench.taskdoc import VAB_INDUSTRIAL_V1 as VAB_DIALECT
+
+import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
 
 __all__ = ["VAB_CAMERAS", "VAB_INDUSTRIAL_V1", "VAB_PHYSICS"]
 
@@ -81,11 +80,12 @@ SHARPS_UNION_PHYSICS = register_arrangement(
     #
     # A separate name rather than a bigger ``vab_500hz@v1``: that arrangement is
     # ``tool_sort``'s too, and raising a shipped suite's buffers to suit another
-    # suite's superset would move numbers nobody asked to move. A superset base
-    # states this one; the sixty-two shipped documents keep the profile's, so
-    # their serial column is untouched -- which is also why a wave's physics and
-    # a document's serial physics are reported as separate columns and never
-    # mixed.
+    # suite's superset would move numbers nobody asked to move.
+    #
+    # The profile below states it too, for every document and not only a superset
+    # base. On ``vab_500hz@v1``'s 1024 a full L2 cell printed 14,517 broadphase
+    # overflows, which drop collision pairs and carry on. Raising the buffers cost
+    # no measurable step rate (122 against 126 steps/s, about 32 MiB per scene).
     ArrangementSpec(
         control_hz=50.0,
         substeps=10,
@@ -133,7 +133,7 @@ VAB_INDUSTRIAL_V1 = register_profile(
             # two arms and dies on a duplicate joint label, three layers from
             # anything that mentions robots.
             scene_resident=True,
-            physics="vab_500hz@v1",
+            physics="vab_sharps_union@v1",
             cameras="sharps_agentview@v1",
             episodes=(("count", 1), ("seed", 0), ("sampler", "fixed")),
             control_mode="joint_position",
@@ -344,4 +344,14 @@ VAB_SYRINGE_FAST = register_arrangement(
         # nothing measurable (and the pyramidal cone dropped the syringe).
         substeps=8,
     ),
+)
+
+# `fast` config: see docs/validation/syringe_working_scene.md.
+VAB_SYRINGE_200HZ = register_arrangement(
+    "vab_syringe_200hz@v1",
+    # 200 Hz, on the same buffers and contacts. Full tiled cells solved no fewer L2
+    # trays than 500 Hz (33/60 against 15/30, p = 0.66) in half the time, and L1 stays
+    # above the paper (27-28/30 against 30/30). The 4 ms contact timeconst stated
+    # above is below the 10 ms 2*dt floor at 200 Hz, so MuJoCo clamps it there.
+    replace(SHARPS_UNION_PHYSICS, substeps=4),
 )

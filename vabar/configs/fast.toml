@@ -99,8 +99,13 @@ physics = { "gear_mesh_960hz@v1" = "gear_mesh_fast@v1" }
 cameras = { "gear_mesh_views@v2" = "gear_mesh_views_fast@v1" }
 
 [suites.syringe_packing]
-# Nothing yet. vab_syringe_fast@v1 (400 Hz) was measured on the scene before
-# docs/validation/syringe_working_scene.md, and needs its own check on this one.
+# 200 Hz (4 substeps) on 16 workers, against `default`'s 500 Hz on 8. Full cells,
+# tiled: L1 27-28/30 in 13-14 min (30/30 in 22.8), L2 14-19/30 in 31-35 min
+# (15/30 in 68). More workers saves little: the shared SAM 3 saturates, a call
+# taking 0.66 s alone and 12.1 s at 24 workers. See
+# docs/validation/syringe_working_scene.md.
+physics = { "vab_sharps_union@v1" = "vab_syringe_200hz@v1" }
+workers = 16
 
 [suites.usbc_insert]
 # The shipped cabled scenes on usbc_bulkhead_960hz@v1 with CUDA-graph capture
