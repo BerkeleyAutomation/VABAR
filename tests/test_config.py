@@ -204,7 +204,7 @@ def test_suite_and_variant_tables(tmp_path):
     assert config.map_task("tool_hanging/wrenches_level1") == "tool_hanging/wrenches_level2"
     assert config.map_task("tool_hanging/pliers_level1") == "tool_hanging/pliers_level1"
     assert config.num_worlds("tool_hanging/pliers_level1") == 4
-    assert config.num_worlds("syringe_packing/tray_pair_t00") == 8
+    assert config.num_worlds("syringe_packing/tray_pair_both_t00") == 8
     assert config.rewrites("tool_hanging/pliers_level1") and not config.rewrites("gear_mesh/x")
 
 

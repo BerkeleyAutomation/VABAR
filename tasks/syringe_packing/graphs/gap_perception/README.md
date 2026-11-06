@@ -1,7 +1,7 @@
 # Syringe packing: perception GaP graph (v2)
 
 > **In VABAR.** This is the `gap_perception` reference graph of the `syringe_packing/L1` and `/L2` cells. It is
-> RoboSimStudio-dev's `sharps_disposal/gap_perception_v2` (origin/main 1cd9f76a), which the VABAR v1.0 export missed;
+> RoboSimStudio-dev's `syringe_packing/gap_perception_v2` (origin/main 1cd9f76a), which the VABAR v1.0 export missed;
 > the 2026-09-10 graph it replaces posted one syringe of two (0/30 on Level 1). Two changes from the source: the
 > fingertip-drop fix ee4ad93 is included (this cell runs the prismatic Franka hand, not the Robotiq), and `carry_sg` is
 > labelled `generic` with its skill under `meta.composes`, for graph-as-policy's SK2 contract. The README below is the
@@ -26,15 +26,15 @@ The graph uses no `sim.*` ground-truth tools.
 
 ## Running it
 
-From the RoboSimStudio repository root, on `sharps_disposal/tray_clutter_tNN`
-(30 cluttered-tray trials, 4-8 syringes each) or `sharps_disposal/tray_pair_both`:
+From the RoboSimStudio repository root, on `syringe_packing/tray_clutter_tNN`
+(30 cluttered-tray trials, 4-8 syringes each) or `syringe_packing/tray_pair_both`:
 
 ```bash
 export CUDA_VISIBLE_DEVICES=0 HF_HUB_OFFLINE=1
 uv run --extra gap --extra curobo --extra rtx python tools/bench_run.py \
-  --task sharps_disposal/tray_clutter_t03 \
+  --task syringe_packing/tray_clutter_t03 \
   --scene robosuite_bench --embodiment panda_robotiq \
-  --policy graph --graph tasks/sharps_disposal/graphs/gap_perception_v2 --allow-undeclared-graph \
+  --policy graph --graph tasks/syringe_packing/graphs/gap_perception_v2 --allow-undeclared-graph \
   --bus-timeout 300 --motion curobo --renderer tiled --device cuda \
   --episodes 0:1 --max-steps 60000 \
   --record --out outputs/tray_clutter_t03_v2
@@ -93,7 +93,7 @@ the old yaw rule was found.
 ```bash
 for t in $(seq -w 0 29); do
   CUDA_VISIBLE_DEVICES=$((t % 7)) HF_HUB_OFFLINE=1 uv run --extra gap --extra curobo --extra rtx \
-    python tools/bench_run.py --task sharps_disposal/tray_clutter_t$t ... --out outputs/tray_clutter_t${t}_v2 &
+    python tools/bench_run.py --task syringe_packing/tray_clutter_t$t ... --out outputs/tray_clutter_t${t}_v2 &
 done
 ```
 

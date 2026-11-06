@@ -3530,7 +3530,7 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level1: the 30 `dispose_both_syringes_from_the_tray_tNN` trials, registered as `tray_pair_both_tNN`.",
+   "selection": "benchmark/syringe_packing/level1: the 30 `tray_pair_both_tNN` trials, registered as `tray_pair_both_tNN`.",
    "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
    "instances": [
     {
@@ -3700,7 +3700,7 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level2: the 30 `dispose_the_syringe_from_the_cluttered_tray_tNN` trials, registered as `tray_clutter_tNN`.",
+   "selection": "benchmark/syringe_packing/level2: the 30 `tray_clutter_tNN` trials, registered as `tray_clutter_tNN`.",
    "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
    "instances": [
     {

@@ -188,11 +188,11 @@ def build(n: int = 30) -> dict:
             notes="No 30-instance selection was recorded for gear meshing; the first 30 by index are used.",
         )
     # The suite's task.py registers each trial document under a short name:
-    # dispose_both_syringes_from_the_tray_tNN -> tray_pair_both_tNN (Level 1),
-    # dispose_the_syringe_from_the_cluttered_tray_tNN -> tray_clutter_tNN (Level 2).
+    # tray_pair_both_tNN (Level 1),
+    # tray_clutter_tNN (Level 2).
     for level, stem, name in (
-        (1, "dispose_both_syringes_from_the_tray", "tray_pair_both"),
-        (2, "dispose_the_syringe_from_the_cluttered_tray", "tray_clutter"),
+        (1, "tray_pair_both", "tray_pair_both"),
+        (2, "tray_clutter", "tray_clutter"),
     ):
         cell(
             "syringe_packing",

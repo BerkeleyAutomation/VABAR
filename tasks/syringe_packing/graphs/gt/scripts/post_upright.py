@@ -5,7 +5,7 @@ open from above, so releasing a tool over it works — that is what
 :file:`descend_release.py` does. A sharps box is a closed shell whose lid is
 solid everywhere except one 55 mm hole, and a 150 mm syringe let go flat over it
 lands *on the lid*: the graph completes every node, reports success and scores
-zero, which is exactly what ``sharps_disposal/syringe`` did before this node existed.
+zero, which is exactly what ``syringe_packing/syringe`` did before this node existed.
 
 The sequence is the reference's ``run_tool_sort.post_upright``, and so is the
 reasoning behind it: the tool goes in the way a person does it — held upright

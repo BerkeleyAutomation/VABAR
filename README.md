@@ -113,7 +113,7 @@ revisions (see `pyproject.toml`).
 git clone -b speed/default-fast https://github.com/BerkeleyAutomation/VABAR.git
 cd VABAR
 uv sync
-uv run python -m vabar list            # 373 variants across the six suites (v1.0's 371 + two cable-free USB-C documents)
+uv run python -m vabar list            # 374 variants across the six suites
 ```
 
 The environment is about 12 GB. `UV_NO_GROUP=rtx uv sync` leaves out the path-traced
@@ -234,8 +234,7 @@ the same settings.
 | Tool sorting | 32 min | 15 | 88 GB | 1-2/30 | 57-59% of objects | 33.7% |
 | Cable routing | 23 min | 2 x 15-world waves | 11.6 GB | 14-21/30 | 47-70% | 46.7% |
 
-Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing is the one task class below the paper: its
-tray and syringe colliders differ from what the cameras see (`docs/validation/dev_history_merge.md`). Cable routing L2's
+Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). The syringe packing rows were measured before the suite took the working scene (61-hull syringes, walled tray, corrected layouts, Robotiq), and are being re-measured; see `docs/validation/syringe_working_scene.md`. Cable routing L2's
 repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
 declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
 written at; on the other task classes tested, declaring it did not help.

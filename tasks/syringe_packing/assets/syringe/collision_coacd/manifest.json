@@ -1,0 +1,1060 @@
+{
+  "method": "CoACD approximate convex decomposition",
+  "source": "vabar/tasks/syringe_packing/assets/syringe/syringe.obj",
+  "source_vertices": 681,
+  "source_triangles": 830,
+  "source_watertight": false,
+  "parameters": {
+    "threshold": 0.01,
+    "max_convex_hull": 64,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 100,
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 80,
+    "mcts_max_depth": 3,
+    "merge": true,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "hulls": [
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_00.obj",
+      "vertices": 24,
+      "triangles": 44,
+      "bounds_m": [
+        [
+          -0.0002651257440447807,
+          -0.07508199512958526,
+          -0.00029349674005061386
+        ],
+        [
+          0.00031419578008353707,
+          -0.04966191351413727,
+          0.00029392128344625236
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_01.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.006065653078258037,
+          0.045495535433292385,
+          -0.005998354777693748
+        ],
+        [
+          0.006065653078258037,
+          0.04667508155107498,
+          0.005998354777693748
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_02.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_m": [
+        [
+          0.0032700184732675553,
+          0.04667508155107498,
+          -0.006591173261404037
+        ],
+        [
+          0.011907238885760308,
+          0.048492349684238434,
+          0.006597109884023666
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_03.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_m": [
+        [
+          0.0025415612384676934,
+          0.07274117320775986,
+          -0.006861988082528114
+        ],
+        [
+          0.007213499955832958,
+          0.07541224658489228,
+          0.006861988082528114
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_04.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.007214500196278095,
+          0.07274123579263687,
+          -0.00685871634632349
+        ],
+        [
+          -0.002547229640185833,
+          0.07541250586509704,
+          0.00685871634632349
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_05.obj",
+      "vertices": 59,
+      "triangles": 114,
+      "bounds_m": [
+        [
+          -0.0119074746966362,
+          0.04667508155107498,
+          -0.005854592844843865
+        ],
+        [
+          -0.005606910958886146,
+          0.04831828325986862,
+          0.005852586776018143
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_06.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_m": [
+        [
+          -0.00429635876789689,
+          0.04849235415458679,
+          -0.002006009593605995
+        ],
+        [
+          -0.001980051677674055,
+          0.07045567631721496,
+          0.0020057503134012222
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_07.obj",
+      "vertices": 60,
+      "triangles": 116,
+      "bounds_m": [
+        [
+          0.0019804115407168863,
+          0.048492349684238434,
+          -0.0020030532963573934
+        ],
+        [
+          0.00429635876789689,
+          0.07045134454965592,
+          0.0020032849162817
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_08.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.001980051677674055,
+          0.04849468767642975,
+          -0.004291410371661186
+        ],
+        [
+          0.0019804115407168863,
+          0.07240554392337799,
+          0.00429202951490879
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_09.obj",
+      "vertices": 54,
+      "triangles": 104,
+      "bounds_m": [
+        [
+          -0.004723466187715531,
+          0.013737266510725021,
+          0.0033631715923547745
+        ],
+        [
+          0.0047228336334228516,
+          0.045495535433292385,
+          0.005765152908861637
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_10.obj",
+      "vertices": 26,
+      "triangles": 48,
+      "bounds_m": [
+        [
+          -0.005506880208849907,
+          0.01715858168900013,
+          0.0019599270075559617
+        ],
+        [
+          -0.0029344188049435613,
+          0.045490595698356624,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_11.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.004711833223700523,
+          -0.03949460685253143,
+          0.0033636415377259255
+        ],
+        [
+          0.004712756350636482,
+          0.013734154030680656,
+          0.005764264985918998
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_12.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_m": [
+        [
+          -0.002547229640185833,
+          0.07273094058036804,
+          -0.007213499955832958
+        ],
+        [
+          0.0025415612384676934,
+          0.07541224658489228,
+          -0.004113439656794071
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_13.obj",
+      "vertices": 32,
+      "triangles": 60,
+      "bounds_m": [
+        [
+          0.0034538157284259795,
+          0.010742813721299172,
+          -0.004671469330787659
+        ],
+        [
+          0.005765152908861637,
+          0.04549213349819183,
+          1.1776573956012726e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_14.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.0029313180595636366,
+          -0.04965957999229431,
+          -0.002934768050909042
+        ],
+        [
+          0.0029178064316511152,
+          -0.04008683860301971,
+          0.0029025569558143614
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_15.obj",
+      "vertices": 26,
+      "triangles": 48,
+      "bounds_m": [
+        [
+          -0.005357040837407112,
+          -0.0062581803649663925,
+          0.0022426231764256952
+        ],
+        [
+          -0.0029344188049435613,
+          0.005894530937075614,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_16.obj",
+      "vertices": 42,
+      "triangles": 80,
+      "bounds_m": [
+        [
+          -0.002762537822127342,
+          0.04667508155107498,
+          -0.0034644065424799917
+        ],
+        [
+          0.0032700179144740105,
+          0.048492349684238434,
+          0.003045075573027134
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_17.obj",
+      "vertices": 28,
+      "triangles": 52,
+      "bounds_m": [
+        [
+          -0.005765152908861637,
+          -0.013911346346139908,
+          -0.002254456328228116
+        ],
+        [
+          -0.0026268750429153443,
+          0.04549213349819183,
+          1.1777970939874648e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_18.obj",
+      "vertices": 17,
+      "triangles": 30,
+      "bounds_m": [
+        [
+          -0.0026291538029909133,
+          0.01074281483888626,
+          -0.002627527993172407
+        ],
+        [
+          0.003453589417040348,
+          0.04549213349819183,
+          1.1776573956012726e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_19.obj",
+      "vertices": 34,
+      "triangles": 64,
+      "bounds_m": [
+        [
+          0.002241348847746849,
+          -0.01911429539322853,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764500238001347,
+          -0.01682535745203495,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_20.obj",
+      "vertices": 48,
+      "triangles": 92,
+      "bounds_m": [
+        [
+          -0.002547229640185833,
+          0.07240554392337799,
+          -0.004320350848138332
+        ],
+        [
+          0.0025415612384676934,
+          0.07541250586509704,
+          0.0026407230645418165
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_21.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.002547229640185833,
+          0.07273094058036804,
+          0.002637873776257038
+        ],
+        [
+          0.0025415612384676934,
+          0.07541224658489228,
+          0.007213499955832958
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_22.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.0027619474567472935,
+          0.04667508155107498,
+          -0.006953789480030536
+        ],
+        [
+          0.003269427549093962,
+          0.048492349684238434,
+          -0.003052776865661144
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_23.obj",
+      "vertices": 45,
+      "triangles": 86,
+      "bounds_m": [
+        [
+          -0.0026291538029909133,
+          0.01074281483888626,
+          -0.005764846131205558
+        ],
+        [
+          0.003453589417040348,
+          0.04549536108970642,
+          -0.0026275282725691795
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_24.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.0027619474567472935,
+          0.04667508155107498,
+          0.0022839417681097983
+        ],
+        [
+          0.003269427549093962,
+          0.048492349684238434,
+          0.006953789480030536
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_25.obj",
+      "vertices": 27,
+      "triangles": 50,
+      "bounds_m": [
+        [
+          0.002304193144664168,
+          -0.01682410016655922,
+          1.1777970939874648e-06
+        ],
+        [
+          0.005764500238001347,
+          -0.006259784661233425,
+          0.002275224169716239
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_26.obj",
+      "vertices": 28,
+      "triangles": 52,
+      "bounds_m": [
+        [
+          -0.005764205195009709,
+          -0.0062581803649663925,
+          1.1777970939874648e-06
+        ],
+        [
+          -0.0027498470619320868,
+          0.005894530937075614,
+          0.002275224169716239
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_27.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          -0.040179151296615596,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764500238001347,
+          -0.030752062797546387,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_28.obj",
+      "vertices": 24,
+      "triangles": 44,
+      "bounds_m": [
+        [
+          -0.00292850062251091,
+          -0.019112922996282578,
+          1.5067867934703826e-06
+        ],
+        [
+          0.0029316499829292295,
+          -0.006261041946709156,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_29.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_m": [
+        [
+          0.0021446420811116695,
+          -0.03948024362325668,
+          -0.005408809706568718
+        ],
+        [
+          0.005350328050553799,
+          0.010742813721299172,
+          -0.0022545712999999523
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_30.obj",
+      "vertices": 33,
+      "triangles": 62,
+      "bounds_m": [
+        [
+          -0.005356882140040397,
+          -0.013911346346139908,
+          -0.005142081342637539
+        ],
+        [
+          -0.0026268750429153443,
+          0.04549213349819183,
+          -0.002252036891877651
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_31.obj",
+      "vertices": 20,
+      "triangles": 36,
+      "bounds_m": [
+        [
+          -0.005764205195009709,
+          0.008887914195656776,
+          1.1777970939874648e-06
+        ],
+        [
+          -0.0027498470619320868,
+          0.01639696955680847,
+          0.0022518548648804426
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_32.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.005606267228722572,
+          0.04667508155107498,
+          -0.0069384673610329625
+        ],
+        [
+          -0.0027630943804979324,
+          0.048318229615688324,
+          -0.002621360309422016
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_33.obj",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds_m": [
+        [
+          -0.002749257255345583,
+          -0.006258505582809448,
+          1.1779367923736572e-06
+        ],
+        [
+          0.001977862883359194,
+          0.04549046605825424,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_34.obj",
+      "vertices": 20,
+      "triangles": 36,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          -0.01075005680322647,
+          1.5067867934703826e-06
+        ],
+        [
+          -0.0028126219287514685,
+          -0.006258949264883995,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_35.obj",
+      "vertices": 17,
+      "triangles": 30,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          -0.012769916653633117,
+          1.1777970939874648e-06
+        ],
+        [
+          -0.00292850062251091,
+          -0.010750692710280419,
+          0.002275224169716239
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_36.obj",
+      "vertices": 39,
+      "triangles": 74,
+      "bounds_m": [
+        [
+          -0.0026268750429153443,
+          -0.013911344110965729,
+          -0.005764500238001347
+        ],
+        [
+          0.0026229254901409147,
+          0.010742812603712081,
+          -0.0026158886030316353
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_37.obj",
+      "vertices": 21,
+      "triangles": 38,
+      "bounds_m": [
+        [
+          0.0026230204850435255,
+          -0.013911344110965729,
+          -0.0022542622871696946
+        ],
+        [
+          0.005764500238001347,
+          0.010742812603712081,
+          9.570037946105004e-07
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_38.obj",
+      "vertices": 22,
+      "triangles": 40,
+      "bounds_m": [
+        [
+          -0.0053516730666160585,
+          0.008887914195656776,
+          0.0022519636899232865
+        ],
+        [
+          -0.0029344188049435613,
+          0.016397703811526297,
+          0.0033630629070103167
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_39.obj",
+      "vertices": 25,
+      "triangles": 46,
+      "bounds_m": [
+        [
+          -0.002895012684166431,
+          -0.01729903668165207,
+          -0.002633378282189369
+        ],
+        [
+          0.0029008945450186728,
+          0.010742812603712081,
+          1.1776573956012726e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_40.obj",
+      "vertices": 26,
+      "triangles": 48,
+      "bounds_m": [
+        [
+          0.0029346121475100516,
+          -0.016824097931385038,
+          0.002240390097722411
+        ],
+        [
+          0.005358109809458255,
+          -0.0062599824741482735,
+          0.0033630629070103167
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_41.obj",
+      "vertices": 30,
+      "triangles": 56,
+      "bounds_m": [
+        [
+          0.001977863162755966,
+          0.03909832388162613,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764961801469326,
+          0.04549540579319,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_42.obj",
+      "vertices": 55,
+      "triangles": 106,
+      "bounds_m": [
+        [
+          -0.005606267228722572,
+          0.04667508602142334,
+          0.0025894710794091224
+        ],
+        [
+          -0.0027628163807094097,
+          0.04831960201263428,
+          0.006938466802239418
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_43.obj",
+      "vertices": 46,
+      "triangles": 88,
+      "bounds_m": [
+        [
+          -0.005606267228722572,
+          0.04667508155107498,
+          -0.002620938420295715
+        ],
+        [
+          -0.0027628163807094097,
+          0.048492349684238434,
+          0.002589045837521553
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_44.obj",
+      "vertices": 14,
+      "triangles": 24,
+      "bounds_m": [
+        [
+          -0.003573159500956535,
+          -0.019114181399345398,
+          1.5067867934703826e-06
+        ],
+        [
+          -0.0028126219287514685,
+          -0.01682513505220413,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_45.obj",
+      "vertices": 27,
+      "triangles": 50,
+      "bounds_m": [
+        [
+          -0.005764857865869999,
+          0.01715858280658722,
+          1.1777970939874648e-06
+        ],
+        [
+          -0.0027498470619320868,
+          0.04549233466386795,
+          0.0022518548648804426
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_46.obj",
+      "vertices": 13,
+      "triangles": 22,
+      "bounds_m": [
+        [
+          0.001977863162755966,
+          0.03265260457992553,
+          1.5067867934703826e-06
+        ],
+        [
+          0.0037291014567017553,
+          0.03909769803285599,
+          0.0033630263060331345
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_47.obj",
+      "vertices": 31,
+      "triangles": 58,
+      "bounds_m": [
+        [
+          -0.005764205195009709,
+          0.005894789099693298,
+          1.1779367923736572e-06
+        ],
+        [
+          -0.0027498470619320868,
+          0.008887913078069687,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_48.obj",
+      "vertices": 46,
+      "triangles": 88,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          -0.04008683860301971,
+          -0.002633378282189369
+        ],
+        [
+          -0.002895012684166431,
+          -0.013911342993378638,
+          1.1776573956012726e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_49.obj",
+      "vertices": 29,
+      "triangles": 54,
+      "bounds_m": [
+        [
+          0.0037196522578597066,
+          0.03265305384993553,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764300189912319,
+          0.03909738510847092,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_50.obj",
+      "vertices": 47,
+      "triangles": 90,
+      "bounds_m": [
+        [
+          -0.005135907791554928,
+          -0.039407216012477875,
+          -0.005306562222540378
+        ],
+        [
+          -0.0023373188450932503,
+          -0.013911344110965729,
+          -0.002633378282189369
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_51.obj",
+      "vertices": 44,
+      "triangles": 84,
+      "bounds_m": [
+        [
+          0.0029008945450186728,
+          -0.04008683860301971,
+          -0.002633378282189369
+        ],
+        [
+          0.005764220282435417,
+          -0.013911342993378638,
+          1.1776573956012726e-06
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_52.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_m": [
+        [
+          -0.0023373188450932503,
+          -0.04008683860301971,
+          -0.005764500238001347
+        ],
+        [
+          0.0022403622977435586,
+          -0.013911342993378638,
+          -0.002633378282189369
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_53.obj",
+      "vertices": 23,
+      "triangles": 42,
+      "bounds_m": [
+        [
+          -0.0035723199136555193,
+          -0.030750922858715057,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005763586610555649,
+          -0.019114404916763306,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_54.obj",
+      "vertices": 33,
+      "triangles": 62,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          -0.03075030148029327,
+          1.1779367923736572e-06
+        ],
+        [
+          -0.0028126219287514685,
+          -0.012769918888807297,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_55.obj",
+      "vertices": 31,
+      "triangles": 58,
+      "bounds_m": [
+        [
+          0.00377360712736845,
+          -0.00625647772103548,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764309130609035,
+          0.011134611815214157,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_56.obj",
+      "vertices": 12,
+      "triangles": 20,
+      "bounds_m": [
+        [
+          -0.005339274555444717,
+          -0.012769916653633117,
+          0.0022753306198865174
+        ],
+        [
+          -0.0029344188049435613,
+          -0.010750692710280419,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_57.obj",
+      "vertices": 15,
+      "triangles": 26,
+      "bounds_m": [
+        [
+          0.001977862883359194,
+          -0.006256477162241936,
+          1.5067867934703826e-06
+        ],
+        [
+          0.0038114058785140514,
+          0.011134611815214157,
+          0.0033630263060331345
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_58.obj",
+      "vertices": 23,
+      "triangles": 42,
+      "bounds_m": [
+        [
+          -0.005764500238001347,
+          0.016397704929113386,
+          1.5067867934703826e-06
+        ],
+        [
+          -0.0027495520189404488,
+          0.017157384753227232,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_59.obj",
+      "vertices": 43,
+      "triangles": 82,
+      "bounds_m": [
+        [
+          0.0019780363887548446,
+          0.011136509478092194,
+          1.5067867934703826e-06
+        ],
+        [
+          0.005764309130609035,
+          0.03265242129564285,
+          0.0033631715923547745
+        ]
+      ]
+    },
+    {
+      "path": "vabar/tasks/syringe_packing/assets/syringe/collision_coacd/hull_60.obj",
+      "vertices": 40,
+      "triangles": 76,
+      "bounds_m": [
+        [
+          -0.002895012684166431,
+          -0.04008683860301971,
+          -0.002633378282189369
+        ],
+        [
+          0.0029008945450186728,
+          -0.01724945604801178,
+          1.1776573956012726e-06
+        ]
+      ]
+    }
+  ]
+}

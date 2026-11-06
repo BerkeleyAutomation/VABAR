@@ -1,0 +1,181 @@
+{
+  "variant": "tray_clutter_t03",
+  "settled_from": "tasks/syringe_packing/tools/make_sweeps.py: 5 syringes packed into tray_pair's own tray pose (itself the export's settled syringe_0 pose, lifted onto the tray floor). Out-of-tray syringes removed (footprint past the cavity walls): syringe_pack_3 (8.3 mm); survivors renamed in order.",
+  "objects": {
+    "syringe_0": {
+      "pose": [
+        0.001761,
+        -0.368616,
+        0.789825
+      ],
+      "quat": [
+        -0.001664,
+        0.006481,
+        0.97422,
+        -0.225498
+      ],
+      "body_name": "syringe_0",
+      "joint_name": "",
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 2.0
+    },
+    "syringe_pack_0": {
+      "pose": [
+        0.044802,
+        -0.323269,
+        0.789825
+      ],
+      "quat": [
+        -0.002809,
+        0.006073,
+        0.917362,
+        -0.397998
+      ],
+      "body_name": "syringe_pack_0",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_1": {
+      "pose": [
+        0.084286,
+        -0.280107,
+        0.789825
+      ],
+      "quat": [
+        -0.003797,
+        0.00551,
+        0.836685,
+        -0.547643
+      ],
+      "body_name": "syringe_pack_1",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_2": {
+      "pose": [
+        0.1323,
+        -0.2288,
+        0.789825
+      ],
+      "quat": [
+        -0.002047,
+        0.006371,
+        0.959054,
+        -0.283143
+      ],
+      "body_name": "syringe_pack_2",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_tray": {
+      "xform": [
+        0.085551,
+        -0.280082,
+        0.785025,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_floor": {
+      "xform": [
+        0.085551,
+        -0.280082,
+        0.772025,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_xpos": {
+      "xform": [
+        0.009695,
+        -0.217248,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_xneg": {
+      "xform": [
+        0.161407,
+        -0.342916,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_ypos": {
+      "xform": [
+        -0.041073,
+        -0.43295,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_yneg": {
+      "xform": [
+        0.212175,
+        -0.127214,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    }
+  },
+  "box_shift": [
+    0.025421,
+    -0.010359
+  ],
+  "trial": {
+    "index": 3,
+    "of": 30,
+    "n_syringes": 5,
+    "box_shift_m": [
+      0.025421,
+      -0.010359
+    ]
+  }
+}

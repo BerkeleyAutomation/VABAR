@@ -16,7 +16,7 @@ checking:
   60 control steps at 20 Hz; this suite runs at 50 Hz. Copying the step count
   would give every leg 1.2 s instead of 3 s, and since the arm's speed is set by
   the impedance gains rather than by the control rate (see
-  :mod:`robosimstudio.robot.motion.osc`) a leg would simply stop 60 % short.
+  :mod:`robosimstudio.solvers.motion.osc`) a leg would simply stop 60 % short.
   So the reference's number is stated as the duration it is -- 3 s -- and the
   step count follows the environment's rate.
 * **The pile is re-read every round.** Tools start stacked, so the order is
@@ -50,8 +50,8 @@ hammer must be attempted after the drill has already been dropped on it.
 so it runs on a variant whose declared mode is ``joint_position`` for the sake of
 its shipped graph without either having to give way::
 
-    env = Env("tool_sort/hammer")     # declares joint_position, for the graph
-    policy = PolicyScripted(env)      # emits osc_pose, and says so
+    env = Env("tool_sort/level1_6")     # declares joint_position, for the graph
+    policy = SolutionRoutine(env)      # emits osc_pose, and says so
 
 The environment carries both controllers and hands the arm over on the first
 tagged action, re-seeded -- see
@@ -65,9 +65,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from robosimstudio_bench.goals.goal import placements
 from robosimstudio.core.math import quat_from_axis_angle, quat_multiply, quat_to_mat
 from robosimstudio.solvers import ActionOsc, OscWaypoints, Waypoint, grasp_from_obb, top_down_grasp_quat
+from robosimstudio_bench.goals.goal import placements
 
 __all__ = ["RoutineSharpsDisposal"]
 
@@ -316,7 +316,7 @@ class RoutineSharpsDisposal:
         (``target_ke=1500``), so 1 means "drive the pads to touching" and the grip
         force is whatever the servo makes of the standing error -- which for a
         smooth 24 mm cylinder is enough to extrude it out of the jaws. Measured on
-        ``sharps_disposal/syringe``: grasped and lifted at a 22.7 mm opening, then
+        ``syringe_packing/tray_pair``: grasped and lifted at a 22.7 mm opening, then
         squeezed to 1.0 mm and dropped during the leg that turns it upright.
 
         So a tool whose box the gripper actually fits is closed on to just inside
@@ -485,6 +485,6 @@ class RoutineSharpsDisposal:
 
     # ----------------------------------------------------------- policy shape
     def get_action(self, obs) -> np.ndarray:
-        """The :class:`~robosimstudio.policies.PolicyBase` interface."""
+        """The :class:`~robosimstudio_bench.solutions.base.SolutionBase` interface."""
         del obs
         return self.act()

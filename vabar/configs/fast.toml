@@ -99,15 +99,8 @@ physics = { "gear_mesh_960hz@v1" = "gear_mesh_fast@v1" }
 cameras = { "gear_mesh_views@v2" = "gear_mesh_views_fast@v1" }
 
 [suites.syringe_packing]
-# 400 Hz (8 substeps): idle 1.20x (L1) / 1.25x (L2), routine and settle drift
-# unchanged. 6 substeps drifted 2.7 mm / 12 deg. Full L1 cell: 3-6% less wall
-# time than `default` (1,091 vs 1,168 s on 4 MPS workers), success 1-2/30 on
-# either physics. No camera change: 800x600
-# passed 6 probe worlds, but on the full L1 cell (2 workers) it saved 3% of wall
-# time (1,725 vs 1,772 s) and had 3 "could not perceive 'syringe'" zero-reward
-# instances against 2. 640x480 lost the syringe outright.
-# See docs/validation/fast_syringe_packing.md and fast_resolution.md.
-physics = { "vab_500hz@v1" = "vab_syringe_fast@v1" }
+# Nothing yet. vab_syringe_fast@v1 (400 Hz) was measured on the scene before
+# docs/validation/syringe_working_scene.md, and needs its own check on this one.
 
 [suites.usbc_insert]
 # The shipped cabled scenes on usbc_bulkhead_960hz@v1 with CUDA-graph capture

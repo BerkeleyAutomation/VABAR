@@ -15,7 +15,7 @@
       "verify_sg": "perceiving-objects"
     },
     "composes_note": "Subgraphs listed in `composes` run this graph's own scripts for the named skill, so they are labelled `generic`: graph-as-policy's SK1/SK2 contract reserves a bundle label for subgraphs that run that bundle's canonical scripts.",
-    "provenance": "RoboSimStudio-dev sharps_disposal/gap_perception_v2 at origin/main 1cd9f76a (473d7f9, fbe20d4, ee4ad93), = AUTOLab-GaP-NVIDIA-Collaboration syringe_packing branch 028911d plus ee4ad93. Replaces the 2026-09-10 graph; see docs/validation/dev_history_merge.md."
+    "provenance": "RoboSimStudio-dev syringe_packing/gap_perception_v2 at origin/main 1cd9f76a (473d7f9, fbe20d4, ee4ad93), = AUTOLab-GaP-NVIDIA-Collaboration syringe_packing branch 028911d plus ee4ad93. Replaces the 2026-09-10 graph; see docs/validation/dev_history_merge.md."
   },
   "requires": {
     "tools": [

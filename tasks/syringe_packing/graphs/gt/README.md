@@ -1,4 +1,4 @@
-# `sharps_disposal/gt` — the ground-truth graph
+# `syringe_packing/gt` — the ground-truth graph
 
 **This is `tool_sort`'s graph, copied whole when the syringe became its own
 suite, and the document below still describes the ten-variant family it was
