@@ -64,6 +64,14 @@
     ; positioning under contact, and at the MJCF's own gain the TCP lags
     ; further than the fit is wide.
     (:arm-actuation (:ke 1600) (:kd 70))
+    ; The graphs were written and measured with the tool servoed at about
+    ; 0.12 m/s (0.4 of the OSC law's 0.31 m/s cruise); stated here so it does
+    ; not depend on the host. A servo turn used to span two or three simulator
+    ; steps with the setpoint law advanced once per turn, so the speed the
+    ; press and carry legs were tuned against was whatever the machine gave;
+    ; the servo now counts every step, and at the law's nominal cruise the
+    ; fine legs land the gear on the peg's tip.
+    (:servo-speed-mps 0.12)
   )
 
   ; -------------------------------------------------------------------------

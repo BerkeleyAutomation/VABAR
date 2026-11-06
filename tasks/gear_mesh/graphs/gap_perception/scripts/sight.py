@@ -243,9 +243,24 @@ def _circle_fit(xy):
 
 
 # ---------------------------------------------------------------- the segmenter
+SEGMENT_TOP_K = 48
+"""How many masks a query asks SAM3 for, best first.
+
+Not a change of what the graph sees, by a factor of three: over 2,073 recorded
+calls of the first sweep (``outputs/gear_levels/round1``), the most masks that
+ever passed a query's score floor was 15 (``pin`` at 0.10; ``gear`` 4, ``red
+circle`` 2), and the tool sorts by score before it caps, so everything this
+drops is below the floor :func:`segment` discards anyway. What it changes is
+the cost: at ``max_results=0`` every call returned 200 full-frame masks -- 246 MB
+over the bundle's pipe, decoded in the simulator's process and written to the
+trace as 200 PNGs -- and took 2-4 s of an episode's wall clock, 40-70 % of it
+on the tiled frames. Measured through the same rpc client on the same frame:
+0.79 s a call at 200 masks, 0.27 s at 20."""
+
+
 def segment(ctx, rgb, query: str, score: float):
     """``[(mask, score)]`` from ``sam3.segment_text``, best first, at or above ``score``."""
-    result = ctx.tool("sam3.segment_text", image=rgb, query=query, max_results=0)
+    result = ctx.tool("sam3.segment_text", image=rgb, query=query, max_results=SEGMENT_TOP_K)
     masks = result.get("masks") or []
     scores = result.get("scores") or []
     out = []

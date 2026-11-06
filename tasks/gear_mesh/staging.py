@@ -156,3 +156,53 @@ GEAR_RIG = register_camera_rig(
         ),
     ),
 )
+
+
+# ---------------------------------------------------------------------------
+# The `fast` config's pair: what `vabar/configs/fast.toml` stages in place of
+# the two above. NEW names, so every document and record that names
+# gear_mesh_960hz@v1 / gear_mesh_views@v2 keeps meaning exactly what it did.
+# Chosen by measurement, not by argument: tools/fast_tune/gear_mesh.py is the
+# sweep and docs/validation/fast_gear_mesh.md the table it produced.
+# ---------------------------------------------------------------------------
+
+GEAR_PHYSICS_FAST = register_arrangement(
+    "gear_mesh_fast@v1",
+    # The shipped arrangement with ONE number changed, so a diff of the two
+    # registrations is the whole story: `substeps` 16 -> 8 (dt 1/960 -> 1/480),
+    # 1.9x the idle steps/s (69.8 -> 133.6 on gearmesh-medium-train-001).
+    #
+    # * The substep count is the only knob that buys speed. Iterations 100 -> 20,
+    #   line search 50 -> 10, tolerance 1e-8 -> 1e-6, ccd_iterations 35 -> 10
+    #   each moved steps/s by at most 7%, never upward: MuJoCo-Warp's solver
+    #   converges in a few iterations and exits early inside the captured graph,
+    #   so the caps never bind. nconmax/njmax trimmed to 1.5x the measured peak
+    #   (1408/4096) bought nothing, so the buffers keep their headroom.
+    #   collide_every is inert under use_mujoco_contacts (no Newton collision
+    #   pipeline exists). The CG solver and a dense Jacobian are 2.5-3x SLOWER.
+    # * Why not fewer. At 6 substeps the three-gear gate still drives (0.974)
+    #   but the four-gear board slips to 0.80 of its ratio (5th percentile
+    #   0.56); impratio 1 rescues the gate (0.982-0.986 on five boards) but the
+    #   graph then solved 3 of 5 probe instances, failing twice to seat a board
+    #   that this arrangement and the shipped one both completed. This one
+    #   solved 5/5, the shipped one 4/5 (same protocol, one episode each).
+    #   At 4 substeps nothing drives at any impratio tried (0.11-0.69).
+    # * At 8 substeps every board measured runs within 0.002 of the shipped
+    #   arrangement's ratio (0.963-0.970 against 0.961-0.968), the gear-b-missing
+    #   control still stops gear_c dead, and the peak contact count is the same.
+    #   MuJoCo clamps the 4 ms solref to 2*dt = 4.17 ms here -- 4% softer.
+    # * multiccd and the elliptic cone are NOT optional: without multiccd the
+    #   train runs at 0.205 of its ratio, with a pyramidal cone at 0.924.
+    GEAR_PHYSICS.with_(substeps=8),
+)
+
+GEAR_RIG_FAST = register_camera_rig(
+    "gear_mesh_views_fast@v1",
+    # gear_mesh_views@v2 at half the pixels per side (CameraSpec.scaled keeps the
+    # field of view and scales the intrinsics): the overhead is 640x480, about
+    # 1 mm per pixel at the bench, and a tooth class (5 mm of tip radius) is five
+    # pixels rather than ten. gap_perception measures its own metres per pixel
+    # and sizes every threshold in metres, and it read every board at this
+    # resolution in the graph probes. Same poses, same names, same channels.
+    tuple(camera.scaled(camera.width // 2, camera.height // 2) for camera in GEAR_RIG),
+)

@@ -39,7 +39,7 @@ def run(ctx, index: int):
     if not holding:
         return {"route": "lost", "index": int(index), "gear": name, "reason": "dropped during the carry", "gripper": fraction}
     staged = float(station["staged_tcp_z"])
-    down = ctx.tool("robot.move_cartesian_until_contact", pose=gb.pose(sx, sy, staged, q), max_steps=200, stall_steps=15)
+    down = ctx.tool("robot.move_cartesian_until_contact", pose=gb.pose(sx, sy, staged, q), max_steps=480, stall_steps=36)  # 8 s budget, 0.6 s stall window at 60 Hz control steps
     # THE BORE HAS TO FIND THE CONE. The lowering stops on contact, and a stop well above the staged height is
     # the gear's underside on the peg's tip -- the bore missed the cone by more than the 2.3 mm it captures
     # (measured: pair-09 and pair-11 stopped 10-20 mm short, released there, and the gear fell off the board).
@@ -53,7 +53,7 @@ def run(ctx, index: int):
             break
         gb.leg(ctx, gb.pose(sx + dx, sy + dy, staged + 0.025, q), 60)
         down = ctx.tool(
-            "robot.move_cartesian_until_contact", pose=gb.pose(sx + dx, sy + dy, staged, q), max_steps=120, stall_steps=15
+            "robot.move_cartesian_until_contact", pose=gb.pose(sx + dx, sy + dy, staged, q), max_steps=300, stall_steps=36  # 5 s budget, 0.6 s stall window at 60 Hz control steps
         )
         searched.append([round(1000 * dx, 1), round(1000 * dy, 1), round(1000 * float(down.get("remaining_distance", 0.0)), 1) if isinstance(down, dict) else None])
     ctx.tool("robot.wait_steps", steps=20)

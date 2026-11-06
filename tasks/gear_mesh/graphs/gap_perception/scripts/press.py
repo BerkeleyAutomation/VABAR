@@ -24,7 +24,7 @@ def run(ctx):
     gb.leg(ctx, gb.pose(bx, by, cap_top + drop + 0.006, q), 200)
     ctx.tool("robot.wait_steps", steps=10)
     target = cap_top + drop - travel - 0.001
-    down = ctx.tool("robot.move_cartesian_until_contact", pose=gb.pose(bx, by, target, q), max_steps=240, stall_steps=12)
+    down = ctx.tool("robot.move_cartesian_until_contact", pose=gb.pose(bx, by, target, q), max_steps=600, stall_steps=30)  # 10 s budget, 0.5 s stall window at 60 Hz control steps
     ctx.tool("robot.wait_steps", steps=45)
     gb.leg(ctx, gb.pose(bx, by, geom["carry_z"], q), 200)
     return {
