@@ -12,8 +12,5 @@ out/
 *.mp4
 !media/*.mp4
 
-
-
-
 # Warp / cuRobo kernel caches
 .warp_cache/

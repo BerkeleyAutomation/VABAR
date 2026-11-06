@@ -187,13 +187,7 @@ def build(n: int = 30) -> dict:
             selection=f"the first {n} drawn `gearmesh-{family}` documents (each one draw, episode 0).",
             notes="No 30-instance selection was recorded for gear meshing; the first 30 by index are used.",
         )
-    # The suite's task.py registers each trial document under a short name:
-    # tray_pair_both_tNN (Level 1),
-    # tray_clutter_tNN (Level 2).
-    for level, stem, name in (
-        (1, "tray_pair_both", "tray_pair_both"),
-        (2, "tray_clutter", "tray_clutter"),
-    ):
+    for level, name in ((1, "tray_pair_both"), (2, "tray_clutter")):
         cell(
             "syringe_packing",
             level,
@@ -201,9 +195,9 @@ def build(n: int = 30) -> dict:
             graph="gap_perception",
             flags=["--motion", "curobo", *UNPRIVILEGED],
             instances=_variants("syringe_packing", [f"{name}_t{i:02d}" for i in range(n)]),
-            selection=f"benchmark/syringe_packing/level{level}: the 30 `{stem}_tNN` trials, registered as `{name}_tNN`.",
-            notes="The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, "
-            "which are what run, state @v2.",
+            selection=f"benchmark/syringe_packing/level{level}: the 30 `{name}_tNN` trials.",
+            notes="The frozen copies under benchmark/ are the suite's documents, byte for byte. Every config runs "
+            "them on a Robotiq 2F-85 with the tiled renderer (docs/validation/syringe_working_scene.md).",
         )
     for task_class, prefix in (("cable_insertion", "usbcinsertion"), ("cable_routing", "cablerouting")):
         for level, name in ((1, "easy"), (2, "medium")):
