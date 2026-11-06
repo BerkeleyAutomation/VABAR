@@ -1,5 +1,8 @@
 # `fast` config: syringe_packing
 
+**Superseded.** This was measured on the scene before `docs/validation/syringe_working_scene.md`, and `fast` no longer
+uses `vab_syringe_fast@v1`. It is kept as the record of what was tried.
+
 Measured 2026-11-05 on GPU 6 (one RTX PRO 6000 Blackwell). RoboSimStudio was pinned at `d9b2e44` and left
 unmodified. Every run went through `tools/fast_tune/syringe_packing.py`, which works the same way as the tool_hanging
 harness (see `docs/validation/fast_tool_hanging.md`): an in-process override of the lowered `TaskSpec`, plus a

@@ -203,7 +203,7 @@ config fixes *how* the run executes. Three ship in [`vabar/configs/`](vabar/conf
 | Config | What it is |
 | --- | --- |
 | `default` | One GPU, the benchmark's own scenes. The simulator waits while the graph thinks (`clock = "lockstep"`) and renders observations only when the graph asks for them (`obs_render = "on-demand"`, RTX). SAM 3, DINO and the other tool servers, and cuRobo, stay up across episodes. Graph traces keep their JSON records but skip the per-call image, mask and depth files (`trace_assets = false`; `--set trace_assets=true` restores them). A task's instances run as fleet waves of up to 8 worlds (15 for cable routing L1). Each suite runs several worker processes, sharing the GPU through a private NVIDIA MPS daemon (`mps = true`) and one SAM 3 / GroundingDINO server between them (`share_tool_servers = true`); because of the lockstep clock this changes wall time, not outcomes. Physics, cameras, step budgets and the tool-sorting VLM (Gemini 2.5 Flash) are the suites' own. |
-| `fast` | `default`, plus cheaper physics where a full 30-instance cell showed no change in outcome: gear meshing at 8 substeps (and half-resolution views), syringe packing at 400 Hz, tool sorting at 300 Hz with a 14,000-step budget and Gemini 3.1 Flash-Lite as its VLM, cable insertion with CUDA-graph capture, cable routing with a lighter rod solver. Tool hanging runs as in `default`. Each change, and the candidates that were rejected, is in `docs/validation/fast_*.md`. |
+| `fast` | `default`, plus cheaper physics where a full 30-instance cell showed no change in outcome: gear meshing at 8 substeps (and half-resolution views), syringe packing at 200 Hz on 16 workers, tool sorting at 300 Hz with a 14,000-step budget and Gemini 3.1 Flash-Lite as its VLM, cable insertion with CUDA-graph capture, cable routing with a lighter rod solver. Tool hanging runs as in `default`. Each change, and the candidates that were rejected, is in `docs/validation/fast_*.md`. |
 | `paper` | The v1.0 protocol exactly: a free-running clock, every camera rendered every step, the cells' own flags and environment, one task at a time. `vabar bench --config paper --print` prints the v1.0 commands verbatim. |
 
 **What a cell costs on one GPU.** These are whole 30-instance cells with their reference GaP graphs on one RTX PRO 6000
@@ -220,7 +220,7 @@ the same settings.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Tool hanging | 5-7 h (10-14 min/episode) | 5-7 min | 6.8 min | 2 x 8-world waves | 21.5 GB | 29/30 | 98% of tools | 86.7% |
 | Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | about 14 min | 8 | 41.9 GB | 29/30 | 98% of gears | 100.0% |
-| Syringe packing | hours | 19.5 min (old graph) | 21.6 min | 8 | 54.1 GB | 7-13/30 | 23-43% | 87.0% |
+| Syringe packing | hours | 22.8 min | 13-14 min | 16 | 40 GB | 27-28/30 | 90-93% | 87.0% |
 | Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 39.2 GB | 30/30 | 100% | 86.7% |
 | Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 9-11/30 | 72-79% of objects | 47.1% |
 | Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 16 min | 2 x 15-world waves | 12.2 GB | 15-23/30 | 50-77% | 46.7% |
@@ -229,12 +229,12 @@ the same settings.
 | --- | --- | --- | --- | --- | --- | --- |
 | Tool hanging | 16.5 min | 2 x 8-world waves | 22.7 GB | 24/30 | 87-90% of tools | 81.7% |
 | Gear meshing | 13.7-15.0 min | 8 | 42.3 GB | 21-23/30 | 89-91% of gears | 90.0% |
-| Syringe packing | 32.3 min | 8 | 53.6 GB | 0/30 (mean reward 0.27) | 0% | 63.0% |
+| Syringe packing | 31-35 min | 16 | 40 GB | 14-19/30 | 47-63% | 63.0% |
 | Cable insertion | 25.7 min | 8 | 43.3 GB | 21/30 | 70% | 30.0% |
 | Tool sorting | 32 min | 15 | 88 GB | 1-2/30 | 57-59% of objects | 33.7% |
 | Cable routing | 23 min | 2 x 15-world waves | 11.6 GB | 14-21/30 | 47-70% | 46.7% |
 
-Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). The syringe packing rows were measured before the suite took the working scene (61-hull syringes, walled tray, corrected layouts, Robotiq), and are being re-measured; see `docs/validation/syringe_working_scene.md`. Cable routing L2's
+Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing runs the working scene (61-hull syringes, walled tray, corrected layouts) on a Robotiq with the tiled renderer under every config, including `paper`. L1 is above the paper, and L2 reaches it only on its best run (`docs/validation/syringe_working_scene.md`). Cable routing L2's
 repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
 declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
 written at; on the other task classes tested, declaring it did not help.
@@ -279,7 +279,7 @@ uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --g
 - A cell's first `vabar bench --solve graph` on an install compiles its RTX scenes first (once per environment;
   `--no-warmup` skips it). Skipped on a cold install, the first perception times out and the episodes abort.
 - Before timing anything on a new machine, run `uv run python -m vabar warmup`. It takes
-  one idle step of each suite with `--renderer rtx`, so the RTX shader cache (about 4
+  one idle step of each suite on its own renderer (RTX, except syringe packing), so the RTX shader cache (about 4
   minutes the first time) and the Warp kernels are compiled once, not inside your first
   measurement. `python tools/profile_instance.py <run dir>` then shows where a run's wall
   time went: build, stepping, and the graph's perception, motion, robot tools and planning.
