@@ -756,6 +756,7 @@ def run(
     if mask is None:
         logger.warning("select_pair: no candidate produced a valid grasp — retry")
         result = _empty_result("retry")
+        result["attempted_json"] = json.dumps(attempts) if by_instance else ""
         result["dino_candidates_overlay"] = dino_candidates_overlay
         return result
 
