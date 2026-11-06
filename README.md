@@ -113,7 +113,7 @@ revisions (see `pyproject.toml`).
 git clone https://github.com/BerkeleyAutomation/VABAR-RoboSimStudio.git
 cd VABAR-RoboSimStudio
 uv sync
-uv run python -m vabar list            # 371 variants across the six suites
+uv run python -m vabar list            # 373 variants across the six suites (v1.0's 371 + two cable-free USB-C documents)
 ```
 
 The environment is about 12 GB. `UV_NO_GROUP=rtx uv sync` leaves out the path-traced
@@ -187,9 +187,100 @@ is an ordinary run over an episode list:
 ```bash
 uv run python -m vabar bench --list                                   # the cells
 uv run python -m vabar bench --cell tool_hanging/L1 --solve graph     # the cell's reference graph, 30 instances
-uv run python -m vabar bench --cell cable_insertion/L2 --print        # the vabar run commands it issues
+uv run python -m vabar bench --cell cable_insertion/L2 --print        # the resolved jobs, as vabar run commands
 uv run python -m vabar bench --cell tool_hanging/L1 --verify          # resets match the frozen transforms
 ```
+
+A cell runs as one runner invocation: `vabar bench` writes a job file (one job per task
+the instances live on) to `outputs/<config>/<cell>/jobs.py` and runs it once, so a pool
+of workers pulls fleet waves from the whole cell.
+
+### Experiment configs
+
+A cell fixes *what* is measured: the instances, the graph and its flags. An experiment
+config fixes *how* the run executes. Three ship in [`vabar/configs/`](vabar/configs/):
+
+| Config | What it is |
+| --- | --- |
+| `default` | One GPU, the benchmark's own scenes. The simulator waits while the graph thinks (`clock = "lockstep"`) and renders observations only when the graph asks for them (`obs_render = "on-demand"`, RTX). SAM 3, DINO and the other tool servers, and cuRobo, stay up across episodes. Graph traces keep their JSON records but skip the per-call image, mask and depth files (`trace_assets = false`; `--set trace_assets=true` restores them). A task's instances run as fleet waves of up to 8 worlds (15 for cable routing L1). Each suite runs several worker processes, sharing the GPU through a private NVIDIA MPS daemon (`mps = true`) and one SAM 3 / GroundingDINO server between them (`share_tool_servers = true`); because of the lockstep clock this changes wall time, not outcomes. Physics, cameras, step budgets and the tool-sorting VLM (Gemini 2.5 Flash) are the suites' own. |
+| `fast` | `default`, plus cheaper physics where a full 30-instance cell showed no change in outcome: gear meshing at 8 substeps (and half-resolution views), syringe packing at 400 Hz, tool sorting at 300 Hz with a 14,000-step budget and Gemini 3.1 Flash-Lite as its VLM, cable insertion with CUDA-graph capture, cable routing with a lighter rod solver. Tool hanging runs as in `default`. Each change, and the candidates that were rejected, is in `docs/validation/fast_*.md`. |
+| `paper` | The v1.0 protocol exactly: a free-running clock, every camera rendered every step, the cells' own flags and environment, one task at a time. `vabar bench --config paper --print` prints the v1.0 commands verbatim. |
+
+**What a cell costs on one GPU.** These are whole 30-instance cells with their reference GaP graphs on one RTX PRO 6000
+(96 GB), measured 2026-11-05 on a warm shader cache, one cell per GPU of a shared 240-core host with other jobs running:
+wall time from launch to exit, and the GPU's peak memory. `paper` figures are estimates from single episodes. `default`
+figures predate the fixes below, and where a cell says 1 worker they also predate workers and MPS.
+
+*Solved* counts whole instances. *Paper's measure* is how the paper counts: one trial per object where a task's objects
+are independent (tool sorting, tool hanging), per seated gear for gear meshing (read here from mean reward), and per
+instance otherwise. A range is several runs: one run does not pin these down, and tool sorting scored 7/30 and 13/30 on
+the same settings.
+
+| Cell (L1) | `paper` (est.) | `default` | `fast` | Workers (`fast`) | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Tool hanging | 5-7 h (10-14 min/episode) | 5-7 min | 6.8 min | 2 x 8-world waves | 21.5 GB | 29/30 | 98% of tools | 86.7% |
+| Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | about 14 min | 8 | 41.9 GB | 29/30 | 98% of gears | 100.0% |
+| Syringe packing | hours | 19.5 min (old graph) | 21.6 min | 8 | 54.1 GB | 7-13/30 | 23-43% | 87.0% |
+| Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 39.2 GB | 30/30 | 100% | 86.7% |
+| Tool sorting | hours | not run | 14-16 min | 15 | 86.8 GB | 7-13/30 | 64-75% of objects | 47.1% |
+| Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 20 min | 2 x 15-world waves | 12.2 GB | 19-20/30 | 63-67% | 46.7% |
+
+| Cell (L2, `fast`) | Wall | Workers | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |
+| --- | --- | --- | --- | --- | --- | --- |
+| Tool hanging | 16.5 min | 2 x 8-world waves | 22.7 GB | 24/30 | 87-90% of tools | 81.7% |
+| Gear meshing | 13.7-15.0 min | 8 | 42.3 GB | 21-23/30 | 89-91% of gears | 90.0% |
+| Syringe packing | 32.3 min | 8 | 53.6 GB | 0/30 (mean reward 0.27) | 0% | 63.0% |
+| Cable insertion | 25.7 min | 8 | 43.3 GB | 21/30 | 70% | 30.0% |
+| Cable routing | 32.6 min | 2 x 15-world waves | 11.6 GB | 19-22/30 | 63-73% | 46.7% |
+
+Tool sorting's L2 cell has no instances in this release. Syringe packing is the one task class below the paper: its
+tray and syringe colliders differ from what the cameras see (`docs/validation/dev_history_merge.md`). Cable routing L2
+is the slowest cell: a repaired episode can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of
+83 successes at the declared servo speed. Gear meshing and cable routing L2 declare the servo speed their graphs were
+written at; on the other task classes tested, declaring it did not help.
+
+A worker that stops making progress is killed and its episode re-run, so a rare renderer hang costs a cell up to 15
+minutes rather than the rest of the run. Gear meshing L1's run took 20.2 min in all for that reason; its other 29
+episodes were done by about 14. See `docs/validation/workers_mps.md`.
+
+On a smaller card a suite's worker count is held to what fits:
+`floor((free GB - shared_gb) / worker_gb)`. The figures in `default.toml` come from the peaks above. A 48 GB card
+still runs every cell's full count except tool sorting's (6 workers instead of 15).
+
+Most of tool sorting's failing episodes loop until the step budget runs out. `fast` uses Gemini 3.1 Flash-Lite, which
+answers in about 0.9 s and does not think (`docs/validation/tool_sort_vlm.md`). Run `vabar warmup` once per machine
+first: a cold RTX shader cache costs 4-8 minutes per scene, and RoboSimStudio now keeps that cache past the driver's
+4 GB limit. Both cable routing cells run as fleet waves (`docs/validation/cable_fleet.md`). Fixes that the v1.0 export
+missed are in `docs/validation/dev_history_merge.md`.
+
+```bash
+uv run python -m vabar bench --cell tool_hanging/L1                      # default
+uv run python -m vabar bench --cell tool_hanging/L1 --config paper       # the paper's protocol
+uv run python -m vabar bench --cell gear_meshing/L1 --config my.toml     # your own (inherits = "default")
+uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --graph gt \
+    --set clock=free --set suites.tool_hanging.max_steps=9000            # override single keys
+```
+
+- `--config NAME|path.toml` works on `vabar run`, `vabar bench`, `vabar studio` and
+  `vabar warmup`; `VABAR_CONFIG` selects one when the flag is absent. `--set key=value`
+  overrides one key on top (`clock=free`, `runtime.env.NAME=value`,
+  `suites.<suite>.physics=<name>@v1`, ...). Flags on the command line still win.
+- `[runtime]` sets the clock, observation rendering, renderer, worker count, MPS, waves and
+  environment. `[suites.<suite>]` (or `[suites."<suite>/<variant>"]`) sets a registered
+  `physics` arrangement or `cameras` rig, `max_steps`, `num_worlds`, `env`, extra `flags`,
+  and `variants = { old = "new" }` to run a benchmark instance on another variant. A suite
+  table also sets `workers`, a ceiling measured on a 96 GB GPU, and `worker_gb`. On a
+  smaller GPU the count is held to free memory / `worker_gb`, and `--set workers=N`
+  overrides it. See [`docs/validation/workers_mps.md`](docs/validation/workers_mps.md).
+  Physics, cameras and budgets rewrite the registered variants, so they hold in every
+  process, pool and fleet workers included. See [`vabar/config.py`](vabar/config.py).
+- Every run directory gets a `vabar_config.json`: the resolved config, its sha256 and
+  the VABAR commit.
+- Before timing anything on a new machine, run `uv run python -m vabar warmup`. It takes
+  one idle step of each suite with `--renderer rtx`, so the RTX shader cache (about 4
+  minutes the first time) and the Warp kernels are compiled once, not inside your first
+  measurement. `python tools/profile_instance.py <run dir>` then shows where a run's wall
+  time went: build, stepping, and the graph's perception, motion, robot tools and planning.
 
 **How success is counted.**
 - **Independent attempts:** in tasks built from attempts that are independent by
@@ -228,11 +319,29 @@ The four systems:
 - **GaP:** the graph generated autonomously by the same model, over the same skill library.
 
 These are the paper's numbers. [`docs/VALIDATION.md`](docs/VALIDATION.md) records what
-this release reproduces on the pinned RoboSimStudio. The cable cells in particular do
-not reproduce under the shipped protocol (palette segmentation): the reference graphs
-also fail on USB-C Easy and Routing Easy under the cable suites' original runtime, so
-the configuration behind those rates is still being confirmed. See
-[`docs/validation/cable.md`](docs/validation/cable.md).
+this release reproduces on the pinned RoboSimStudio. Both cable cells failed at first
+under the shipped protocol. In both, the graph's perception had been tuned on a different
+camera rig from the one the benchmark stages:
+- Cable insertion's `mate` was written for a straight-down camera. On the benchmark's
+  oblique head camera, the port's visible side wall dragged its read of the port 8–10 mm
+  off, a later check then threw away the correct close-up read, and the plug was
+  released about 16 mm off the bore. Reading the port from its roof alone fixes it:
+  0/30 before, 30/30 after
+  ([`cable_insertion_fix.md`](docs/validation/cable_insertion_fix.md)).
+- Cable routing's terminal detector had a pixel floor measured on a 1280×960 camera,
+  while the benchmark renders 1280×720, so the port was never found: 4/30 before,
+  16/30 after scaling the floor by the camera's focal length and keeping the open
+  jaws off the port ([`cable_routing_fix.md`](docs/validation/cable_routing_fix.md)).
+  Run as fleet waves since, the cell scored 16-20/30 in four runs, within the
+  single-world runs' own spread ([`cable_fleet.md`](docs/validation/cable_fleet.md)).
+- Cable routing L2 then scored 1-2/30. On its 80 mm peg pitch the crossing's fully open
+  jaws came down on the next spool, and Medium-only branches of the graph let go of the
+  end on top of the port, skipped its correction and switched off the seat-repair pass.
+  Opening the jaws only as far as clears the pegs, and running Medium's terminal and
+  repair as Easy's: 13-18/30 in three fleet cells and 15/30 single-world, at 34-57 min
+  a cell ([`cable_routing_l2.md`](docs/validation/cable_routing_l2.md)).
+
+See [`docs/validation/cable.md`](docs/validation/cable.md).
 
 ## Skill library
 

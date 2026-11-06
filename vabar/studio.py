@@ -9,14 +9,19 @@ Open the printed URL (forward the port when the machine is remote). The page is
 upstream's :class:`robosimstudio_studio.StudioSession`, unchanged: its **Task**
 menu lists every VABAR suite and variant, the **Goal** panel scores the scene
 clause by clause, and the **Policy** panel runs the task's scripted ``routine``
-or any graph it ships. The only thing added here is :func:`vabar.install`
-before the page is built.
+or any graph it ships. What is added here: :func:`vabar.install` before the page
+is built, and an experiment config (``--config``, ``--set``; see
+:mod:`vabar.config`) -- its per-suite physics, cameras and budgets rewrite the
+variants the menu offers, and its environment (tool servers kept warm, the
+planner cached) applies to the graphs the page runs.
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 
+from . import config as cfg
 from . import install
 
 FLEET_SOLUTIONS = {
@@ -45,16 +50,30 @@ def create_parser() -> argparse.ArgumentParser:
         help=f"what drives the worlds when --num-worlds > 1: {', '.join(FLEET_SOLUTIONS)}",
     )
     parser.add_argument("--graph", default="gt", help="the graph a --fleet-solution graph runs")
+    parser.add_argument(
+        "--config",
+        default=None,
+        help=f"experiment config: {', '.join(cfg.names())} or a .toml path (default: $VABAR_CONFIG, else default)",
+    )
+    parser.add_argument(
+        "--set", action="append", default=[], metavar="KEY=VALUE", help="override one config key; repeatable"
+    )
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
     args = create_parser().parse_args(argv)
+    try:
+        config = cfg.activate(cfg.resolve(args.config, args.set))
+    except cfg.ConfigError as exc:
+        print(f"[vabar] {exc}", file=sys.stderr)
+        return 2
+    cfg.apply_env(config, args.task)
     install()
     from robosimstudio_bench.taskbuild.registry import list_tasks
     from robosimstudio_studio import StudioConfig, StudioSession
 
-    task = args.task or list_tasks()[0]
+    task = config.map_task(args.task or list_tasks()[0])
     overrides = {
         "port": args.port,
         "share": args.share,

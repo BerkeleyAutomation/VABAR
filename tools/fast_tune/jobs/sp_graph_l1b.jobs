@@ -1,0 +1,4 @@
+# syringe_packing real fidelity, second candidate: the halved rig (sp_fast) aborted both
+# worlds at target_sg.perceive ("could not perceive 'syringe'"), so the graph probe is
+# re-run on the physics alone (8 substeps, agentview@v2 unchanged), beside sp_ref.
+syringe_packing sp_ss8 graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180

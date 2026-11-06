@@ -1,0 +1,6 @@
+# Real-fidelity phase 4 (after phase 3's tool_hanging Level 2 pair): tool_sort Level 1
+# gap_perception_loop, reference and candidate, 2 worlds each; and the half-resolution
+# syringe rig on reference physics, to confirm that phase 2's perception abort was the rig.
+tool_sort ts_ref graph_l1_6b :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 20000
+tool_sort ts_fast graph_l1_6b :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 20000
+syringe_packing sp_cam_half graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180

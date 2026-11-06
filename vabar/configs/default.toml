@@ -1,0 +1,169 @@
+# VABAR experiment config: default.
+#
+# What `vabar run`, `vabar bench` and `vabar studio` use unless told otherwise.
+# The goal is one GPU running a whole 30-instance cell of a GaP graph in about
+# half an hour, without changing what is measured: the physics, cameras and
+# budgets are the suites' own; only how the run is executed changes. See
+# vabar/config.py for every key, and `paper.toml` for the v1.0 protocol.
+
+description = "One GPU: lockstep clock, on-demand RTX observations, warm tool servers and planner, fleet waves, several workers sharing the GPU through MPS."
+
+[runtime]
+# The simulator waits while the graph thinks, instead of free-running (and
+# spending the episode's step budget) during a perception call or a plan.
+clock = "lockstep"
+# Render camera observations only when a graph asks for one; per-step path
+# tracing was the largest single cost (about 25x) in profiling.
+obs_render = "on-demand"
+render_every = 0
+# The renderer the reference graphs' perception was tuned on. Compile its
+# shader cache once with `python -m vabar warmup`.
+renderer = "rtx"
+# Keep SAM 3, GroundingDINO and the other tool servers alive across episodes
+# (GAP_TOOL_BUNDLE_LINGER=1), and build cuRobo once per worker
+# (ROBOSIMSTUDIO_PLANNER_CACHE=1), instead of re-initialising both per episode.
+keep_tool_servers = true
+cache_planner = true
+# Graph traces keep dag_trace.json and every request/response record, but skip
+# the per-call PNG/npy/npz assets (GAP_TRACE_ASSETS=0). One 8-world tool_hanging
+# wave wrote 3.5 GB in 7,542 files, and a 720p RGB PNG is ~90 ms of encoding on
+# the graph's own thread. `--set trace_assets=true` brings them back for the
+# trace viewer.
+trace_assets = false
+# A task with several instances in a cell runs them as waves of this many
+# worlds in one model (min(this, the task's instances)).
+num_worlds = 8
+# Processes per cell. Under the lockstep clock a worker's simulation waits for
+# its own graph, so how many share the GPU changes wall time, not outcomes:
+# per-instance results matched across 1, 2 and 4 workers (docs/validation/
+# workers_mps.md). Each suite below sets its own ceiling, measured on one RTX
+# PRO 6000 (96 GB), and the GPU memory one of its workers holds; on a smaller
+# card a ceiling is held to free memory / worker_gb. This is the fallback.
+# Run `vabar warmup` first: a cold RTX shader cache takes 4 minutes, and
+# workers starting the path tracer together then miss the first-render watchdog.
+workers = 1
+worker_gb = 20.0
+# GPU memory of the tool servers the workers share (share_tool_servers below):
+# held once per run, not per worker. SAM 3 is about 6.5 GB and GroundingDINO
+# about 2.5; a suite whose graph calls only SAM 3 sets 6.5. A card fits
+# floor((free - shared_gb) / worker_gb) workers, each suite's ceiling at most.
+shared_gb = 9.0
+# With workers > 1, share the GPU through a private NVIDIA MPS daemon, started
+# for the run and stopped after it. Without MPS the processes time-slice the
+# GPU: cable insertion took 43 min on 1 worker, 37.5 on 4, and 19.7 on 4 with
+# MPS. Falls back to plain processes when nvidia-cuda-mps-control is missing.
+mps = true
+# With workers > 1, one SAM 3 and one GroundingDINO server per GPU, shared by
+# every worker through a broker, instead of one of each per worker. The tools
+# shared this way take everything they need in the call, so sharing changes no
+# call's answer; it frees about 9 GB per worker, which is what lets tool_sort
+# and gear_mesh run 15 and 8 workers. Needs graph-as-policy with
+# gap_core.rpc.broker (GAP_TOOL_SHARE_DIR); see docs/validation/workers_mps.md.
+share_tool_servers = true
+# 0 keeps each cell's own bus watchdog (180 s; 600 s on the cable cells).
+bus_timeout = 0
+env = {}
+
+# Per-suite tables: physics / cameras (registered names), max_steps,
+# num_worlds, workers, worker_gb, shared_gb, variants = { old = "new" }, env,
+# flags. Physics is untouched here.
+#
+# worker_gb is what one more worker costs with the tool servers shared, from
+# the GPU's peak in the final `fast` validation of 2026-11-05 (sampled every
+# 10 s; docs/validation/workers_mps.md): (peak - shared_gb) / workers, plus
+# about 10%.
+
+[suites.tool_hanging]
+# Fleet waves of 7-8 worlds; a second worker runs a second wave alongside.
+# L1: 431 s on 1 worker, 300 s on 2 (29/30 and 30/30). Peak 21.5 GB on 2.
+workers = 2
+worker_gb = 7.0
+
+[suites.gear_mesh]
+# Measured: gear_mesh/gearmesh-easy-pair-01 refuses a replicated build ("these
+# entities contribute substep physics written for one world: board").
+num_worlds = 1
+# L1 (fast physics): 35 min on 1 worker, 24 on 2, 17.9 on 4 with MPS, 15.1 on 8
+# with MPS and shared tool servers (25/30, inside the 24-28 of other runs);
+# 10.7 on 8 once the graph asks SAM 3 for 48 masks a query instead of all 200
+# (27/30; sight.py SEGMENT_TOP_K); about 14 with the suite's servo speed declared
+# (29/30). Fleet waves, 6 x up to 8 worlds, were measured and not taken: 8.9 min,
+# 26/30, but 21% more sim steps and a board and document port to keep
+# (docs/validation/workers_mps.md).
+# Peak 41.9 GB on 8 with shared servers (10.4 GB a worker with its own), so a
+# 48 GB card still runs all 8.
+workers = 8
+worker_gb = 5.0
+shared_gb = 6.5
+
+[suites.syringe_packing]
+# The multi-syringe graph (gap_perception_v2; docs/validation/dev_history_merge.md)
+# runs about twice the steps of the graph it replaced. L1, `fast`, full cells:
+# 32.5 min on 4 workers (7/30), 21.6 on 8 (11/30, 54 GB at peak), 21.1 on 12
+# (9/30, 77 GB). L2: 32.3 min on 8 (0/30, mean reward 0.27), 37.5 on 12 with one
+# worker hung and replaced by the pool's watchdog (0/30, 0.32).
+workers = 8
+worker_gb = 6.5
+shared_gb = 6.5
+
+[suites.tool_sort]
+# Most of a tool-sort episode is remote VLM latency, which overlaps across
+# workers. L1: about 3.9 h on 1 worker (20k budget), 69 min on 3 (12k budget);
+# under `fast` (14k budget) 45.5 min on 5, 36.5 on 10 and 29.1 on 15 with shared
+# tool servers. 15 workers held 87.1 GB of a 96 GB card at peak: about 4.2 GB
+# each, 1 GB for each one's cuRobo server, and the shared SAM 3 / GroundingDINO.
+workers = 15
+worker_gb = 5.5
+# The graph's VLM (the bin labels, select_pair's A/B tournament and label
+# questions): the model VABAR's tool-sort numbers were measured with. A suite's
+# env wins over the shell (apply_env), so an exported GAP_VLM_MODEL does not
+# change it; --set suites.tool_sort.env.GAP_VLM_MODEL=<id> does, and is recorded.
+# `fast` swaps in a faster one. See docs/validation/tool_sort_vlm.md.
+env = { GAP_VLM_MODEL = "gemini-2.5-flash" }
+
+[suites.cable_route]
+# L1 (port_easy) runs as fleet waves: 30 instances in 2 waves of 15, one per
+# MPS worker (docs/validation/cable_fleet.md). Needs RoboSimStudio's fleet fixes
+# from that note: WorldFacade.stream_dual_trajectory, and the rod's friction
+# written in every world (before it, worlds 1+ gripped the cable at mu 11
+# instead of 60 and the cell scored 5/30). Measured on one RTX PRO 6000, `fast`
+# physics, full L1 cell:
+#   15 worlds x 2 workers: 17.0, 16.9 and 18.0 min; 20, 16 and 19/30 (mean
+#     reward 0.875, 0.833, 0.867); 11.7 GB of GPU at peak.
+#   8 x 4: 18.1 min, 16/30. 30 x 1: 24.4 min, 17/30 (its one wave carried a
+#     13,000-step truncation). 8 x 2: 28.7 min, 17/30 (two waves a worker).
+#   Single-world, 1 x 6 with MPS, same stack: 46.5 min, 18/30 (0.817), 32.8 GB.
+# A wave advances at 9-12 steps/s whatever its width (host-bound), so the
+# cell takes about its longest episode: 15-24 min.
+num_worlds = 15
+# A fleet cell is held to its wave count, so L1 gets 2 of these; L2 runs its
+# single-world episodes on all 6. Single-world, the cell is physics-bound: one
+# 5.4 GB worker cannot fill the GPU. L1: 6 instances took 1,410 s on 3 workers
+# without MPS and 547 s with it; the full cell 34-46.5 min on 6 with MPS (about
+# 2 h on 1 worker).
+workers = 6
+# A 15-world worker holds 5.8 GB (8 worlds 5.0, 30 worlds 6.2); single-world 5.4.
+# The weave graph calls SAM 3 alone.
+worker_gb = 6.0
+shared_gb = 6.5
+
+# L2 (port_medium) runs as the same 15-world waves. Measured 2026-11-05, `fast`,
+# with the graph's L2 fixes and the task's declared servo speed
+# (docs/validation/cable_routing_l2.md), at `fast`'s 14,000-step budget: fleet
+# 2 x 15 took 32.6 min, 21/30 (mean reward 0.92), 11.6 GB; single-world on 10 MPS
+# workers took 53.5 min, 21/30 (0.92), 53.5 GB. Before the speed was declared,
+# fleet episodes ended about 5% earlier than single-world, which biases cycle
+# time: set [suites."cable_route/port_medium"] num_worlds = 1 when it matters.
+
+[suites.usbc_insert]
+# Measured: every episode rebuilds the model (the port moves with it), and the
+# suite's IK planners (tools.py plan_brace / insertion) copy into
+# env.state.joint_q and step a solver directly, which a fleet world's sliced
+# state does not support ("Copy source and destination must be arrays").
+num_worlds = 1
+# Physics-bound like cable_route. L1 (fast physics): 43 min on 1 worker, 44 on
+# 2 and 37.5 on 4 without MPS; with MPS 19.7 on 4, 15.0 on 8 and 16.8 on 15
+# (each episode slows as workers are added). Peak 39.2 GB on 8.
+workers = 8
+worker_gb = 4.5
+shared_gb = 6.5

@@ -1,0 +1,2 @@
+python -m vabar run --task gear_mesh/gearmesh-easy-pair-01 --episodes 0 --solve idle
+python -m vabar run --task gear_mesh/gearmesh-easy-pair-02 --episodes 0 --solve idle

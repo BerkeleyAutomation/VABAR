@@ -1,0 +1,28 @@
+# Fragments for vabar/configs/fast.toml from the tool_hanging / syringe_packing / tool_sort
+# tuning (docs/validation/fast_{tool_hanging,syringe_packing,tool_sort}.md). Every name is
+# registered in that suite's tasks/<suite>/staging.py; no document stages any of them.
+# The renderer stays RTX for all three: GL has no fleet form (see fast_tool_hanging.md).
+#
+# Read each entry as "in place of" the reference it was measured against, not suite-wide:
+#   tool_hanging    physics replaces tool_hanging_480hz@v1 (every variant but hammers, which
+#                   stage tool_hanging_plain_960hz@v1 and were not measured); cameras replaces
+#                   yam_station_tool_hanging@v1 (the 8 Level-1/2 variants; the full variants'
+#                   tool_hanging_views@v1 is a different, already 640x480 rig).
+#   syringe_packing physics replaces vab_500hz@v1 (every variant).
+#   tool_sort       physics replaces vab_500hz@v1 (every variant).
+# A runtime that swaps the names suite-wide would put hammers on 480 Hz and the full
+# variants on the YAM station's cameras, which nothing here measured.
+
+[suites.tool_hanging]
+physics = "tool_hanging_fast@v1"              # tool_hanging_480hz@v1, collide_every 2
+cameras = "yam_station_tool_hanging_fast@v1"  # yam_station_tool_hanging@v1 at 640x360
+
+[suites.syringe_packing]
+physics = "vab_syringe_fast@v1"               # vab_500hz@v1, 8 substeps (400 Hz)
+# cameras: unchanged (agentview@v2). At 640x480 the perception graph lost the syringe in
+# both worlds (target_sg.perceive), so the rig is not part of the fast config.
+
+[suites.tool_sort]
+physics = "vab_tool_sort_fast@v1"             # vab_500hz@v1, 6 substeps (300 Hz)
+# cameras: unchanged (tool_sort_agentview@v3); its 1280x960 overhead is what resolves the
+# Level-1 bins' small parts, and halving it was not measured.

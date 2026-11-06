@@ -1,0 +1,13 @@
+# tool_hanging: the pliers_level1 routine is the probe that splits the candidates (4 substeps
+# and collide_every 4 failed it, 4 substeps + collide_every 2 passed it), so repeat it: is
+# that outcome a property of the knob or of the run?
+tool_hanging th_ref routine_p1_r2 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ref routine_p1_r3 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 routine_p1_r2 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 routine_p1_r3 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4 routine_p1_r2 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4 routine_p1_r3 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce4 routine_p1_r2 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4_ce2 routine_p1_r2 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 routine_w1_r2 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ce2 routine_s1_r2 :: --task tool_hanging/scissors_level1 --solve routine

@@ -1,0 +1,12 @@
+# syringe_packing settle drift: 1,500 idle steps, objects' pose change from step 60 to the end.
+# Run with: sweep.py --drift.
+syringe_packing sp_ref drift_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 1500
+syringe_packing sp_ref drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss6 drift_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss6 drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss4 drift_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss4 drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_it10 drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_pyr drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_noccd drift_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 1500
+syringe_packing sp_noccd drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500

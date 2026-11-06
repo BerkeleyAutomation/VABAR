@@ -1,0 +1,25 @@
+# tool_hanging cheap fidelity: the three Level-1 routines and the privileged gt graph on
+# scissors_level1. Gate: success with steps within +-10% of the reference. Run in parallel.
+# (wrenches_level1 routines for the single knobs ran in th_speed.jobs.)
+tool_hanging th_ref routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ref gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ss4 routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ss4 routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4 gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ce2 routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ce2 routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_pyr routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_pyr routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_pyr gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ss4_ce2 routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ss4_ce2 routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4_ce2 gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ss4_ce2_pyr routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ss4_ce2_pyr routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ss4_ce2_pyr routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ss4_ce2_pyr gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ref gt_p1 :: --task tool_hanging/pliers_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ss4_ce2 gt_p1 :: --task tool_hanging/pliers_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_sup_dec routine_p1b :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_sup_dec idle_p2b :: --task tool_hanging/pliers_level2 --solve idle --max-steps 600

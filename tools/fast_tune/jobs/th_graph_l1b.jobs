@@ -1,0 +1,6 @@
+# tool_hanging real fidelity, Level 1, second round: the reference, collide_every 2 alone
+# (full-resolution rig) and collide_every 2 with the halved rig, concurrently, so the
+# camera and the physics are separated. sweep.py --parallel 3.
+tool_hanging th_ref graph_w1g :: --task tool_hanging/wrenches_level1 --episodes 1,5,9,13 --num-worlds 4 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 8500
+tool_hanging th_ce2 graph_w1g :: --task tool_hanging/wrenches_level1 --episodes 1,5,9,13 --num-worlds 4 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 8500
+tool_hanging th_ce2_half graph_w1g :: --task tool_hanging/wrenches_level1 --episodes 1,5,9,13 --num-worlds 4 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 8500

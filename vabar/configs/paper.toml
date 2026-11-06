@@ -1,0 +1,37 @@
+# VABAR experiment config: paper.
+#
+# Exactly the v1.0 protocol the paper's tables and docs/VALIDATION.md were
+# measured under. `python -m vabar bench --cell <cell> --config paper --print`
+# prints the same per-task `vabar run` commands v1.0 printed (tests/data/v1_print).
+#
+# Everything here is the runner's own behaviour stated explicitly. The per-cell
+# flags and environment are the manifest's (benchmark/vabar_v1.json), used
+# verbatim because nothing below overrides them:
+#   tool/gear/syringe cells: --no-privileged --perception vision --bus-timeout 180
+#     (+ --motion curobo on tool hanging, gear meshing and syringe packing;
+#      --max-steps 20000 on tool sorting, 8500 / 22000 on tool hanging L1 / L2),
+#     rendered by `vabar run`'s default for a vision run, --renderer auto;
+#   cable cells: --no-privileged --perception vision --renderer rtx --bus-timeout 600
+#     --settle-steps <the case's>, with ROBOSIMSTUDIO_SEGMENTATION_BACKEND=palette.
+
+description = "The v1.0 protocol: free-running clock, per-step observation rendering, the cells' own flags and environment, one task at a time."
+
+[runtime]
+# The simulator free-runs while the graph thinks, as every v1.0 number did.
+clock = "free"
+# Every camera rendered every control step.
+obs_render = "per-step"
+render_every = 0
+# The cells' own renderer (rtx on the cable cells; auto for the other vision cells).
+renderer = ""
+# Tool servers and cuRobo start afresh with each episode.
+keep_tool_servers = false
+cache_planner = false
+# Every tool call's images, masks and depth written beside its trace.
+trace_assets = true
+# One world, one process: the cell's tasks run one after another.
+num_worlds = 1
+workers = 1
+# The cells' own bus watchdog.
+bus_timeout = 0
+env = {}

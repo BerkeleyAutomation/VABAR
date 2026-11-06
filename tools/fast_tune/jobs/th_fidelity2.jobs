@@ -1,0 +1,10 @@
+# tool_hanging cheap fidelity, round 2. substeps 4 failed pliers_level1 and the pyramidal
+# cone failed scissors_level1 in round 1, so their combinations were dropped; collide_every
+# 2 passed everything and collide_every 4 is the next step up.
+tool_hanging th_ce4 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ce4 routine_s1 :: --task tool_hanging/scissors_level1 --solve routine
+tool_hanging th_ce4 routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce4 gt_s1 :: --task tool_hanging/scissors_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ref gt_p1 :: --task tool_hanging/pliers_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ce2 gt_p1 :: --task tool_hanging/pliers_level1 --solve graph --graph gt --bus-timeout 180
+tool_hanging th_ce4 gt_p1 :: --task tool_hanging/pliers_level1 --solve graph --graph gt --bus-timeout 180

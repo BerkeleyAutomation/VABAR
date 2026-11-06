@@ -1,0 +1,6 @@
+# Real-fidelity phase 5. Phases 2 and 3 lost their runs at the first observation ("render was
+# not answered within 180 s"), with the GPU idle and the machine's load average at 160-200 from
+# other work on its CPUs: the renderer's host side was starved. --bus-timeout is raised to 600
+# for the reference and the candidate alike; nothing else differs from the cell's protocol.
+tool_hanging th_ref graph_w2g :: --task tool_hanging/wrenches_level2 --episodes 1,5 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 600 --max-steps 22000
+tool_hanging th_ce2_half graph_w2g :: --task tool_hanging/wrenches_level2 --episodes 1,5 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 600 --max-steps 22000

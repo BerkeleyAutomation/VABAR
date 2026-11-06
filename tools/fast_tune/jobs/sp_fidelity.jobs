@@ -1,0 +1,18 @@
+# syringe_packing cheap fidelity (parallel). The suite's gt graph does not run the tray
+# levels (docs/validation/syringe_packing.md), so the probes are:
+#  - the scripted routine posting one syringe through the same sharps box in the same
+#    cell on the same arrangement (tool_sort/syringe, reference success at 1,958 steps)
+#    and tool_sort/hammer (786);
+#  - 1,500 idle steps (30 s) on an L1 and an L2 tray scene with --drift: how far the
+#    settled objects move from step 60 to the end, against the reference.
+syringe_packing sp_ref routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ref routine_ts_hammer :: --task tool_sort/hammer --solve routine
+syringe_packing sp_ss6 routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ss6 routine_ts_hammer :: --task tool_sort/hammer --solve routine
+syringe_packing sp_ss4 routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_it10 routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_it5 routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_pyr routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_pyr routine_ts_hammer :: --task tool_sort/hammer --solve routine
+syringe_packing sp_noccd routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_noccd routine_ts_hammer :: --task tool_sort/hammer --solve routine

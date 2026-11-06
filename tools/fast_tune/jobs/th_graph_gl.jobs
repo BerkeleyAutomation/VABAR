@@ -1,0 +1,4 @@
+# tool_hanging renderer probe: one world, rasterized GL instead of RTX (fleets have no GL),
+# the cell's graph protocol on wrenches_level1 episodes 1 and 5, one after the other.
+tool_hanging th_ref graph_gl_w1e1b :: --task tool_hanging/wrenches_level1 --episodes 1 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer gl --bus-timeout 180 --max-steps 8500
+tool_hanging th_ref graph_gl_w1e5b :: --task tool_hanging/wrenches_level1 --episodes 5 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer gl --bus-timeout 180 --max-steps 8500

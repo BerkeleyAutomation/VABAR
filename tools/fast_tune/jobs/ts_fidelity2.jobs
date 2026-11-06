@@ -1,0 +1,11 @@
+# tool_sort cheap fidelity, round 2: drift for 4 substeps (whose routines passed), and the
+# gt graph on two Level-1 bins for the reference and the substep candidates. The gt graph
+# boots open-robot-skills' cuRobo bundle: sweep.py --open-robot-skills <checkout> --drift.
+tool_sort ts_ss4 drift_l1_1 :: --task tool_sort/level1_1 --solve idle --max-steps 1500
+tool_sort ts_ss4 drift_l1_7 :: --task tool_sort/level1_7 --solve idle --max-steps 1500
+tool_sort ts_ref gt_l1_1 :: --task tool_sort/level1_1 --solve graph --graph gt --bus-timeout 180
+tool_sort ts_ss6 gt_l1_1 :: --task tool_sort/level1_1 --solve graph --graph gt --bus-timeout 180
+tool_sort ts_ss4 gt_l1_1 :: --task tool_sort/level1_1 --solve graph --graph gt --bus-timeout 180
+tool_sort ts_ref gt_l1_2 :: --task tool_sort/level1_2 --solve graph --graph gt --bus-timeout 180
+tool_sort ts_ss6 gt_l1_2 :: --task tool_sort/level1_2 --solve graph --graph gt --bus-timeout 180
+tool_sort ts_ss4 gt_l1_2 :: --task tool_sort/level1_2 --solve graph --graph gt --bus-timeout 180
