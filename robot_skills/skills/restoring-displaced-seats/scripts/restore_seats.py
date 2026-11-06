@@ -5,6 +5,17 @@ earlier bend. After terminating the run, observe each seat again and reuse the
 ordinary contact grasp/cross/release motions for any missing span. The pass is
 bounded by the number of observed pegs; the final verifier still checks the
 entire route, including the terminal that a repair may itself disturb.
+
+**On four stations too.** VABAR v1.0 returned at once on Medium ("Medium uses its
+first crossing action without recovery pickups"), which switched the repair off on
+the tier that needs it most; the line came in with the dev repo's 7e837ed on the
+720 mm rod, and RoboSimStudio-dev's 48df9c6 had already reverted it. On the
+staged cable_routing/L2 the pass repairs a seat on 13-16 of 30 episodes, and the
+repaired seat held 50 times in 63 over three cells (docs/validation/cable_routing_l2.md).
+
+A repair's take opens its jaws only as far as clears the pegs, as a crossing's
+does (``plan_crossing.take_opening``), and a planner refusal at one station moves
+on to the next instead of erroring the node.
 """
 
 import json
@@ -17,6 +28,7 @@ from gap import NodeContext
 
 # Sibling helpers resolve inside the GaP skill package.
 from .perceive_rod import run as observe_rod
+from .plan_crossing import take_opening
 from .run_legs import run as run_legs
 
 
@@ -54,8 +66,6 @@ def run(ctx: NodeContext, scene: str = "") -> Output:
     stations, sides = seen.get('stations') or [], seen.get('sides') or []
     if len(stations) not in (2, 4) or len(sides) != len(stations):
         return {'exit': 'checked', 'repairs': 0, 'observations': []}
-    if len(stations) == 4:
-        return {'exit': 'checked', 'repairs': 0, 'observations': [], 'reason': 'Medium uses its first crossing action without recovery pickups'}
     order = sorted(range(len(stations)), key=lambda j: stations[j][1])
     planner_order = ([j for j in reversed(order) if sides[j] > 0] +
                      [j for j in reversed(order) if sides[j] < 0])
@@ -82,9 +92,17 @@ def run(ctx: NodeContext, scene: str = "") -> Output:
         if coverage >= .026:
             print(f'[restore] station {station}: {coverage*1000:.1f} mm visible; leave seated span', flush=True)
             continue
-        plan = ctx.tool('cable.plan_station', index=planner_order.index(station),
-                        stations=stations, sides=sides, seats_x=seen.get('seats_x'),
-                        rod=curve, final_pass=True)
+        try:
+            plan = ctx.tool('cable.plan_station', index=planner_order.index(station),
+                            stations=stations, sides=sides, seats_x=seen.get('seats_x'),
+                            rod=curve, final_pass=True)
+        except (ValueError, RuntimeError) as exc:
+            # One unreachable station must not stop the other observed seats
+            # from getting their own bounded repair.
+            observations[-1].update(repair='planner_refused', error=str(exc)[:200])
+            print(f'[restore] station {station}: planner refused ({exc}); check the next seat', flush=True)
+            continue
+        plan['take_open_m'], plan['jaw'] = take_opening(curve, plan, stations)
         if float(plan.get('worst_grasp_error', float('inf'))) > .025 or not plan.get('grasp_ok', True):
             observations[-1]['repair'] = 'infeasible'
             continue
@@ -106,9 +124,15 @@ def run(ctx: NodeContext, scene: str = "") -> Output:
         observations[-1]['after_first_m'] = after
         if after >= .026:
             continue
-        second = ctx.tool('cable.plan_station', index=planner_order.index(station),
-                          stations=stations, sides=sides, seats_x=seen.get('seats_x'),
-                          rod=curve, slack_margin=.045, final_pass=True)
+        try:
+            second = ctx.tool('cable.plan_station', index=planner_order.index(station),
+                              stations=stations, sides=sides, seats_x=seen.get('seats_x'),
+                              rod=curve, slack_margin=.045, final_pass=True)
+        except (ValueError, RuntimeError) as exc:
+            observations[-1].update(second_touch='planner_refused', error=str(exc)[:200])
+            print(f'[restore] station {station}: second-touch planner refused ({exc}); check the next seat', flush=True)
+            continue
+        second['take_open_m'], second['jaw'] = take_opening(curve, second, stations)
         if float(second.get('worst_grasp_error', float('inf'))) > .025 or not second.get('grasp_ok', True):
             observations[-1]['second_touch'] = 'infeasible'
             continue

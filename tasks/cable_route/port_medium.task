@@ -20,6 +20,11 @@
 
   (:staging
     (:cameras yam_station_cable@v1)
+    ; The tool speed the weave graph was written at. RoboSimStudio's servo now
+    ; advances every step, so an undeclared task runs at the law's 0.31 m/s.
+    ; Measured on this tier: 83/120 at 0.12 against 60/120 at 0.31, the gain in
+    ; the terminal clauses. docs/validation/cable_routing_l2.md.
+    (:servo-speed-mps 0.12)
     ; THE BOARD IS DRAWN IN CENTIMETRES, THE TWO ENDS IN MILLIMETRES.
     ; `staging:PORT_BOARD` places all four pegs fresh every episode -- the gap between
     ; them, each one's stagger off the line, a wobble on top, the board's rotation

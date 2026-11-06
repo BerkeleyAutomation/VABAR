@@ -141,6 +141,38 @@ wide enough to clear the mask's own soft edge and narrow enough to stay on the
 bench rather than reaching past it.
 """
 
+ROOF_BAND = 0.004
+"""How far below a fixed receptacle's top surface a point may sit and still be roof [m].
+
+**The footprint of a block is its roof, not its silhouette.** This body was
+written against ``usbc_perception@v1``'s ``topdown``: straight down from 0.40 m,
+which sees a block's roof and nothing else, so every statistic below could be
+taken over the whole mask. The documents now stage ``yam_station_usbc@v1``,
+whose ``topdown`` is a head camera ~0.95 m out and 33 degrees off vertical. From
+there the port -- 150 mm tall, 40 mm across -- shows its camera-facing side wall
+as well, and on episode 10009 that wall was 42 % of the mask. Its points all sit
+at the wall's x, so over nine drawn layouts the whole-mask read put the mouth
+**7.7-9.7 mm toward the camera** and the bore axis **6.5-10.6 degrees off**.
+
+That bias sank the whole graph rather than one read: ``inspect_vision`` gates
+its wrist measurement against this one (6 mm horizontal, 8 degrees), on the
+stated premise that the bench read is good to about a millimetre. The wrist read
+the bore to 0.2 mm, was rejected for disagreeing with a 9 mm error, and the
+stroke was aimed at the error -- every L1 instance ended ~15 mm off the bore.
+
+The roof is what a straight-down view would have measured, and the highest
+horizontal surface of a bolted block is on its own centre line whatever the
+camera's angle. Over the same nine layouts the roof read is 0.7-1.3 mm off
+laterally and within 0.7 degrees in heading; on 10009 any band from 2 to 6 mm
+gives the same. 4 mm is several times the depth spread across a flat roof, and
+of a 150 mm wall it admits only the top rim (2,096 roof points at 2 mm, 2,103 at
+4 mm, against 3,606 in the mask).
+
+Only the FIXED receptacle uses this. A barrel's highest surface is its flange
+rim, a short arc across the bore axis, so the bulkhead keeps its whole
+silhouette and its own catalogue fit (:func:`_barrel_mouth`).
+"""
+
 HELD_WORDS = ("holding", "held", "bulkhead")
 """Words in the instruction that mean the far end of the mate is not bolted down.
 
@@ -334,6 +366,18 @@ def _yaw_across(axis_xy: np.ndarray, reference: np.ndarray) -> float:
     yaw = float(np.degrees(np.arctan2(float(axis_xy[1]), float(axis_xy[0]))) + 90.0)
     across = float(np.degrees(np.arctan2(float(reference[1]), float(reference[0]))) + 90.0)
     return yaw if abs((yaw - across + 180.0) % 360.0 - 180.0) <= 90.0 else yaw + 180.0
+
+
+def _roof(points: np.ndarray) -> np.ndarray:
+    """The part's highest horizontal surface: points within :data:`ROOF_BAND` of its top.
+
+    The top is the 98th percentile of height rather than the maximum, so a few
+    stray pixels above the part cannot define it. Falls back to the whole cloud
+    when the roof is too sparse to measure anything with.
+    """
+    z = points[:, 2]
+    roof = points[z >= float(np.percentile(z, 98.0)) - ROOF_BAND]
+    return roof if len(roof) >= MIN_MASK_PIXELS else points
 
 
 def _support_z(mask: np.ndarray, depth: np.ndarray, K: np.ndarray, T: np.ndarray) -> float | None:
@@ -565,7 +609,10 @@ def run(
         shape = ctx.tool("usbc.receptacle_shape")
     except Exception:
         shape = None
-    axis_xy = _principal_xy(rec_pts)
+    # A fixed block is located by its roof; see ROOF_BAND for the 8-10 mm the
+    # whole silhouette cost on an oblique head camera. A barrel keeps its own.
+    footprint = rec_pts if shape is not None else _roof(rec_pts)
+    axis_xy = _principal_xy(footprint)
     # Sign it so the axis runs INTO the receptacle -- away from the plug, which
     # is the direction the stroke pushes. The two parts' own separation is what
     # says which way that is, and it is the one thing in this scene that cannot
@@ -610,7 +657,9 @@ def run(
         perp = np.array([-axis[1], axis[0], 0.0])
         along_rec = rec_pts @ axis
         front = float(np.percentile(along_rec, 5.0))
-        lateral = float(np.median(rec_pts @ perp))
+        # Across the bore from the roof only: a visible side wall is all at one
+        # lateral offset and drags a whole-mask median toward the camera.
+        lateral = float(np.median(footprint @ perp))
         # HEIGHT COMES FROM THE PLUG, not from the receptacle's own silhouette.
         #
         # A top-down camera cannot see the height of a horizontal bore at all --

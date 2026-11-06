@@ -111,6 +111,7 @@ from __future__ import annotations
 
 import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
 
+import dataclasses
 import itertools
 import math
 import warnings
@@ -143,6 +144,7 @@ from .assets.layout import (
 __all__ = [
     "CABLE",
     "CABLE_BOW",
+    "CABLE_FAST",
     "CABLE_REPRO_HOOKS",
     "CABLE_RIG",
     "PORT_BOARD",
@@ -287,6 +289,43 @@ CABLE = register_arrangement(
         ),
     ),
 )
+
+CABLE_FAST = register_arrangement(
+    "cable_route_fast@v1",
+    # 60 Hz x 16 substeps as the reference, one coupler pass, VBD at 20 iterations.
+    dataclasses.replace(
+        CABLE,
+        backends=CABLE.backends_replacing("rod", CABLE.backend_for("rod").with_(iterations=20)),
+        coupling=CABLE.coupling.with_(iterations=1),
+    ),
+)
+"""The ``fast`` config's cable arrangement: :data:`CABLE` with one coupler pass and 20 VBD iterations.
+
+**Not what any document stages.** Every cable document still names
+``cable_coupled_960hz@v1``; this is selected by ``vabar/configs/fast.toml``
+(``[suites.cable_route] physics = "cable_route_fast@v1"``) for a grad student
+with one GPU, and every number below is in
+``docs/validation/fast_cable_route.md`` -- re-run with
+``tools/fast_tune/cable_route.py``.
+
+**Two multipliers cut, and the rate kept.** The step is launch-bound, so what
+pays is fewer graph nodes: one coupler pass halves both solvers' restarts per
+substep, and once there is one pass VBD's iterations are most of what is left --
+halving them buys ~40 %, not the ~2 % :data:`CABLE`'s note measured at two
+passes. Idle on ``port_easy`` 10009, no renderer, alone on an RTX PRO 6000:
+15.2 and 15.1 steps/s against 7.2 for the reference in the same block (2.1x; the
+reference's mean over four runs is 7.17). Still 960 Hz: 480 Hz bought the same
+speed (8 substeps, one pass: 12.9-16.6) but the same rate at two passes diverged
+on weave3, and :data:`CABLE`'s note records 480 Hz killing the wrap.
+
+**Measured against the reference's own spread, not a single run of it**, because
+the routine does not reproduce itself: the reference's weave3 closed success
+(2,737 steps) and then 0.67 on the same command, and four of five port_easy
+instances closed at a different reward in its second run. Here: weave3 0.67 and
+then success (2,733), port_easy 9 of 10 seats held on those five instances (the
+reference: 8, then 6), and the cell graph protocol exactly the reference's --
+success on 10009 (6,297 steps against its 6,374) and 0.50 on 10062.
+"""
 
 CABLE_RIG = register_camera_rig(
     "cable_overhead_corner@v1",
