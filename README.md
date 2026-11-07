@@ -234,6 +234,8 @@ the same settings.
 | Tool sorting | 28-37 min | 15 | 90 GB | 0-2/30 | 57-64% of objects | 33.7% |
 | Cable routing | 21-23 min | 2 x 15-world waves | 11.7 GB | 12-21/30 | 40-70% | 46.7% |
 
+At `fast`'s 15 instances a cell took 4-25 min (one pass from a new install, seven cells at once), against 5-36 min for all 30. Tool hanging L2 and both cable routing cells save little, because they run as fleet waves: fewer worlds, but about the same waves. Syringe packing scored below its full cells in that pass, 10/15 on L1 and 4/15 on L2, which is not yet explained.
+
 One full pass from a fresh install is in `docs/validation/complete_test.md`, and the same pass after the shader-cache fix in `docs/validation/driver_shader_cache.md`. Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing runs the working scene (61-hull syringes, walled tray, corrected layouts) on a Robotiq with the tiled renderer under every config, including `paper`. L1 is above the paper, and L2 reaches it only on its best run (`docs/validation/syringe_working_scene.md`). Cable routing L2's
 repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
 declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
