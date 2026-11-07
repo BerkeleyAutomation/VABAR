@@ -218,23 +218,23 @@ the same settings.
 
 | Cell (L1) | `paper` (est.) | `default` | `fast` | Workers (`fast`) | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Tool hanging | 5-7 h (10-14 min/episode) | 5-7 min | 7-8 min | 2 x 8-world waves | 22.5 GB | 29-30/30 | 98-100% of tools | 86.7% |
-| Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | about 14 min | 8 | 42.6 GB | 29/30 | 98% of gears | 100.0% |
+| Tool hanging | 5-7 h (10-14 min/episode) | 5-7 min | 5-8 min | 2 x 8-world waves | 22.5 GB | 29-30/30 | 98-100% of tools | 86.7% |
+| Gear meshing | 8-10 h (16-20 min/episode) | 76 min (1 worker) | 10-14 min | 8 | 42.6 GB | 29-30/30 | 98-100% of gears | 100.0% |
 | Syringe packing | hours | 21-23 min | 13-14 min | 16 | 40 GB | 26-27/30 | 87-90% | 87.0% |
 | Cable insertion | ~3.5 h | not run | 16.5 min | 8 | 40.2 GB | 30/30 | 100% | 86.7% |
-| Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 7-11/30 | 72-79% of objects | 47.1% |
+| Tool sorting | hours | not run | 12-14 min | 15 | 90 GB | 7-12/30 | 72-81% of objects | 47.1% |
 | Cable routing | more than `default`'s 1-worker time | ~5 h (1 worker) | about 16 min | 2 x 15-world waves | 12.2 GB | 15-23/30 | 50-77% | 46.7% |
 
 | Cell (L2, `fast`) | Wall | Workers | GPU peak | Solved | Paper's measure | Paper (GaP Human-Newton) |
 | --- | --- | --- | --- | --- | --- | --- |
-| Tool hanging | 12-17 min | 2 x 8-world waves | 23.6 GB | 24-25/30 | 87-92% of tools | 81.7% |
-| Gear meshing | 13.7-15.0 min | 8 | 43.2 GB | 21-23/30 | 89-91% of gears | 90.0% |
+| Tool hanging | 12-17 min | 2 x 8-world waves | 23.6 GB | 21-26/30 | 83-93% of tools | 81.7% |
+| Gear meshing | 13.7-15.0 min | 8 | 43.2 GB | 21-23/30 | 89-92% of gears | 90.0% |
 | Syringe packing | 31-35 min | 16 | 40 GB | 14-19/30 | 47-63% | 63.0% |
 | Cable insertion | 25-30 min | 8 | 45 GB | 20-24/30 | 67-80% | 30.0% |
-| Tool sorting | 32-37 min | 15 | 90 GB | 1-2/30 | 57-64% of objects | 33.7% |
+| Tool sorting | 28-37 min | 15 | 90 GB | 0-2/30 | 57-64% of objects | 33.7% |
 | Cable routing | 21-23 min | 2 x 15-world waves | 11.7 GB | 12-21/30 | 40-70% | 46.7% |
 
-One full pass from a fresh install is in `docs/validation/complete_test.md`. Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing runs the working scene (61-hull syringes, walled tray, corrected layouts) on a Robotiq with the tiled renderer under every config, including `paper`. L1 is above the paper, and L2 reaches it only on its best run (`docs/validation/syringe_working_scene.md`). Cable routing L2's
+One full pass from a fresh install is in `docs/validation/complete_test.md`, and the same pass after the shader-cache fix in `docs/validation/driver_shader_cache.md`. Tool sorting L2 is the heap tier: `fast` gives each document its own budget, capped at 20,000 steps, and whole instances are rarely solved (`docs/validation/tool_sort_l2.md`). Syringe packing runs the working scene (61-hull syringes, walled tray, corrected layouts) on a Robotiq with the tiled renderer under every config, including `paper`. L1 is above the paper, and L2 reaches it only on its best run (`docs/validation/syringe_working_scene.md`). Cable routing L2's
 repaired episodes can run to 19,000 steps, so `fast` caps its budget at 14,000, which cost 1 of 83 successes at the
 declared servo speed (`docs/validation/fleet_profile.md` has what took it from 31 to 23 min). Gear meshing and cable routing L2 declare the servo speed their graphs were
 written at; on the other task classes tested, declaring it did not help.
@@ -248,9 +248,9 @@ On a smaller card a suite's worker count is held to what fits:
 still runs every cell's full count except tool sorting's (6 workers instead of 15).
 
 Most of tool sorting's failing episodes loop until the step budget runs out. `fast` uses Gemini 3.1 Flash-Lite, which
-answers in about 0.9 s and does not think (`docs/validation/tool_sort_vlm.md`). Run `vabar warmup` once per machine
-first: a cold RTX shader cache costs 4-8 minutes per scene, and RoboSimStudio now keeps that cache past the driver's
-4 GB limit. Both cable routing cells run as fleet waves (`docs/validation/cable_fleet.md`). Fixes that the v1.0 export
+answers in about 0.9 s and does not think (`docs/validation/tool_sort_vlm.md`). The RTX pipelines compile once per
+install, 5-8 minutes on the first cell that renders, and are then copied for its workers
+(`docs/validation/driver_shader_cache.md`). Both cable routing cells run as fleet waves (`docs/validation/cable_fleet.md`). Fixes that the v1.0 export
 missed are in `docs/validation/dev_history_merge.md`.
 
 ```bash
@@ -276,11 +276,13 @@ uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --g
   process, pool and fleet workers included. See [`vabar/config.py`](vabar/config.py).
 - Every run directory gets a `vabar_config.json`: the resolved config, its sha256 and
   the VABAR commit.
-- A cell's first `vabar bench --solve graph` on an install compiles its RTX scenes first (once per environment;
-  `--no-warmup` skips it). Skipped on a cold install, the first perception times out and the episodes abort.
+- A cell's first `vabar bench --solve graph` on an install warms its first scene, and the install's first RTX cell
+  also compiles the pipelines (`--no-warmup` skips both). Skipped on a cold install, the first perception times out
+  and the episodes abort. The driver's files take about 134 MB per worker, 2 GB on one GPU and at most 9.6 GB, inside
+  `.venv`; delete `ovrtx/bin/cache/nv_shadercache` to reclaim them and the next run compiles once more.
 - Before timing anything on a new machine, run `uv run python -m vabar warmup`. It takes
-  one idle step of each suite on its own renderer (RTX, except syringe packing), so the RTX shader cache (about 4
-  minutes the first time) and the Warp kernels are compiled once, not inside your first
+  one idle step of each suite on its own renderer (RTX, except syringe packing), so the RTX pipelines (5-8 minutes
+  the first time) and the Warp kernels are compiled once, not inside your first
   measurement. `python tools/profile_instance.py <run dir>` then shows where a run's wall
   time went: build, stepping, and the graph's perception, motion, robot tools and planning.
 

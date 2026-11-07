@@ -1,6 +1,7 @@
 # One full pass from a fresh install
 
 Measured 2026-11-06 at `1b22b3f`, from a new `git clone` and `uv sync` with the README's commands, with no shader cache.
+This pass predates the fix in `driver_shader_cache.md`, which has the same pass repeated after it.
 Each run had one RTX PRO 6000 Blackwell. Seven ran at once on a shared 240-core host, at a load of 60-150.
 
 ## Every cell under `fast`
@@ -69,9 +70,10 @@ The slow builds match one renderer line, `Streaming client gpu.foundation.Textur
 | Cable insertion L1 | 1 | 1 | | Cable routing L2 | 0 | 2 |
 
 RoboSimStudio's `rtx.py` records that this client stays busy through a pipeline compile and times out when the compile
-ends. So these workers look to be compiling shaders after warmup has compiled them. That is an inference: nothing here
-measures a compile directly. In the tool sorting and cable insertion arms, the slow builds fall on the last workers to
-start (`w8`-`w14` of 15, `w7` of 8).
+ends. So these workers look to be compiling shaders after warmup has compiled them. In the tool sorting and cable
+insertion arms, the slow builds fall on the last workers to start (`w8`-`w14` of 15, `w7` of 8).
 
-A worker compiling this way is silent and busy on the CPU, which is also how the hangs look. Some kills at 900 s may be
-slow compiles rather than hangs. That is also untested.
+**Later measured: they were.** The driver's cache needs a complete file per process, and warmup left fewer files than a
+cell has workers. With that fixed, the same pass had no build over 300 s and no stream timeouts, and tool sorting L2
+took 35.9 min. See `driver_shader_cache.md`. The kills in the limit test above were these compiles, so the case for
+keeping a long limit is weaker than it was, though no shorter limit has been measured since the fix.

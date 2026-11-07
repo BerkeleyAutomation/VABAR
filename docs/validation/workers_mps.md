@@ -143,12 +143,14 @@ plus 1 GB for its own cuRobo server.
 | cable_insertion (no perception servers) | 21.8 min, 4 workers (30/30) | 15.0 min on 8 (30/30); 16.8 on 15 (30/30) |
 | syringe_packing | 18.4 min, 4 workers (2/30) | 13.2 min on 4 with cuRobo attachment slots (0/30, mean reward 0.42); 13.2 on 8 (2/30, 0.52) |
 
-**The driver's shader cache was evicting the warm-up.** A scene's first render builds its ray-tracing pipelines:
-several minutes of CPU, 19 s once cached. The NVIDIA driver keeps them in
-`ovrtx/bin/cache/nv_shadercache` in 128 MB chunks. OVRTX sets `__GL_SHADER_DISK_CACHE_SIZE` to 4,194,304,000
-bytes when the renderer starts, overwriting the environment, and offers no config key for it. One tool-sorting
-scene adds 130-230 MB, so that cell's thirty scenes alone overflow the cap and the driver drops the oldest chunks.
-After warming every scene, the cache held 34 chunks, and 26 of them were written by the next hour's runs. In a
+**The driver's shader cache was evicting the warm-up.** Corrected later: pipelines do not differ by scene, and each
+process needs a complete cache file of its own (`driver_shader_cache.md`). The measurements here stand. The first
+explanation, that each scene adds 130-230 MB, was wrong: those were new files, one per compiling process.
+
+A process's first render builds its ray-tracing pipelines: several minutes of CPU, 19 s once cached. The NVIDIA driver
+keeps them in `ovrtx/bin/cache/nv_shadercache`. OVRTX sets `__GL_SHADER_DISK_CACHE_SIZE` to 4,194,304,000 bytes when
+the renderer starts, overwriting the environment, and offers no config key for it. Past that cap the driver drops the
+oldest files. After warming every scene, the cache held 34 chunks, and 26 of them were written by the next hour's runs. In a
 15-worker tool-sorting run, 12 of the first 15 builds compiled again, for 410-500 s each, and a scene warmed
 twenty minutes earlier (`level1_11`) compiled again alone in 248 s. RoboSimStudio now sets the driver's
 `__GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1` before the renderer starts (`keep_driver_shader_cache` in
@@ -156,8 +158,7 @@ twenty minutes earlier (`level1_11`) compiled again alone in 248 s. RoboSimStudi
 the cap instead of rotating. Delete `nv_shadercache` to reclaim the space.
 
 Checked by re-warming all six L1 cells (96 scenes, `vabar warmup --jobs 12`) with the fix. Every scene built.
-91 of them took 29-67 s. The 5 that compiled again (300-360 s: two tool-hanging scenes, three gear scenes)
-were the ones the earlier runs had evicted. The cache finished at 4,504,621,095 bytes in 68 files, past the
+91 of them took 29-67 s, and 5 compiled again for 300-360 s. The cache finished at 4,504,621,095 bytes in 68 files, past the
 4,194,304,000-byte cap that had held it at 34 chunks before.
 
 **A 30-minute renderer stall.** Four builds out of about 500 today waited exactly the renderer's streaming

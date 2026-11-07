@@ -33,7 +33,7 @@ number to compare with its 33.7%. *Solved* is the whole instance.
 ## The graph's two fixes
 
 The failure analysis below found two problems, both also on L1, so both were fixed in `gap_perception_loop` and
-measured on both cells. Raw output is under `/home/shadeform/speed_ws/agent_scratch/sortl2/cap/`.
+measured on both cells.
 
 1. **The attempt log reaches `select_pair`.** The graph was written when the runtime ignored a subgraph node's own
    `inputs` and fed it the latest output of the same name, which is how the log came round the loop. graph-as-policy
