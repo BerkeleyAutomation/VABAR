@@ -15,7 +15,8 @@ Three ship in ``vabar/configs/``:
   episodes, a cell's episodes run as fleet waves, and the worker count follows
   free GPU memory. Physics is untouched.
 * ``fast`` -- ``default`` plus per-suite physics, cameras and budgets tuned for
-  throughput. Its suite tables are filled by measurement sweeps.
+  throughput, on the first 15 of a cell's instances, for trying a change quickly.
+  Its suite tables are filled by measurement sweeps.
 * ``paper`` -- exactly the v1.0 protocol: a free-running clock, per-step
   observation rendering, and the cells' own flags, serially.
 
@@ -48,6 +49,7 @@ The file format::
     mps = true                      # bench: with workers > 1, share the GPU through a private MPS daemon
     share_tool_servers = true       # bench: with workers > 1, one SAM 3 / GroundingDINO per GPU, not per worker
     bus_timeout = 0                 # seconds; 0 keeps the cell's (bench) or the runner's (run)
+    instances = 15                  # bench: a cell's first N instances, 0 = all of them; --limit wins
     env = { NAME = "value" }        # extra environment for the run and its workers
 
     [suites.tool_hanging]           # or [suites."tool_hanging/wrenches_level1"] for one variant
@@ -134,6 +136,7 @@ RUNTIME_DEFAULTS: dict[str, Any] = {
     "mps": False,
     "share_tool_servers": False,
     "bus_timeout": 0.0,
+    "instances": 0,
     "env": {},
 }
 """Every runtime key, at the value that changes nothing about a v1.0 run."""
@@ -395,6 +398,7 @@ def _validate(where: str, data: dict) -> tuple[dict[str, Any], dict[str, dict[st
     choice("renderer", RENDERERS)
     integer("render_every", 0)
     integer("num_worlds", 1)
+    integer("instances", 0)
     if runtime["workers"] != "auto":
         integer("workers", 1)
     number("worker_gb", 0.5)

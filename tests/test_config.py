@@ -32,8 +32,9 @@ def test_builtin_configs():
     assert (rt["num_worlds"], rt["workers"]) == (8, 1)
     assert not default.registry_overrides(), "default must leave physics, cameras and budgets alone"
 
-    # fast is default plus suite tables the sweeps fill: same runtime, default first in its chain.
-    assert fast.runtime == default.runtime
+    # fast is default plus suite tables the sweeps fill, on fewer instances: default first in its chain.
+    assert (default.runtime["instances"], fast.runtime["instances"]) == (0, 15)
+    assert {**fast.runtime, "instances": 0} == default.runtime
     assert [p.rsplit("/", 1)[-1] for p in fast.chain] == ["default.toml", "fast.toml"]
     assert fast.num_worlds("gear_mesh/gearmesh-easy-pair-01") == 1
 

@@ -19,6 +19,12 @@
 inherits = "default"
 description = "default, with cheaper physics, cameras, budgets and VLM where a full cell showed no change in outcome."
 
+[runtime]
+# The first 15 of a cell's 30 instances, to try a change quickly. Over earlier
+# 30-instance runs of 11 cells they scored within 3 points of the whole cell, but 15 is
+# too few to compare with the paper: `--limit 30` runs them all.
+instances = 15
+
 [suites.tool_sort]
 # 300 Hz (6 substeps) instead of 500: idle 1.59x, routine 1.40x; level1_1..3
 # routines and gap_perception_loop (2/2) unchanged. 4 substeps (2.17x) passed

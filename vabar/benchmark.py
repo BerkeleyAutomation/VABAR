@@ -400,7 +400,7 @@ def plan_cell(
         cell: Its manifest entry.
         config: The experiment config.
         solve: ``graph`` (the cell's reference graph and flags) or another solution.
-        limit: Only the first N instances.
+        limit: Only the first N instances; 0 leaves it to the config's ``instances``.
         extra: Further ``vabar run`` flags; they win over the cell and the config.
         flags: The runner's flags (:func:`vabar.run.runner_flags`).
         budget: A task's own step budget, for ordering jobs whose flags name
@@ -411,7 +411,8 @@ def plan_cell(
 
     flags = flags or runner_flags()
     extra = list(extra)
-    groups = _groups(cell["instances"][: limit or None])
+    first = limit or config.runtime["instances"]
+    groups = _groups(cell["instances"][: first or None])
     if "--name" in _flag_names(extra) and len(groups) > 1:
         raise SystemExit(f"[bench] --name names one run directory and {key} runs {len(groups)} jobs; use --out")
     user = {k for k, _ in flags.items(extra) if k is not None}
@@ -422,6 +423,9 @@ def plan_cell(
     jobs: list[Job] = []
     dropped: list[str] = []
     notes: list[str] = []
+    total = len(cell["instances"])
+    if not limit and 0 < first < total:
+        notes.append(f"config {config.name} runs the first {first} of {total} instances; --limit {total} runs them all")
     for instance_task, episodes in groups.items():
         task = config.map_task(instance_task)
         if task != instance_task:
@@ -728,7 +732,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--list", action="store_true", help="list the cells and their instance counts")
     parser.add_argument("--cell", help="task_class/L<level>, e.g. tool_hanging/L1")
     parser.add_argument("--solve", default="graph", help="graph (the cell's reference graph), routine, idle, ...")
-    parser.add_argument("--limit", type=int, default=0, help="run only the first N instances")
+    parser.add_argument("--limit", type=int, default=0, help="run only the first N instances, over the config's count")
     parser.add_argument("--print", action="store_true", help="print the resolved jobs as vabar run commands and exit")
     parser.add_argument("--verify", action="store_true", help="check resets against the frozen transforms")
     parser.add_argument(
