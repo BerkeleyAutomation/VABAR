@@ -4,8 +4,7 @@
 The SuperDex candidate of ``tools/fast_tune/cable_route.py``, which registers it as
 ``register_entity("cable_rod", engine="superdex")`` for an ``sdx:`` candidate and
 points the variants' rod spec at ``cable_rod``. It lives here rather than in
-``tasks/cable_route/assets`` because SuperDex did not win the sweep
-(``docs/validation/fast_cable_route.md``); moving it into the suite and binding it
+``tasks/cable_route/assets`` because SuperDex did not win the sweep; moving it into the suite and binding it
 in ``assets/rod.py`` is all a SuperDex arrangement would need.
 
 :class:`~robosimstudio_materials.rod.superdex.EntityRodSuperdex` builds the same
@@ -39,7 +38,7 @@ fingertip filter, below):
   the same thing off the live particles (the midpoints of consecutive nodes),
   and ``hold_segment`` is the engine pin :meth:`hold` asks for.
 
-What it does not close is written in ``docs/validation/fast_cable_route.md``:
+What it does not close:
 one world only (no per-world pins), and one-way coupling when the arrangement
 stages ``feedback="off"``.
 """

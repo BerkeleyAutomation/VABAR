@@ -248,8 +248,8 @@ YAM_STATION_RIG = register_camera_rig(
 
 # --------------------------------------------------------------- the `fast` config
 # Registered beside, never instead of, what the documents stage: no document names these.
-# A run opts in through vabar/configs/fast.toml (`[suites.tool_hanging]`). Measured in
-# docs/validation/fast_tool_hanging.md with tools/fast_tune/tool_hanging.py.
+# A run opts in through vabar/configs/fast.toml (`[suites.tool_hanging]`). Measured with
+# tools/fast_tune/tool_hanging.py.
 
 TOOL_HANGING_PHYSICS_FAST = register_arrangement(
     "tool_hanging_fast@v1",

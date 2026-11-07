@@ -329,8 +329,7 @@ The latter two are the minimum perception hardware needed by the non-privileged
 sorting/packing graphs; GT graphs remain compatible and simply ignore them.
 """
 
-# `fast` config: see docs/validation/fast_syringe_packing.md, measured with
-# tools/fast_tune/syringe_packing.py.
+# `fast` config, measured with tools/fast_tune/syringe_packing.py.
 VAB_SYRINGE_FAST = register_arrangement(
     "vab_syringe_fast@v1",
     replace(

@@ -304,8 +304,7 @@ CABLE_FAST = register_arrangement(
 **Not what any document stages.** Every cable document still names
 ``cable_coupled_960hz@v1``; this is selected by ``vabar/configs/fast.toml``
 (``[suites.cable_route] physics = "cable_route_fast@v1"``) for a grad student
-with one GPU, and every number below is in
-``docs/validation/fast_cable_route.md`` -- re-run with
+with one GPU. Re-run the numbers below with
 ``tools/fast_tune/cable_route.py``.
 
 **Two multipliers cut, and the rate kept.** The step is launch-bound, so what

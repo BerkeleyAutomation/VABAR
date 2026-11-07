@@ -62,7 +62,7 @@
   ; `level2_N` is the heap tier above it, the same way: the same bench and pool,
   ; but 8 to 12 objects dropped into a pile rather than laid out, so an object
   ; can be under another. Ported from RoboSimStudio-dev `tool_perception`
-  ; (7ffc4017, 97309ce3, 067645c6); see docs/validation/tool_sort_l2.md.
+  ; (7ffc4017, 97309ce3, 067645c6).
   (:variants sort_all sort_all_neat hammer sort_new sort_bench sort_power
              sort_electrical sort_wiring sort_electrical_usd sort_electrical_usd_geom
              syringe

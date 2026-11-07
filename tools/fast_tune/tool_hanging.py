@@ -3,8 +3,7 @@
 
 The reference is what the Level-1/Level-2 documents stage: 60 Hz x 8, MuJoCo-Warp
 integrating, Newton generating the contacts, ``yam_station_tool_hanging@v1`` (4 x
-1280x720 RGB-D). Each candidate changes one knob (then the survivors combine); see
-``docs/validation/fast_tool_hanging.md`` for what each measured.
+1280x720 RGB-D). Each candidate changes one knob (then the survivors combine).
 
     cd <checkout> && CUDA_VISIBLE_DEVICES=6 python tools/fast_tune/tool_hanging.py th_ss4 -- \\
         --task tool_hanging/wrenches_level1 --solve routine --out OUT --name NAME

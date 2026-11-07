@@ -45,7 +45,7 @@ Usage (from the worktree root; GPUs 3 and 7 only)::
         --episodes a,b,c overrides the port/graph instances; --parallel starts the runs at once
         (fine for routine/graph fidelity, never for speed); a finished run directory is skipped.
 
-    The sweep as run for docs/validation/fast_cable_route.md (OUT under agent_scratch/d1)::
+    The sweep as run::
 
         probe --gpu 3 --stage speed  --out OUT/speed ref 'vbd:substeps=8,passes=1' 'vbd:passes=1' ...
         probe --gpu 7 --stage weave3 --parallel --out OUT/fid ref 'vbd:substeps=8,passes=1' 'sdx:rod=2' ...

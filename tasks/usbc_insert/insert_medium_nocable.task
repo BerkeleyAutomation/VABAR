@@ -2,8 +2,7 @@
 ; Same draw (so the same episode ids are the same layouts), goal, reward,
 ; cameras, graphs and budget as insert_medium; the cables, the physics
 ; arrangement and the sampler's rebuild declaration differ. Measured against
-; insert_medium in docs/validation/fast_usbc_insert.md, which is the only place
-; this document's claim to "the same task, faster" is made -- and qualified.
+; insert_medium.
 
 (define (problem INSERT_THE_USB_C_PLUG_MEDIUM_NOCABLE)
 
@@ -83,6 +82,6 @@
             first three L2 instances where the cabled scene seated 7/7, so the
             cable steadies the plug enough to matter here. Episode ids are
             insert_medium's (same draw, same seed), so a cell instance's episode
-            runs the same layout. Measurements in docs/validation/fast_usbc_insert.md.")
+            runs the same layout.")
   )
 )

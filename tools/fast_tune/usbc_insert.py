@@ -8,8 +8,7 @@ from the lowered :class:`~robosimstudio.specs.TaskSpec` with
 (``<base>__<candidate>``) with ``SUITES.replace``. Nothing shipped is renamed or
 edited: the reference documents keep their names and their physics.
 
-Three probes, cheapest first (docs/validation/fast_usbc_insert.md has the table
-this produced):
+Three probes, cheapest first:
 
 ``speed``  idle for 600 steps, no renderer: steps/s, build_s, per-episode reset_s.
 ``gt``     the privileged ``gt`` graph, no renderer, on the first five L1

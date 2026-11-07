@@ -51,7 +51,7 @@ flange and twists the wrist 0.66 rad off its command, and the carry moves nothin
 32 mm is the spool's 12.5 mm rim plus the clearance the L1 port keep-out implies
 (``plug_port.PORT_KEEPOUT``: 40 mm from the centre of a 22.6 mm half-diagonal).
 L1's pegs are 240 mm apart, and none of an L1 cell's 60 takes comes this close,
-so L1 runs exactly as before. See docs/validation/cable_routing_l2.md."""
+so L1 runs exactly as before."""
 
 JAW_MIN_REACH = 0.015
 """Narrowest pre-grasp opening per finger a crossing will use [m] -- the terminal

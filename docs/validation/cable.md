@@ -113,7 +113,7 @@ How to read this:
 | -54 (10053) | 0.25 / yes / no / no | 0.50 / yes / yes / no |
 | **Success** | **0/5** | **1/5** |
 
-**Resolved in [cable_routing_fix](cable_routing_fix.md):** the 3,400 px floor was measured
+**Since resolved:** the 3,400 px floor was measured
 on the suite's 1280x960 `cable` view, and `yam_station_cable@v1` renders the same pose
 at 1280x720. The floor is now scaled by the frame's `fx * fy`.
 
@@ -134,7 +134,7 @@ suite owners.
   and the medium `mate` run inserts, so the physics, cable chain and mate contact are
   sound; this is the vision `mate` graph's easy-tier behaviour in the delivered source,
   not something the port introduced. Not fixed (out of a conservative port's scope).
-  **Since found and fixed: see [`cable_insertion_fix.md`](cable_insertion_fix.md).** The
+  **Since found and fixed.** The
   graph's bench read was written for `usbc_perception@v1`'s straight-down camera. On the
   documents' `yam_station_usbc@v1` head camera, the port's side wall biased it ~9 mm and
   ~7°, and `inspect_vision` then rejected its own correct wrist read. Segmentation was
@@ -148,7 +148,7 @@ suite owners.
 ## Not validated
 
 * Routing Medium and any batch beyond the runs above (no success-rate claim is made).
-  **Since measured and fixed: see [cable_routing_l2](cable_routing_l2.md).** The crossing's open
+  **Since measured and fixed.** The crossing's open
   jaws came down on the next spool on L2's 80 mm pitch, and the Medium-only terminal branches
   let the end spring out of the port.
 * `weave_vision`, `usbc_insert` `gt` on medium/bulkhead/port, the routine on the other
@@ -174,9 +174,9 @@ suite owners.
    either stack (10/10 runs); the paper's 86.7 % / 46.7 % were
    evidently measured under a different configuration (e.g. SAM3 segmentation or
    different graph constants). The suite owners should say which. (USB-C Easy:
-   superseded by [`cable_insertion_fix.md`](cable_insertion_fix.md).)
+   since fixed.)
    *Routing: it was the camera.* The delivery's `cable` view was 1280x960, and the
-   terminal floor is in its pixels. See [cable_routing_fix](cable_routing_fix.md).
+   terminal floor is in its pixels.
 
 ## Reproducing the A/B
 

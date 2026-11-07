@@ -163,7 +163,7 @@ GEAR_RIG = register_camera_rig(
 # the two above. NEW names, so every document and record that names
 # gear_mesh_960hz@v1 / gear_mesh_views@v2 keeps meaning exactly what it did.
 # Chosen by measurement, not by argument: tools/fast_tune/gear_mesh.py is the
-# sweep and docs/validation/fast_gear_mesh.md the table it produced.
+# sweep.
 # ---------------------------------------------------------------------------
 
 GEAR_PHYSICS_FAST = register_arrangement(

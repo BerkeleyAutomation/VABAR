@@ -1,9 +1,7 @@
 ; Easy, cable-free: insert_easy without the plug cable (a measured speed variant).
 ; Same sampler (so the same episode ids are the same layouts), goal, reward,
 ; cameras, graphs and budget as insert_easy; only the cable and the physics
-; arrangement differ. Measured against insert_easy in
-; docs/validation/fast_usbc_insert.md, which is the only place this document's
-; claim to "the same task, faster" is made -- and where it is qualified.
+; arrangement differ. Measured against insert_easy.
 
 (define (problem INSERT_THE_USB_C_PLUG_EASY_NOCABLE)
 
@@ -79,7 +77,6 @@
             insert_easy on every instance run, gt and cell protocol, but its plug
             missed the gt grasp on ep 10084 in 2/3 runs where the cabled plug never
             did, and its L2 sibling is measurably less steady. Episode ids are
-            insert_easy's (same sampler, same seed). Measurements in
-            docs/validation/fast_usbc_insert.md.")
+            insert_easy's (same sampler, same seed).")
   )
 )
