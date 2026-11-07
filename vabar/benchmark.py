@@ -187,13 +187,7 @@ def build(n: int = 30) -> dict:
             selection=f"the first {n} drawn `gearmesh-{family}` documents (each one draw, episode 0).",
             notes="No 30-instance selection was recorded for gear meshing; the first 30 by index are used.",
         )
-    # The suite's task.py registers each trial document under a short name:
-    # tray_pair_both_tNN (Level 1),
-    # tray_clutter_tNN (Level 2).
-    for level, stem, name in (
-        (1, "tray_pair_both", "tray_pair_both"),
-        (2, "tray_clutter", "tray_clutter"),
-    ):
+    for level, name in ((1, "tray_pair_both"), (2, "tray_clutter")):
         cell(
             "syringe_packing",
             level,
@@ -201,9 +195,9 @@ def build(n: int = 30) -> dict:
             graph="gap_perception",
             flags=["--motion", "curobo", *UNPRIVILEGED],
             instances=_variants("syringe_packing", [f"{name}_t{i:02d}" for i in range(n)]),
-            selection=f"benchmark/syringe_packing/level{level}: the 30 `{stem}_tNN` trials, registered as `{name}_tNN`.",
-            notes="The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, "
-            "which are what run, state @v2.",
+            selection=f"benchmark/syringe_packing/level{level}: the 30 `{name}_tNN` trials.",
+            notes="The frozen copies under benchmark/ are the suite's documents, byte for byte. Every config runs "
+            "them on a Robotiq 2F-85 with the tiled renderer (docs/validation/syringe_working_scene.md).",
         )
     for task_class, prefix in (("cable_insertion", "usbcinsertion"), ("cable_routing", "cablerouting")):
         for level, name in ((1, "easy"), (2, "medium")):
@@ -406,7 +400,7 @@ def plan_cell(
         cell: Its manifest entry.
         config: The experiment config.
         solve: ``graph`` (the cell's reference graph and flags) or another solution.
-        limit: Only the first N instances.
+        limit: Only the first N instances; 0 leaves it to the config's ``instances``.
         extra: Further ``vabar run`` flags; they win over the cell and the config.
         flags: The runner's flags (:func:`vabar.run.runner_flags`).
         budget: A task's own step budget, for ordering jobs whose flags name
@@ -417,7 +411,8 @@ def plan_cell(
 
     flags = flags or runner_flags()
     extra = list(extra)
-    groups = _groups(cell["instances"][: limit or None])
+    first = limit or config.runtime["instances"]
+    groups = _groups(cell["instances"][: first or None])
     if "--name" in _flag_names(extra) and len(groups) > 1:
         raise SystemExit(f"[bench] --name names one run directory and {key} runs {len(groups)} jobs; use --out")
     user = {k for k, _ in flags.items(extra) if k is not None}
@@ -428,6 +423,9 @@ def plan_cell(
     jobs: list[Job] = []
     dropped: list[str] = []
     notes: list[str] = []
+    total = len(cell["instances"])
+    if not limit and 0 < first < total:
+        notes.append(f"config {config.name} runs the first {first} of {total} instances; --limit {total} runs them all")
     for instance_task, episodes in groups.items():
         task = config.map_task(instance_task)
         if task != instance_task:
@@ -734,7 +732,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--list", action="store_true", help="list the cells and their instance counts")
     parser.add_argument("--cell", help="task_class/L<level>, e.g. tool_hanging/L1")
     parser.add_argument("--solve", default="graph", help="graph (the cell's reference graph), routine, idle, ...")
-    parser.add_argument("--limit", type=int, default=0, help="run only the first N instances")
+    parser.add_argument("--limit", type=int, default=0, help="run only the first N instances, over the config's count")
     parser.add_argument("--print", action="store_true", help="print the resolved jobs as vabar run commands and exit")
     parser.add_argument("--verify", action="store_true", help="check resets against the frozen transforms")
     parser.add_argument(

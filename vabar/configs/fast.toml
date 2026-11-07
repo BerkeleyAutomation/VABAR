@@ -2,9 +2,8 @@
 #
 # `default`, plus per-suite physics, cameras, budgets, variants and a VLM tuned
 # for throughput. Each change below was measured on a whole 30-instance cell
-# against the suite's own and kept only where the success rate did not move;
-# its note in docs/validation/ names the candidates that were rejected. Keys a
-# suite table may set:
+# against the suite's own and kept only where the success rate did not move.
+# Keys a suite table may set:
 #
 #   physics    = "<arrangement>@vN"   a name registered in the suite's staging.py
 #   cameras    = "<camera rig>@vN"    likewise
@@ -19,11 +18,18 @@
 inherits = "default"
 description = "default, with cheaper physics, cameras, budgets and VLM where a full cell showed no change in outcome."
 
+[runtime]
+# The first 15 of a cell's 30 instances, to try a change quickly. Over earlier
+# 30-instance runs of 11 cells they scored within 3 points of the whole cell, but 15 is
+# too few to compare with the paper: `--limit 30` runs them all. In the first pass at 15,
+# syringe packing scored below its full cells (L1 10/15, L2 4/15), not yet explained.
+instances = 15
+
 [suites.tool_sort]
 # 300 Hz (6 substeps) instead of 500: idle 1.59x, routine 1.40x; level1_1..3
 # routines and gap_perception_loop (2/2) unchanged. 4 substeps (2.17x) passed
 # too but is held back: 200 Hz bins of thin tools did not settle in the
-# arrangement's own measurements. See docs/validation/fast_tool_sort.md.
+# arrangement's own measurements.
 physics = { "vab_500hz@v1" = "vab_tool_sort_fast@v1" }
 # Step budget 14,000 instead of the cell's 20,000. Most failing episodes loop on
 # select -> grasp -> verify_reach -> recover until the budget runs out, so they
@@ -38,7 +44,7 @@ max_steps = 14000
 # 10/60, 37.7 min against 46-51 (28.2 with the vlm client's reused connection),
 # but mean reward 0.59 against 0.63: it keeps choosing an AA battery or a
 # breadboard the grasp cannot finish (8 of 30 episodes, against 3-4). level1_9
-# succeeded 5 of 5. See docs/validation/tool_sort_vlm.md.
+# succeeded 5 of 5.
 env = { GAP_VLM_MODEL = "gemini-3.1-flash-lite" }
 
 [suites]
@@ -47,7 +53,7 @@ env = { GAP_VLM_MODEL = "gemini-3.1-flash-lite" }
 # 4 or 5 objects and cuts 8-12 of them off. Full cell, objects sorted of 273, wall
 # time on 15 workers, with the graph's attempt log and stall-stopped descent: this
 # cap 57.1-59.3%, 32 min; uncapped (up to 28,800) 57.9-60.4%, 33-37 min. Physics and
-# VLM are the suite's. See docs/validation/tool_sort_l2.md.
+# VLM are the suite's.
 "tool_sort/level2_1" = { max_steps = 19200 }
 "tool_sort/level2_2" = { max_steps = 19200 }
 "tool_sort/level2_3" = { max_steps = 20000 }
@@ -81,7 +87,7 @@ env = { GAP_VLM_MODEL = "gemini-3.1-flash-lite" }
 
 [suites.tool_hanging]
 # Nothing: tool_hanging runs as in `default`. Both tuned knobs failed the
-# full-cell check (L1, 30 instances; docs/validation/fast_tool_hanging.md):
+# full-cell check (L1, 30 instances):
 # - 640x360 views: 20/30 twice (pliers 1/7), against 30/30.
 # - Contacts every 2nd substep (tool_hanging_fast@v1): idle 1.49x and routines
 #   1.2x, but no cell-level gain (421-554 s vs 431 s on 1 worker, 317 vs 300 s on
@@ -94,13 +100,17 @@ env = { GAP_VLM_MODEL = "gemini-3.1-flash-lite" }
 # boards (6 substeps already drops the 4-gear board to 0.80); graph 5/5 vs the
 # reference's 4/5. Iteration caps, collide_every and buffer sizes buy nothing
 # here. The views at half resolution per side (overhead 640x480).
-# See docs/validation/fast_gear_mesh.md.
 physics = { "gear_mesh_960hz@v1" = "gear_mesh_fast@v1" }
 cameras = { "gear_mesh_views@v2" = "gear_mesh_views_fast@v1" }
 
 [suites.syringe_packing]
-# Nothing yet. vab_syringe_fast@v1 (400 Hz) was measured on the scene before
-# docs/validation/syringe_working_scene.md, and needs its own check on this one.
+# 200 Hz (4 substeps) on 16 workers, against `default`'s 500 Hz on 8. Full cells,
+# tiled: L1 27-28/30 in 13-14 min (30/30 in 22.8), L2 14-19/30 in 31-35 min
+# (15/30 in 68). More workers saves little: the shared SAM 3 saturates, a call
+# taking 0.66 s alone and 12.1 s at 24 workers. See
+# docs/validation/syringe_working_scene.md.
+physics = { "vab_sharps_union@v1" = "vab_syringe_200hz@v1" }
+workers = 16
 
 [suites.usbc_insert]
 # The shipped cabled scenes on usbc_bulkhead_960hz@v1 with CUDA-graph capture
@@ -110,7 +120,6 @@ cameras = { "gear_mesh_views@v2" = "gear_mesh_views_fast@v1" }
 # Cable-free documents (insert_easy_nocable / insert_medium_nocable) are another
 # ~20% but the loose plug was less steady on L2 (mate 6/10 vs 7/7 cabled), so
 # they are opt-in: --set 'suites.usbc_insert.variants={...}'.
-# See docs/validation/fast_usbc_insert.md.
 physics = { "usbc_bulkhead_960hz@v1" = "usbc_fast@v1" }
 
 [suites.cable_route]
@@ -118,11 +127,11 @@ physics = { "usbc_bulkhead_960hz@v1" = "usbc_fast@v1" }
 # iterations (was 40), still 960 Hz: idle 7.2 -> 15.1 steps/s (2.1x); weave3 and
 # port_easy routine outcomes and the weave graph on 10009/10062 within the
 # reference's own run-to-run range. SuperDex was ~4x faster but never matched
-# the reference's seat retention. See docs/validation/fast_cable_route.md.
+# the reference's seat retention.
 # Only the two benchmark tiers: `wrap` stages the same arrangement and was not
 # measured (halving its rate was what killed the wrap before).
 # L1's fleet waves (15 worlds x 2 workers) come from default.toml unchanged; they
-# were measured under this physics (docs/validation/cable_fleet.md).
+# were measured under this physics.
 
 [suites."cable_route/port_easy"]
 physics = { "cable_coupled_960hz@v1" = "cable_route_fast@v1" }
@@ -132,5 +141,5 @@ physics = { "cable_coupled_960hz@v1" = "cable_route_fast@v1" }
 # The suite's 24,000-step budget lets a repaired episode run to 19,000 steps, and
 # a fleet wave lasts as long as its longest episode. At the declared servo speed,
 # 1 of 83 successes ran past 14,000; L2 fleet then takes 32.6 min, 21/30, reward
-# 0.92 (docs/validation/cable_routing_l2.md).
+# 0.92.
 max_steps = 14000

@@ -14,11 +14,9 @@
 ; WHY A NEW DOCUMENT rather than pointing the tier at its richest instance. The
 ; union needs bigger constraint buffers -- an eight-syringe model demands njmax
 ; ~3209 against the 1024 the shipped arrangement gives, and MuJoCo-Warp answers
-; the overflow by printing and dropping rows -- and putting those buffers on a
-; shipped document would change that document's own serial numbers. This states
-; (:physics vab_sharps_union@v1); the 30 instances keep the profile's, so their
-; serial column is exactly what it was and a wave's numbers are a column of
-; their own.
+; the overflow by printing and dropping rows. This states
+; (:physics vab_sharps_union@v1), which the suite's profile now gives the 30
+; instances as well, so a wave and a serial run solve on the same buffers.
 ;
 ; THE GOAL IS THE UNION'S, and it is masked per episode: an instance running
 ; four syringes is scored on four clauses, not four of 8

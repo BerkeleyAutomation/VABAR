@@ -106,6 +106,36 @@ def test_cable_cells_keep_their_environment_and_take_the_configs_renderer(flags)
     assert job.num_worlds == 1 and len(job.episodes) == 30
 
 
+def _episodes(p) -> int:
+    return sum(len(j.episodes) for j in p.jobs)
+
+
+def test_fast_runs_the_first_15_instances_and_says_so(flags):
+    p = plan("tool_hanging/L1", cfg.load("fast"), flags)
+    assert sorted(e for j in p.jobs for e in j.episodes) == list(range(1, 16))
+    assert any("the first 15 of 30 instances; --limit 30" in note for note in p.notes)
+
+
+def test_the_other_configs_run_the_whole_cell(flags):
+    for name in ("default", "paper"):
+        p = plan("tool_hanging/L1", cfg.load(name), flags)
+        assert _episodes(p) == 30 and not any("instances;" in note for note in p.notes)
+
+
+def test_limit_and_set_beat_the_configs_instances(flags):
+    fast = cfg.load("fast")
+    assert _episodes(plan("tool_hanging/L1", fast, flags, limit=30)) == 30
+    assert _episodes(plan("tool_hanging/L1", fast, flags, limit=3)) == 3
+    assert not any("instances;" in note for note in plan("tool_hanging/L1", fast, flags, limit=3).notes)
+    assert _episodes(plan("tool_hanging/L1", cfg.load("fast", ("instances=0",)), flags)) == 30
+    assert _episodes(plan("tool_hanging/L1", cfg.load("default", ("instances=4",)), flags)) == 4
+
+
+def test_instances_must_be_a_count():
+    with pytest.raises(cfg.ConfigError, match="instances"):
+        cfg.load("fast", ("instances=-1",))
+
+
 def test_gear_meshing_runs_one_world_per_job(flags):
     p = plan("gear_meshing/L1", cfg.load("default"), flags)
     assert len(p.jobs) == 30 and {j.num_worlds for j in p.jobs} == {1}

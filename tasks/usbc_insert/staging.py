@@ -161,7 +161,7 @@ USBC_FAST_PHYSICS = register_arrangement(
     "usbc_fast@v1",
     # `usbc_bulkhead_960hz@v1` with CUDA graph capture back on, and nothing
     # else changed: same rates, same solver, same contact settings, same
-    # ceilings. Measured in docs/validation/fast_usbc_insert.md: 4-5x the
+    # ceilings. Measured: 4-5x the
     # eager steps/s on both cells, with the same gt and cell-protocol outcomes
     # per instance.
     #
@@ -196,7 +196,7 @@ What the ``fast`` config runs the two cable-insertion cells on, over the shipped
 cabled documents (``physics = "usbc_fast@v1"``): the scene is the reference's, and
 the measured outcomes are too. ``insert_easy_nocable`` and
 ``insert_medium_nocable`` stage it as well; they are ~20 % faster again and
-measurably less steady on L2 (docs/validation/fast_usbc_insert.md).
+measurably less steady on L2.
 """
 
 USBC_RIG = register_camera_rig(

@@ -3530,8 +3530,8 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level1: the 30 `tray_pair_both_tNN` trials, registered as `tray_pair_both_tNN`.",
-   "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
+   "selection": "benchmark/syringe_packing/level1: the 30 `tray_pair_both_tNN` trials.",
+   "notes": "The frozen copies under benchmark/ are the suite's documents, byte for byte. Every config runs them on a Robotiq 2F-85 with the tiled renderer (docs/validation/syringe_working_scene.md).",
    "instances": [
     {
      "id": "syringe_packing/tray_pair_both_t00",
@@ -3700,8 +3700,8 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level2: the 30 `tray_clutter_tNN` trials, registered as `tray_clutter_tNN`.",
-   "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
+   "selection": "benchmark/syringe_packing/level2: the 30 `tray_clutter_tNN` trials.",
+   "notes": "The frozen copies under benchmark/ are the suite's documents, byte for byte. Every config runs them on a Robotiq 2F-85 with the tiled renderer (docs/validation/syringe_working_scene.md).",
    "instances": [
     {
      "id": "syringe_packing/tray_clutter_t00",

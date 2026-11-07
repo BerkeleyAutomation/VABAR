@@ -6,7 +6,7 @@
 > fingertip-drop fix ee4ad93 is included (this cell runs the prismatic Franka hand, not the Robotiq), and `carry_sg` is
 > labelled `generic` with its skill under `meta.composes`, for graph-as-policy's SK2 contract. The README below is the
 > source's. Its sweep numbers were measured on RoboSimStudio-dev's tray colliders, CoACD syringe hulls and re-drawn
-> Level-2 layouts, which VABAR does not stage; VABAR's own numbers are in `docs/validation/dev_history_merge.md`.
+> Level-2 layouts, which VABAR does not stage.
 
 This graph packs every syringe visible on the tray. It detects the box aperture
 first, then loops over fresh RGB-D target perception, collision geometry, a

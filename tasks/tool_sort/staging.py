@@ -487,8 +487,8 @@ rolled so the two long bins fill the landscape frame.
 
 # --------------------------------------------------------------- the `fast` config
 # Registered beside, never instead of, what the documents stage: no document names these.
-# A run opts in through vabar/configs/fast.toml (`[suites.tool_sort]`). Measured in
-# docs/validation/fast_tool_sort.md with tools/fast_tune/tool_sort.py.
+# A run opts in through vabar/configs/fast.toml (`[suites.tool_sort]`). Measured with
+# tools/fast_tune/tool_sort.py.
 
 VAB_TOOL_SORT_FAST = register_arrangement(
     "vab_tool_sort_fast@v1",

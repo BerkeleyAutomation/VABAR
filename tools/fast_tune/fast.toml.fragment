@@ -1,7 +1,7 @@
 # Fragments for vabar/configs/fast.toml from the tool_hanging / syringe_packing / tool_sort
 # tuning (docs/validation/fast_{tool_hanging,syringe_packing,tool_sort}.md). Every name is
 # registered in that suite's tasks/<suite>/staging.py; no document stages any of them.
-# The renderer stays RTX for all three: GL has no fleet form (see fast_tool_hanging.md).
+# The renderer stays RTX for all three: GL has no fleet form.
 #
 # Read each entry as "in place of" the reference it was measured against, not suite-wide:
 #   tool_hanging    physics replaces tool_hanging_480hz@v1 (every variant but hammers, which

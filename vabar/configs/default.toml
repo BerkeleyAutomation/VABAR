@@ -35,8 +35,7 @@ trace_assets = false
 num_worlds = 8
 # Processes per cell. Under the lockstep clock a worker's simulation waits for
 # its own graph, so how many share the GPU changes wall time, not outcomes:
-# per-instance results matched across 1, 2 and 4 workers (docs/validation/
-# workers_mps.md). Each suite below sets its own ceiling, measured on one RTX
+# per-instance results matched across 1, 2 and 4 workers. Each suite below sets its own ceiling, measured on one RTX
 # PRO 6000 (96 GB), and the GPU memory one of its workers holds; on a smaller
 # card a ceiling is held to free memory / worker_gb. This is the fallback.
 # Run `vabar warmup` first: a cold RTX shader cache takes 4 minutes, and
@@ -58,7 +57,7 @@ mps = true
 # shared this way take everything they need in the call, so sharing changes no
 # call's answer; it frees about 9 GB per worker, which is what lets tool_sort
 # and gear_mesh run 15 and 8 workers. Needs graph-as-policy with
-# gap_core.rpc.broker (GAP_TOOL_SHARE_DIR); see docs/validation/workers_mps.md.
+# gap_core.rpc.broker (GAP_TOOL_SHARE_DIR).
 share_tool_servers = true
 # 0 keeps each cell's own bus watchdog (180 s; 600 s on the cable cells).
 bus_timeout = 0
@@ -70,7 +69,7 @@ env = {}
 #
 # worker_gb is what one more worker costs with the tool servers shared, from
 # the GPU's peak in the final `fast` validation of 2026-11-05 (sampled every
-# 10 s; docs/validation/workers_mps.md): (peak - shared_gb) / workers, plus
+# 10 s): (peak - shared_gb) / workers, plus
 # about 10%.
 
 [suites.tool_hanging]
@@ -88,8 +87,7 @@ num_worlds = 1
 # 10.7 on 8 once the graph asks SAM 3 for 48 masks a query instead of all 200
 # (27/30; sight.py SEGMENT_TOP_K); about 14 with the suite's servo speed declared
 # (29/30). Fleet waves, 6 x up to 8 worlds, were measured and not taken: 8.9 min,
-# 26/30, but 21% more sim steps and a board and document port to keep
-# (docs/validation/workers_mps.md).
+# 26/30, but 21% more sim steps and a board and document port to keep.
 # Peak 41.9 GB on 8 with shared servers (10.4 GB a worker with its own), so a
 # 48 GB card still runs all 8.
 workers = 8
@@ -101,14 +99,13 @@ shared_gb = 6.5
 # The bus timeout is the one the cells set: under the lockstep clock, a bare `vabar run` on the default 30 s dies at
 # step 1 while the first SAM 3 call and planner start up.
 flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq", "--bus-timeout", "180"]
-# The multi-syringe graph (gap_perception_v2; docs/validation/dev_history_merge.md)
-# runs about twice the steps of the graph it replaced. L1, `fast`, full cells:
-# 32.5 min on 4 workers (7/30), 21.6 on 8 (11/30, 54 GB at peak), 21.1 on 12
-# (9/30, 77 GB). L2: 32.3 min on 8 (0/30, mean reward 0.27), 37.5 on 12 with one
-# worker hung and replaced by the pool's watchdog (0/30, 0.32).
+# Tiled scored the same as RTX on this scene, needs no shader warmup and holds
+# less than half the GPU memory (docs/validation/syringe_working_scene.md).
+renderer = "tiled"
+# Peak is 8.6 GB + 1.98 GB per worker, fitted to full L2 cells; 2.2 adds 10%.
 workers = 8
-worker_gb = 6.5
-shared_gb = 6.5
+worker_gb = 2.2
+shared_gb = 8.6
 
 [suites.tool_sort]
 # Most of a tool-sort episode is remote VLM latency, which overlaps across
@@ -122,12 +119,12 @@ worker_gb = 5.5
 # questions): the model VABAR's tool-sort numbers were measured with. A suite's
 # env wins over the shell (apply_env), so an exported GAP_VLM_MODEL does not
 # change it; --set suites.tool_sort.env.GAP_VLM_MODEL=<id> does, and is recorded.
-# `fast` swaps in a faster one. See docs/validation/tool_sort_vlm.md.
+# `fast` swaps in a faster one.
 env = { GAP_VLM_MODEL = "gemini-2.5-flash" }
 
 [suites.cable_route]
 # L1 (port_easy) runs as fleet waves: 30 instances in 2 waves of 15, one per
-# MPS worker (docs/validation/cable_fleet.md). Needs RoboSimStudio's fleet fixes
+# MPS worker. Needs RoboSimStudio's fleet fixes
 # from that note: WorldFacade.stream_dual_trajectory, and the rod's friction
 # written in every world (before it, worlds 1+ gripped the cable at mu 11
 # instead of 60 and the cell scored 5/30). Measured on one RTX PRO 6000, `fast`
@@ -138,8 +135,8 @@ env = { GAP_VLM_MODEL = "gemini-2.5-flash" }
 #     13,000-step truncation). 8 x 2: 28.7 min, 17/30 (two waves a worker).
 #   Single-world, 1 x 6 with MPS, same stack: 46.5 min, 18/30 (0.817), 32.8 GB.
 # A wave's GPU cost barely depends on its width, so the cell takes about its
-# longest episode. The times above predate docs/validation/fleet_profile.md,
-# which took L2 from 31 to 23 min; a fleet's limit is GPU physics, not the host.
+# longest episode. The times above predate a profile
+# that took L2 from 31 to 23 min; a fleet's limit is GPU physics, not the host.
 num_worlds = 15
 # A fleet cell is held to its wave count, so L1 gets 2 of these; L2 runs its
 # single-world episodes on all 6. Single-world, the cell is physics-bound: one
@@ -153,8 +150,8 @@ worker_gb = 6.0
 shared_gb = 6.5
 
 # L2 (port_medium) runs as the same 15-world waves. Measured 2026-11-05, `fast`,
-# with the graph's L2 fixes and the task's declared servo speed
-# (docs/validation/cable_routing_l2.md), at `fast`'s 14,000-step budget: fleet
+# with the graph's L2 fixes and the task's declared servo speed,
+# at `fast`'s 14,000-step budget: fleet
 # 2 x 15 took 32.6 min, 21/30 (mean reward 0.92), 11.6 GB; single-world on 10 MPS
 # workers took 53.5 min, 21/30 (0.92), 53.5 GB. Before the speed was declared,
 # fleet episodes ended about 5% earlier than single-world, which biases cycle

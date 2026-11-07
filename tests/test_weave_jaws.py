@@ -3,7 +3,7 @@
 
 cable_routing/L2's pegs stand 72-80 mm apart and each crossing takes the cable
 50-140 mm past its station, so a fully open jaw (47.5 mm a finger) put a fingertip
-on the next spool on most station-1 takes. See docs/validation/cable_routing_l2.md.
+on the next spool on most station-1 takes.
 """
 
 from __future__ import annotations

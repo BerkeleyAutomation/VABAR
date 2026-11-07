@@ -48,8 +48,7 @@ the end. The spools reach 1,786 px there, so no floor separates the two any more
 and none has to: :func:`run` takes the block furthest from the anchored end,
 which is the port whenever the port is in the list. 2,667 at the reference focal
 length is 1,500 px at 720 rows, the value of the dev repo's own fix for this
-(AUTOLab-GaP-NVIDIA-Collaboration ``lgulich/cable-port-floor``, 138b438). See
-``docs/validation/cable_routing_l2.md``.
+(AUTOLab-GaP-NVIDIA-Collaboration ``lgulich/cable-port-floor``, 138b438).
 
 What follows is the floor's original derivation, at 3,400.
 
@@ -632,8 +631,7 @@ def run(ctx: NodeContext, scene: str = "", arm_id: int = 0,
     # Those two Medium-only branches arrived with the dev repo's 7e837ed, on the
     # 720 mm rod and a camera that found the port, and never ran here before the
     # L1 floor fix. Easy's sequence -- release at the grasp height, between the
-    # walls, then one measured correction -- keeps the end on L2 too
-    # (docs/validation/cable_routing_l2.md).
+    # walls, then one measured correction -- keeps the end on L2 too.
 
     # ROUTE AROUND THE SEATS, NOT ACROSS THEM.
     #

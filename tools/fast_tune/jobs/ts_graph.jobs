@@ -1,5 +1,5 @@
 # tool_sort real fidelity: the Level-1 cell graph (gap_perception_loop) on level1_6, two worlds
 # each, reference and candidate side by side. --bus-timeout 600 on both (the machine's CPUs
-# were saturated by other work; see fast_tool_hanging.md), otherwise the cell's protocol.
+# were saturated by other work), otherwise the cell's protocol.
 tool_sort ts_ref graph_l1_6c :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 600 --max-steps 20000
 tool_sort ts_fast graph_l1_6c :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 600 --max-steps 20000

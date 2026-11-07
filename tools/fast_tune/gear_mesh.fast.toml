@@ -1,5 +1,5 @@
 # Fragment for vabar/configs/fast.toml (merge into that file; this one is not read by anything).
-# Measured by tools/fast_tune/gear_mesh.py; see docs/validation/fast_gear_mesh.md.
+# Measured by tools/fast_tune/gear_mesh.py.
 # Both names are registered in tasks/gear_mesh/staging.py beside the shipped ones,
 # which keep their meaning (gear_mesh_960hz@v1, gear_mesh_views@v2).
 [suites.gear_mesh]

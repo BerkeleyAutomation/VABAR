@@ -11,7 +11,7 @@ first crossing action without recovery pickups"), which switched the repair off 
 the tier that needs it most; the line came in with the dev repo's 7e837ed on the
 720 mm rod, and RoboSimStudio-dev's 48df9c6 had already reverted it. On the
 staged cable_routing/L2 the pass repairs a seat on 13-16 of 30 episodes, and the
-repaired seat held 50 times in 63 over three cells (docs/validation/cable_routing_l2.md).
+repaired seat held 50 times in 63 over three cells.
 
 A repair's take opens its jaws only as far as clears the pegs, as a crossing's
 does (``plan_crossing.take_opening``), and a planner refusal at one station moves
