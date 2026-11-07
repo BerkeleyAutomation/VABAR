@@ -1,0 +1,7 @@
+# Contact / constraint peaks (per control step) on the reference arrangements, for sizing
+# nconmax/njmax. Run with sweep.py --peaks.
+syringe_packing sp_ref peaks_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ref peaks_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 300
+tool_sort ts_ref peaks_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_hanging th_ref peaks_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ref peaks_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 300

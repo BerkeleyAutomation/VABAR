@@ -810,7 +810,7 @@ wheels = [
 [[package]]
 name = "graph-as-policy"
 version = "0.1.0.dev0"
-source = { git = "https://github.com/KeplerC/graph-as-policy.git?rev=09e45f8de27bc1a29629382ed7c2b9b4b384b3d6#09e45f8de27bc1a29629382ed7c2b9b4b384b3d6" }
+source = { git = "https://github.com/KeplerC/graph-as-policy.git?rev=06dd6193e13eab816123febef1369deda0849d91#06dd6193e13eab816123febef1369deda0849d91" }
 dependencies = [
     { name = "bddl", marker = "sys_platform == 'never'" },
     { name = "cloudpickle" },
@@ -854,7 +854,7 @@ dependencies = [
 [[package]]
 name = "graph-as-policy-core"
 version = "0.1.0.dev0"
-source = { git = "https://github.com/KeplerC/graph-as-policy.git?subdirectory=gap-core&rev=09e45f8de27bc1a29629382ed7c2b9b4b384b3d6#09e45f8de27bc1a29629382ed7c2b9b4b384b3d6" }
+source = { git = "https://github.com/KeplerC/graph-as-policy.git?subdirectory=gap-core&rev=06dd6193e13eab816123febef1369deda0849d91#06dd6193e13eab816123febef1369deda0849d91" }
 dependencies = [
     { name = "msgpack" },
     { name = "msgpack-numpy" },
@@ -3605,7 +3605,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/3d/c3/44b1d1ea4bcb4bbed
 [[package]]
 name = "robosimstudio"
 version = "0.1.0"
-source = { git = "https://github.com/robosimstudio/robosimstudio.git?rev=d9b2e442fd86dd10b6e4659993a7febad4cf5ef9#d9b2e442fd86dd10b6e4659993a7febad4cf5ef9" }
+source = { git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774#39b7a6e75ddfbd1f68ebb7242caf098804da6774" }
 dependencies = [
     { name = "coacd" },
     { name = "fast-simplification" },
@@ -4610,7 +4610,7 @@ requires-dist = [
     { name = "matplotlib" },
     { name = "opencv-python" },
     { name = "pillow" },
-    { name = "robosimstudio", extras = ["gap", "curobo"], git = "https://github.com/robosimstudio/robosimstudio.git?rev=d9b2e442fd86dd10b6e4659993a7febad4cf5ef9" },
+    { name = "robosimstudio", extras = ["gap", "curobo"], git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774" },
     { name = "rtree" },
     { name = "scikit-image" },
     { name = "trimesh" },
@@ -4621,7 +4621,7 @@ dev = [
     { name = "pytest" },
     { name = "ruff", specifier = "==0.16.1" },
 ]
-rtx = [{ name = "robosimstudio", extras = ["rtx"], marker = "sys_platform == 'linux' or sys_platform == 'win32'", git = "https://github.com/robosimstudio/robosimstudio.git?rev=d9b2e442fd86dd10b6e4659993a7febad4cf5ef9" }]
+rtx = [{ name = "robosimstudio", extras = ["rtx"], marker = "sys_platform == 'linux' or sys_platform == 'win32'", git = "https://github.com/KeplerC/robosimstudio.git?rev=39b7a6e75ddfbd1f68ebb7242caf098804da6774" }]
 
 [[package]]
 name = "vcs-versioning"

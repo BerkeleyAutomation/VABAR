@@ -42,6 +42,13 @@ where the bench put it, off blobs of 356-1098 px where the validated aperture is
 tens -- it had locked onto a face, not the slot. Every one of those is rejected
 by this gate and by AXIS_MAX_DEG below, and the schedule proceeds on the read it
 already had.
+
+**The premise is the bench read's, so it has to be kept there.** On the
+documents' ``yam_station_usbc@v1`` head camera the whole-silhouette bench read
+of the bolted port was 7.7-9.7 mm and 6.5-10.6 degrees off, and this gate threw
+away a wrist read good to 0.2 mm on every L1 episode. The fix is in the bench
+read (``ground_vision.ROOF_BAND``), not here: loosening this gate would also let
+through the misdetections it exists for.
 """
 
 MAX_RISE_MM = 45.0

@@ -1,0 +1,215 @@
+{
+  "variant": "tray_clutter_t10",
+  "settled_from": "tasks/syringe_packing/tools/make_sweeps.py: 7 syringes packed into tray_pair's own tray pose (itself the export's settled syringe_0 pose, lifted onto the tray floor). Out-of-tray syringes removed (footprint past the cavity walls): syringe_0 (16.5 mm), syringe_pack_5 (31.6 mm); survivors renamed in order.",
+  "objects": {
+    "syringe_0": {
+      "pose": [
+        0.027165,
+        -0.354116,
+        0.789825
+      ],
+      "quat": [
+        -0.002841,
+        0.006059,
+        0.91524,
+        -0.402853
+      ],
+      "body_name": "syringe_0",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_0": {
+      "pose": [
+        0.051177,
+        -0.325149,
+        0.789825
+      ],
+      "quat": [
+        -0.002162,
+        0.006333,
+        0.953789,
+        -0.300401
+      ],
+      "body_name": "syringe_pack_0",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_1": {
+      "pose": [
+        0.081736,
+        -0.297255,
+        0.789825
+      ],
+      "quat": [
+        -0.001303,
+        0.006563,
+        0.985194,
+        -0.17131
+      ],
+      "body_name": "syringe_pack_1",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_2": {
+      "pose": [
+        0.115833,
+        -0.241178,
+        0.789825
+      ],
+      "quat": [
+        -0.001154,
+        0.006591,
+        0.988836,
+        -0.148858
+      ],
+      "body_name": "syringe_pack_2",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_pack_3": {
+      "pose": [
+        0.177689,
+        -0.188266,
+        0.789825
+      ],
+      "quat": [
+        -0.001588,
+        0.006501,
+        0.976806,
+        -0.21402
+      ],
+      "body_name": "syringe_pack_3",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_tray": {
+      "xform": [
+        0.085551,
+        -0.280082,
+        0.785025,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_floor": {
+      "xform": [
+        0.085551,
+        -0.280082,
+        0.772025,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_xpos": {
+      "xform": [
+        0.009695,
+        -0.217248,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_xneg": {
+      "xform": [
+        0.161407,
+        -0.342916,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_ypos": {
+      "xform": [
+        -0.041073,
+        -0.43295,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    },
+    "syringe_tray_wall_yneg": {
+      "xform": [
+        0.212175,
+        -0.127214,
+        0.776525,
+        0.0,
+        0.0,
+        0.940775,
+        0.339031
+      ]
+    }
+  },
+  "box_shift": [
+    -0.00541,
+    0.018067
+  ],
+  "trial": {
+    "index": 10,
+    "of": 30,
+    "n_syringes": 7,
+    "box_shift_m": [
+      -0.00541,
+      0.018067
+    ]
+  }
+}

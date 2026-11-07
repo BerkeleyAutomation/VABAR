@@ -5,7 +5,11 @@ list     every registered suite/variant
 run      run a solution over a task's episodes (RoboSimStudio's bench_run)
 studio   open a task in the RoboSimStudio Studio (browser UI)
 bench    run a solution over a frozen benchmark cell (task class x level)
+warmup   compile the RTX shader cache and Warp kernels before timing anything
 probe    check that every suite loads on the installed RoboSimStudio
+
+run, bench, studio and warmup take --config default|fast|paper|<file.toml> and
+--set key=value (see vabar/config.py); $VABAR_CONFIG selects one too.
 """
 
 from __future__ import annotations
@@ -18,6 +22,7 @@ COMMANDS = {
     "run": ("vabar.run", "main"),
     "studio": ("vabar.studio", "main"),
     "bench": ("vabar.benchmark", "main"),
+    "warmup": ("vabar.warmup", "main"),
     "probe": ("vabar.probe", "main"),
 }
 

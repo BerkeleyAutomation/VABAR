@@ -23,6 +23,8 @@ machinery and lives in the toolkit; what goes in it is this file.
 
 from __future__ import annotations
 
+from dataclasses import replace
+
 import vabar  # noqa: F401 -- the scripted-routine module RoboSimStudio leaves out; see vabar/__init__.py
 import vabar.ext.tool_sort  # noqa: F401 -- the robots this suite's host rows name
 
@@ -48,6 +50,7 @@ __all__ = [
     "VAB_INDUSTRIAL_ROBOTIQ_V1",
     "VAB_INDUSTRIAL_V1",
     "VAB_PHYSICS",
+    "VAB_TOOL_SORT_FAST",
     "VAB_TOOL_SORT_V2",
 ]
 
@@ -480,3 +483,25 @@ and rolled the other way, because what it has to resolve is a hole in a lid
 rather than two bins side by side. The sorting rig's overhead is higher and
 rolled so the two long bins fill the landscape frame.
 """
+
+
+# --------------------------------------------------------------- the `fast` config
+# Registered beside, never instead of, what the documents stage: no document names these.
+# A run opts in through vabar/configs/fast.toml (`[suites.tool_sort]`). Measured in
+# docs/validation/fast_tool_sort.md with tools/fast_tune/tool_sort.py.
+
+VAB_TOOL_SORT_FAST = register_arrangement(
+    "vab_tool_sort_fast@v1",
+    replace(
+        VAB_PHYSICS["vab_500hz@v1"],
+        # 300 Hz rather than 500, and nothing else: 1.59x on a Level-1 bin's idle and
+        # 1.40x on its scripted sort, with the three Level-1 routines still succeeding
+        # (2,183 / 2,127 / 2,063 steps against 2,181 / 2,053 / 2,068) and the bins'
+        # 30 s settle drift no worse than at 500 Hz. The 4 ms contact timeconst is below
+        # the 6.7 ms 2*dt floor at 300 Hz, so MuJoCo clamps it there. Multi-CCD stays
+        # on: off, the drawn_hull tools walk (a multimeter turned over in 30 s of idle)
+        # and the level1_1 sort fails. 200 Hz passed the same probes but is where this
+        # arrangement's own measurement found bins of thin tools that never settle.
+        substeps=6,
+    ),
+)

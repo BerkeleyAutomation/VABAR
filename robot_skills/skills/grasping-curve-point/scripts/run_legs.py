@@ -89,6 +89,14 @@ def run(
     if open_before:
         ctx.tool("cable.set_gripper", width=float(grip_open_m), arm_id=int(arm_id))
         ctx.tool("cable.wait_steps", steps=int(settle_steps))
+    # THE TAKE OPENS ONLY AS FAR AS CLEARS THE PEGS. ``plan_crossing`` (and the
+    # restore pass) put the opening in the plan; fully open, a finger landed on the
+    # next spool on most of cable_routing/L2's station-1 takes. See
+    # ``plan_crossing.PEG_KEEPOUT``. Set before the approach, so the jaws arrive
+    # at that width; the close below is unchanged.
+    take_open = (json.loads(plan or "{}") or {}).get("take_open_m")
+    if "take" in wanted and take_open is not None and float(take_open) < float(grip_open_m) - 1e-9:
+        ctx.tool("cable.set_gripper", width=float(take_open), arm_id=int(arm_id))
     if str(legs).startswith("move"):
         rows = [row["positions"] for stage in mine for row in stage["trajectory"]["waypoints"]]
         ctx.tool("robot.stream_dual", tracks={str(arm_id): rows}, settle_steps=0)

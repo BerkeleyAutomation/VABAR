@@ -1,0 +1,5 @@
+# tool_hanging real fidelity, Level 1: the cell's graph protocol on wrenches_level1, four
+# episodes as one fleet (render on demand). Reference and candidate run concurrently so
+# they share the machine's load. sweep.py --parallel 2.
+tool_hanging th_ref graph_w1f :: --task tool_hanging/wrenches_level1 --episodes 1,5,9,13 --num-worlds 4 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 8500
+tool_hanging th_ce2_half graph_w1f :: --task tool_hanging/wrenches_level1 --episodes 1,5,9,13 --num-worlds 4 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 8500

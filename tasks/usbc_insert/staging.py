@@ -50,7 +50,9 @@ __all__ = [
     "USBC_BENCH",
     "USBC_BULKHEAD_PHYSICS",
     "USBC_EASY",
+    "USBC_FAST_PHYSICS",
     "USBC_MEDIUM",
+    "USBC_MEDIUM_REPOSE",
     "USBC_PERCEPTION_RIG",
     "USBC_PHYSICS",
     "USBC_RIG",
@@ -154,6 +156,48 @@ USBC_BULKHEAD_PHYSICS = register_arrangement(
         use_cuda_graph=False
     ),
 )
+
+USBC_FAST_PHYSICS = register_arrangement(
+    "usbc_fast@v1",
+    # `usbc_bulkhead_960hz@v1` with CUDA graph capture back on, and nothing
+    # else changed: same rates, same solver, same contact settings, same
+    # ceilings. Measured in docs/validation/fast_usbc_insert.md: 4-5x the
+    # eager steps/s on both cells, with the same gt and cell-protocol outcomes
+    # per instance.
+    #
+    # Why capture is legal now, where the comment above says it is not: the
+    # Newton this release pins (1.7) no longer reads the hydroelastic overflow
+    # counter back every launch. It polls it once every 120 launches
+    # (`HydroelasticSDF._host_warning_poll_interval`), the warm-up runs launches
+    # 1-32 eagerly and the capture is 33-48, and a replay runs no Python, so the
+    # captured block never contains the read. On insert_easy there is no
+    # hydroelastic PAIR at all -- the welded port is a plain mesh -- so that
+    # narrow phase is never even built.
+    #
+    # What was tried and left out, all measured in the same doc: 8 substeps
+    # and iterations 50 / ls_iterations 20 each lost the gt graph's grasp on
+    # an instance the reference seats; a 0.5 mm voxel and point contacts buy
+    # nothing an idle step can see, and the 0.5 mm field is the one
+    # parts.MATE_SDF_VOXEL records seating 0/13; ceilings trimmed to 1024/2048
+    # or 512/1024 measured no faster, so the cable-sized ones stay -- which is
+    # what keeps this arrangement right for the CABLED documents it is staged
+    # under (`[suites.usbc_insert] physics = "usbc_fast@v1"`).
+    #
+    # The risk this carries: a RE-capture (after `invalidate_graph`) restarts
+    # from wherever the eager launch counter stands, and one that lands on a
+    # multiple of 120 with a hydroelastic pair in the scene (insert_medium)
+    # would hit the read mid-capture. No run in the sweep re-captured
+    # (`recapture_failures 0`, `steps_eager 0` on every captured run).
+    USBC_BULKHEAD_PHYSICS.with_(use_cuda_graph=True),
+)
+"""The cable-insertion fit with capture: ``usbc_bulkhead_960hz@v1``, graph-captured.
+
+What the ``fast`` config runs the two cable-insertion cells on, over the shipped
+cabled documents (``physics = "usbc_fast@v1"``): the scene is the reference's, and
+the measured outcomes are too. ``insert_easy_nocable`` and
+``insert_medium_nocable`` stage it as well; they are ~20 % faster again and
+measurably less steady on L2 (docs/validation/fast_usbc_insert.md).
+"""
 
 USBC_RIG = register_camera_rig(
     "usbc_multiview@v1",
@@ -668,6 +712,27 @@ def _usbc_evaluation(task, episode_id: int, rng) -> dict[str, dict[str, tuple[fl
 
 _usbc_evaluation.model_key_fields = ("object_xforms", "static_xforms")
 USBC_MEDIUM = _usbc_evaluation
+
+
+def _usbc_evaluation_repose(task, episode_id: int, rng) -> dict[str, dict[str, tuple[float, ...]]]:
+    """:data:`USBC_MEDIUM`'s draw, number for number, declared re-posable.
+
+    The same function underneath, so an episode id is the same layout on
+    ``insert_medium`` and ``insert_medium_nocable``. Only the declaration
+    differs: ``object_xforms`` is not model-changing here, because the one
+    thing that made it so -- the bulkhead's rear cable, whose joint anchor
+    :meth:`EntityUsbcCables.build` computes off the drawn pose -- is not in a
+    document that stages this. ``static_xforms`` stays declared (it is always
+    empty on a variant with no welded port, so it never forces a rebuild).
+
+    **Only for documents with no cable rooted on a drawn body.** Staged beside
+    one, it would hang episode N's cable off episode 0's boot tip.
+    """
+    return _usbc_evaluation(task, episode_id, rng)
+
+
+_usbc_evaluation_repose.model_key_fields = ("static_xforms",)
+USBC_MEDIUM_REPOSE = _usbc_evaluation_repose
 
 
 def _usbc_easy(task, episode_id: int, rng) -> dict[str, dict[str, tuple[float, ...]]]:

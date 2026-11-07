@@ -1,0 +1,9 @@
+# tool_sort speed probes, serial: 600 idle steps on level1_1, no renderer.
+tool_sort ts_ref idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ss6 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ss4 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_it10 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_pyr idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_noccd idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_buf idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_hull32 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600

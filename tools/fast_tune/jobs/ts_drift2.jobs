@@ -1,0 +1,8 @@
+# tool_sort settle drift on two more Level-1 bins, for the substep candidates (sweep.py --drift).
+tool_sort ts_ref drift_l1_12 :: --task tool_sort/level1_12 --solve idle --max-steps 1500
+tool_sort ts_ss6 drift_l1_12 :: --task tool_sort/level1_12 --solve idle --max-steps 1500
+tool_sort ts_ss4 drift_l1_12 :: --task tool_sort/level1_12 --solve idle --max-steps 1500
+tool_sort ts_ref drift_l1_20 :: --task tool_sort/level1_20 --solve idle --max-steps 1500
+tool_sort ts_ss6 drift_l1_20 :: --task tool_sort/level1_20 --solve idle --max-steps 1500
+tool_sort ts_ss4 drift_l1_20 :: --task tool_sort/level1_20 --solve idle --max-steps 1500
+tool_sort ts_hull32 drift_l1_12 :: --task tool_sort/level1_12 --solve idle --max-steps 1500

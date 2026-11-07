@@ -1,0 +1,164 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+  <asset>
+    <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    <texture file="../../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    <texture file="../../assets/light-wood.png" type="2d" name="tex-light-wood" />
+    <texture file="../../assets/dark-wood.png" type="2d" name="tex-dark-wood" />
+    <material name="light-wood" reflectance="0" texrepeat="15 15" texture="tex-light-wood" texuniform="true" />
+    <material name="dark-wood" reflectance="0" texrepeat="5 5" texture="tex-dark-wood" texuniform="true" />
+    <texture name="tex-concrete" type="2d" file="../../assets/gray-plaster.png" />
+    <texture name="tex-steel-plate" type="2d" file="../../assets/steel-scratched.png" />
+    <material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" />
+    <texture name="bin2_label0_tex" type="2d" file="../../assets/bin2_0_breadboard.png" />
+    <material name="bin2_label0_mat" texture="bin2_label0_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label1_tex" type="2d" file="../../assets/bin2_1_crimping_pliers.png" />
+    <material name="bin2_label1_mat" texture="bin2_label1_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label2_tex" type="2d" file="../../assets/bin2_2_compression_spring.png" />
+    <material name="bin2_label2_mat" texture="bin2_label2_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="bin2_label3_tex" type="2d" file="../../assets/bin2_3_sanding_block_large.png" />
+    <material name="bin2_label3_mat" texture="bin2_label3_tex" texrepeat="1 1" texuniform="false" specular="0" shininess="0" />
+    <texture name="industrial_crimping_pliers_0_crimping_pliers_tex" type="2d" file="../../assets/diffuse_16.png" />
+    <material name="industrial_crimping_pliers_0_crimping_pliers_mat" texture="industrial_crimping_pliers_0_crimping_pliers_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_crimping_pliers_0_crimping_pliers_mesh" file="../../assets/crimping_pliers.obj" />
+    <mesh name="industrial_compression_spring_0_compression_spring_mesh" file="../../assets/compression_spring.obj" />
+    <mesh name="industrial_compression_spring_1_compression_spring_mesh" file="../../assets/compression_spring.obj" />
+    <texture name="industrial_breadboard_0_breadboard_tex" type="2d" file="../../assets/diffuse_9.png" />
+    <material name="industrial_breadboard_0_breadboard_mat" texture="industrial_breadboard_0_breadboard_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_breadboard_0_breadboard_mesh" file="../../assets/breadboard_1.obj" />
+    <texture name="industrial_breadboard_1_breadboard_tex" type="2d" file="../../assets/diffuse_9.png" />
+    <material name="industrial_breadboard_1_breadboard_mat" texture="industrial_breadboard_1_breadboard_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_breadboard_1_breadboard_mesh" file="../../assets/breadboard_1.obj" />
+    <texture name="industrial_breadboard_2_breadboard_tex" type="2d" file="../../assets/diffuse_9.png" />
+    <material name="industrial_breadboard_2_breadboard_mat" texture="industrial_breadboard_2_breadboard_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_breadboard_2_breadboard_mesh" file="../../assets/breadboard_1.obj" />
+    <texture name="industrial_sanding_block_large_0_sanding_block_large_tex" type="2d" file="../../assets/diffuse_22.png" />
+    <material name="industrial_sanding_block_large_0_sanding_block_large_mat" texture="industrial_sanding_block_large_0_sanding_block_large_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_sanding_block_large_0_sanding_block_large_mesh" file="../../assets/sanding_block_large.obj" />
+    <texture name="industrial_sanding_block_large_1_sanding_block_large_tex" type="2d" file="../../assets/diffuse_22.png" />
+    <material name="industrial_sanding_block_large_1_sanding_block_large_mat" texture="industrial_sanding_block_large_1_sanding_block_large_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_sanding_block_large_1_sanding_block_large_mesh" file="../../assets/sanding_block_large.obj" />
+    <texture name="industrial_sanding_block_large_2_sanding_block_large_tex" type="2d" file="../../assets/diffuse_22.png" />
+    <material name="industrial_sanding_block_large_2_sanding_block_large_mat" texture="industrial_sanding_block_large_2_sanding_block_large_tex" specular="0.2" shininess="0.1" />
+    <mesh name="industrial_sanding_block_large_2_sanding_block_large_mesh" file="../../assets/sanding_block_large.obj" />
+    <texture name="distractor_industrial_combination_pliers_0_combination_pliers_tex" type="2d" file="../../assets/diffuse_11.png" />
+    <material name="distractor_industrial_combination_pliers_0_combination_pliers_mat" texture="distractor_industrial_combination_pliers_0_combination_pliers_tex" specular="0.2" shininess="0.1" />
+    <mesh name="distractor_industrial_combination_pliers_0_combination_pliers_mesh" file="../../assets/combination_pliers.obj" />
+  </asset>
+  <visual>
+    <map znear="0.001" />
+  </visual>
+  <worldbody>
+    <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" material="light-wood" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="light-wood" />
+    </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0" size="0.2 0.25 0.02" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0.05" size="0.2 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 -0.25 0.05" size="0.21 0.01 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="0 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" group="0" friction="1 0.005 0.0001" rgba="0.5 0.5 0 1" />
+      <geom pos="-0.2 0 0.05" size="0.01 0.25 0.05" type="box" conaffinity="0" contype="0" group="1" material="dark-wood" />
+      <geom name="bin2_label0" type="box" pos="-0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label0_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label1" type="box" pos="0.097500 -0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label1_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label2" type="box" pos="-0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label2_mat" contype="0" conaffinity="0" group="1" />
+      <geom name="bin2_label3" type="box" pos="0.097500 0.122500 0.021000" quat="0.7071068 0 0 0.7071068" size="0.098000 0.078000 0.001000" material="bin2_label3_mat" contype="0" conaffinity="0" group="1" />
+    </body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+    <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" />
+    <geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" />
+    <geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" />
+    <body name="industrial_crimping_pliers_0_main">
+      <geom name="industrial_crimping_pliers_0_g0" type="box" pos="2.75134267e-06 -0.000129874589 6.41748379e-05" quat="0.000585540386 0.707616288 -0.00137683556 0.706595323" size="0.0102227852 0.0310456213 0.107050046" mass="0.150000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_crimping_pliers_0_g0_visual" type="mesh" mesh="industrial_crimping_pliers_0_crimping_pliers_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_crimping_pliers_0_crimping_pliers_mat" />
+      <joint type="free" name="industrial_crimping_pliers_0_joint0" />
+      <site name="industrial_crimping_pliers_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_compression_spring_0_main">
+      <geom name="industrial_compression_spring_0_g0" type="box" pos="-2.31894542e-05 3.58714852e-06 6.34636142e-06" quat="0.592425977 0.641018777 -0.327392283 0.361857268" size="0.0124087026 0.0134748006 0.0184627324" mass="0.039820" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_compression_spring_0_g0_visual" type="mesh" mesh="industrial_compression_spring_0_compression_spring_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" rgba="0.55 0.56 0.60 1" />
+      <joint type="free" name="industrial_compression_spring_0_joint0" />
+      <site name="industrial_compression_spring_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_compression_spring_1_main">
+      <geom name="industrial_compression_spring_1_g0" type="box" pos="-2.31894542e-05 3.58714852e-06 6.34636142e-06" quat="0.592425977 0.641018777 -0.327392283 0.361857268" size="0.0124087026 0.0134748006 0.0184627324" mass="0.039820" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_compression_spring_1_g0_visual" type="mesh" mesh="industrial_compression_spring_1_compression_spring_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" rgba="0.55 0.56 0.60 1" />
+      <joint type="free" name="industrial_compression_spring_1_joint0" />
+      <site name="industrial_compression_spring_1_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_breadboard_0_main">
+      <geom name="industrial_breadboard_0_g0" type="box" pos="1.65943655e-07 7.99830395e-08 -1.64413237e-06" quat="0.499519451 0.500027489 -0.500492897 0.499959687" size="0.0100669414 0.0274059195 0.0420609899" mass="0.034740" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_breadboard_0_g0_visual" type="mesh" mesh="industrial_breadboard_0_breadboard_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_breadboard_0_breadboard_mat" />
+      <joint type="free" name="industrial_breadboard_0_joint0" />
+      <site name="industrial_breadboard_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_breadboard_1_main">
+      <geom name="industrial_breadboard_1_g0" type="box" pos="1.65943655e-07 7.99830395e-08 -1.64413237e-06" quat="0.499519451 0.500027489 -0.500492897 0.499959687" size="0.0100669414 0.0274059195 0.0420609899" mass="0.034740" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_breadboard_1_g0_visual" type="mesh" mesh="industrial_breadboard_1_breadboard_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_breadboard_1_breadboard_mat" />
+      <joint type="free" name="industrial_breadboard_1_joint0" />
+      <site name="industrial_breadboard_1_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_breadboard_2_main">
+      <geom name="industrial_breadboard_2_g0" type="box" pos="1.65943655e-07 7.99830395e-08 -1.64413237e-06" quat="0.499519451 0.500027489 -0.500492897 0.499959687" size="0.0100669414 0.0274059195 0.0420609899" mass="0.034740" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_breadboard_2_g0_visual" type="mesh" mesh="industrial_breadboard_2_breadboard_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_breadboard_2_breadboard_mat" />
+      <joint type="free" name="industrial_breadboard_2_joint0" />
+      <site name="industrial_breadboard_2_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_sanding_block_large_0_main">
+      <geom name="industrial_sanding_block_large_0_g0" type="box" pos="0.000202741186 -0.00356988667 1.49260239e-10" quat="0.0297945417 0.706478793 -0.0297945417 0.706478793" size="0.00800000038 0.0124421455 0.0562857389" mass="0.015682" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_sanding_block_large_0_g0_visual" type="mesh" mesh="industrial_sanding_block_large_0_sanding_block_large_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_sanding_block_large_0_sanding_block_large_mat" />
+      <joint type="free" name="industrial_sanding_block_large_0_joint0" />
+      <site name="industrial_sanding_block_large_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_sanding_block_large_1_main">
+      <geom name="industrial_sanding_block_large_1_g0" type="box" pos="0.000202741186 -0.00356988667 1.49260239e-10" quat="0.0297945417 0.706478793 -0.0297945417 0.706478793" size="0.00800000038 0.0124421455 0.0562857389" mass="0.015682" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_sanding_block_large_1_g0_visual" type="mesh" mesh="industrial_sanding_block_large_1_sanding_block_large_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_sanding_block_large_1_sanding_block_large_mat" />
+      <joint type="free" name="industrial_sanding_block_large_1_joint0" />
+      <site name="industrial_sanding_block_large_1_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="industrial_sanding_block_large_2_main">
+      <geom name="industrial_sanding_block_large_2_g0" type="box" pos="0.000202741186 -0.00356988667 1.49260239e-10" quat="0.0297945417 0.706478793 -0.0297945417 0.706478793" size="0.00800000038 0.0124421455 0.0562857389" mass="0.015682" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="industrial_sanding_block_large_2_g0_visual" type="mesh" mesh="industrial_sanding_block_large_2_sanding_block_large_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="industrial_sanding_block_large_2_sanding_block_large_mat" />
+      <joint type="free" name="industrial_sanding_block_large_2_joint0" />
+      <site name="industrial_sanding_block_large_2_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+    <body name="distractor_industrial_combination_pliers_0_main">
+      <geom name="distractor_industrial_combination_pliers_0_g0" type="box" pos="-1.41555389e-06 -1.46817184e-05 -1.06084235e-05" quat="-0.0006067094 0.707507296 -0.000415284835 0.706705657" size="0.0156048015 0.0263689719 0.0800068304" mass="0.200000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" rgba="0.5 0 0 1" />
+      <geom name="distractor_industrial_combination_pliers_0_g0_visual" type="mesh" mesh="distractor_industrial_combination_pliers_0_combination_pliers_mesh" pos="0 0 0" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" conaffinity="0" contype="0" material="distractor_industrial_combination_pliers_0_combination_pliers_mat" />
+      <joint type="free" name="distractor_industrial_combination_pliers_0_joint0" />
+      <site name="distractor_industrial_combination_pliers_0_default_site" pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" />
+    </body>
+  </worldbody>
+  <equality>
+  </equality>
+  <tendon />
+  <contact />
+</mujoco>

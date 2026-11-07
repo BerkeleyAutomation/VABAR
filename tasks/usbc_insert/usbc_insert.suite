@@ -23,7 +23,7 @@
               pair on the free one, YAM i2rt bimanual.")
 
   ; Headline first; every document beside this file, and only those.
-  (:variants bulkhead port insert_easy insert_medium)
+  (:variants bulkhead port insert_easy insert_medium insert_easy_nocable insert_medium_nocable)
 
   ; The tier is each document's own (:provenance (:tier ...)), stated where its
   ; thresholds are -- `port` is a reproduction and `bulkhead` is original. What

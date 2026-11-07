@@ -13,11 +13,12 @@ class Output(TypedDict):
 
 
 CAP_SCORE_MIN = 0.04
-"""SAM-3 confidence floor for the cap in a wrist view. Deliberately the overhead
-gate, which a wrist view essentially never clears: admitted at 0.008 the cap
-was found at the *wrong end* (the flange) and the tip direction flipped, so the
-tip's direction stays the overhead measurement's and the wrist cloud refines
-only its sideways position -- see the lateral refinement below."""
+"""SAM-3 confidence floor for a whole-syringe post-lift observation.
+
+The functional end remains the overhead observation transformed through the
+known gripper motion. A partial close-view mask near the fingers cannot reliably
+recover the syringe's along-axis endpoint.
+"""
 
 HELD_EXTENT_M = 0.10
 """Farthest a point of the held barrel can be from the cloud's centre [m]: a
@@ -54,6 +55,9 @@ def _snap_to_jaw_axis(feature_in_hand: np.ndarray) -> np.ndarray:
 HELD_MAX_DISTANCE_M = 0.12
 """Farthest a cloud may sit from the TCP and still be the barrel in the fingers [m]:
 the held syringe is within a few centimetres, the tray's spare tens."""
+
+HELD_SCORE_MIN = 0.005
+"""Confidence only admits a candidate; 3-D shape and hand proximity verify it."""
 
 
 def _vec(value: dict[str, float]) -> np.ndarray:
@@ -123,22 +127,18 @@ def run(
     grasp_pose: dict[str, Any],
     target_cloud: dict[str, Any],
 ) -> Output:
-    """Use wrist RGB-D when visible, with the overhead feature as a measured fallback."""
+    """Verify the held syringe in RGB-D and preserve its measured grasp transform."""
     # Before the object moves, its measured feature relative to the commanded
     # grasp frame is known.  Preserve that rigid transform as the fallback.
     # Transforming the old world-frame tip with the *post-lift* hand pose made a
     # failed wrist detection look like a large, false in-hand displacement.
     fallback_in_hand = np.linalg.inv(_pose_matrix(grasp_pose)) @ _pose_matrix(fallback_insertion_pose)
-    feature_world = None
     attachment_points = np.asarray(target_cloud["points"], dtype=np.float64).reshape(-1, 3)
     attachment_in_grasp = (
         np.linalg.inv(_pose_matrix(grasp_pose))
         @ np.column_stack((attachment_points, np.ones(len(attachment_points)))).T
     ).T[:, :3]
-    wrist_attachment = False
-
-    wrist = None
-    held_points = None
+    verification_view = None
     # The held syringe is the one in the fingers, not the one SAM scores
     # highest: with a spare in the tray 90 mm away the two score within 0.01
     # of each other and the top mask is a coin flip. Back-project every
@@ -147,100 +147,55 @@ def run(
     hand_now = _vec(ctx.tool("robot.get_ee_pose")["pose"]["position"])
     best_distance = HELD_MAX_DISTANCE_M
     for candidate in observation.get("cameras", []):
-        if "eye_in_hand" not in candidate.get("name", ""):
+        if candidate.get("name") not in ("eye_in_hand", "agentview", "overhead"):
             continue
-        detected = ctx.tool("sam3.segment_text", image=candidate["rgb"], query="syringe", max_results=3)
+        detected = ctx.tool("sam3.segment_text", image=candidate["rgb"], query="medical syringe", max_results=0)
         for mask, score in zip(detected.get("masks") or [], detected.get("scores") or []):
-            if float(score) < 0.04:
+            if float(score) < HELD_SCORE_MIN:
                 continue
             cloud = ctx.tool(
                 "geometry.mask_to_world_points", mask=np.asarray(mask, dtype=np.uint8),
                 depth=candidate["depth"], intrinsics=candidate["intrinsics"], camera_pose=candidate["pose"],
             )["points"]
             points = np.asarray(cloud["points"], dtype=np.float64).reshape(-1, 3)
+            points = points[np.isfinite(points).all(axis=1)]
             if len(points) < 20:
+                continue
+            center = np.median(points, axis=0)
+            points = points[np.linalg.norm(points - center, axis=1) < HELD_EXTENT_M]
+            if len(points) < 20:
+                continue
+            centered = points - np.median(points, axis=0)
+            _, _, basis = np.linalg.svd(centered, full_matrices=False)
+            projection = centered @ basis.T
+            extent = np.percentile(projection, 95, axis=0) - np.percentile(projection, 5, axis=0)
+            if not (0.075 <= extent[0] <= 0.18 and extent[0] >= 3.0 * max(extent[1], 0.003)):
                 continue
             distance = float(np.linalg.norm(np.median(points, axis=0) - hand_now))
             if distance < best_distance:
-                wrist, held_points, best_distance = candidate, points, distance
-    if wrist is not None:
-        # The mask's cloud carries what the mask covered *behind* the barrel --
-        # tray floor seen past it -- and a convex hull over those far points is
-        # what the sphere fit would cover. Keep what lies within a barrel's
-        # length of the cloud's robust centre and nothing further.
-        held_center = np.median(held_points, axis=0)
-        points = held_points[np.linalg.norm(held_points - held_center, axis=1) <= HELD_EXTENT_M]
-        held_center = np.median(points, axis=0)
-        attachment_points = points
-        wrist_attachment = True
-        cap = ctx.tool(
-            "sam3.segment_text", image=wrist["rgb"], query="red needle cap of syringe", max_results=3,
-        )
-        # The cap that belongs to *this* barrel: nearest its cloud, same rule.
-        cap_points = np.empty((0, 3))
-        cap_distance = HELD_MAX_DISTANCE_M
-        for mask, score in zip(cap.get("masks") or [], cap.get("scores") or []):
-            # A cap is a few dozen wrist pixels; recorded true positives score
-            # ~0.01, and the nearest-to-barrel rule below does the choosing.
-            if float(score) < CAP_SCORE_MIN:
-                continue
-            cap_cloud = ctx.tool(
-                "geometry.mask_to_world_points", mask=np.asarray(mask, dtype=np.uint8),
-                depth=wrist["depth"], intrinsics=wrist["intrinsics"], camera_pose=wrist["pose"],
-            )["points"]
-            candidate_points = np.asarray(cap_cloud["points"], dtype=np.float64).reshape(-1, 3)
-            if len(candidate_points) < 6:
-                continue
-            distance = float(np.linalg.norm(np.median(candidate_points, axis=0) - held_center))
-            if distance < cap_distance:
-                cap_points, cap_distance = candidate_points, distance
-        if len(cap_points) >= 6:
-            centered = points - np.median(points, axis=0)
-            _, _, basis = np.linalg.svd(centered, full_matrices=False)
-            axis = basis[0]
-            cap_center = np.median(cap_points, axis=0)
-            if float(axis @ (cap_center - np.median(points, axis=0))) < 0.0:
-                axis = -axis
-            along = centered @ axis
-            tip = np.median(points[along >= np.percentile(along, 98)], axis=0)
-            reference = np.array([0.0, 0.0, 1.0])
-            if abs(float(reference @ axis)) > 0.9:
-                reference = np.array([1.0, 0.0, 0.0])
-            x_axis = np.cross(reference, axis); x_axis /= np.linalg.norm(x_axis)
-            y_axis = np.cross(axis, x_axis)
-            feature_world = np.eye(4)
-            feature_world[:3, :3] = np.column_stack((x_axis, y_axis, axis))
-            feature_world[:3, 3] = tip
+                verification_view, best_distance = candidate, distance
+    if verification_view is None:
+        raise RuntimeError("grasp verification failed: no syringe-shaped RGB-D cloud follows the lifted hand")
 
     ee = ctx.tool("robot.get_ee_pose")["pose"]
     world_hand = _pose_matrix(ee)
-    if not wrist_attachment:
-        # Move the pre-grasp cloud with the same rigid grasp transform.  Leaving
-        # it at its old table coordinates corrupts TCP-frame collision spheres
-        # after the verification lift.
-        attachment_points = (
-            world_hand
-            @ np.column_stack((attachment_in_grasp, np.ones(len(attachment_in_grasp)))).T
-        ).T[:, :3]
-    if feature_world is None and wrist_attachment and len(points) >= 20:
-        # No cap seen from the wrist, so the tip's *direction* stays the
-        # overhead measurement's -- but its sideways position need not: the
-        # barrel's line is right here in the wrist cloud. Slide the fallback
-        # tip onto that line, keeping its distance along it. The lateral
-        # error this removes is what put the lower end on the lid: the grasp
-        # never closes exactly where it was planned, and a few millimetres of
-        # barrel offset become the whole margin the aperture allows.
-        centered = points - held_center
-        _, _, basis = np.linalg.svd(centered, full_matrices=False)
-        line = basis[0] / np.linalg.norm(basis[0])
-        fallback_world = world_hand @ fallback_in_hand
-        tip = fallback_world[:3, 3]
-        tip_on_line = held_center + line * float((tip - held_center) @ line)
-        fallback_world[:3, 3] = tip_on_line
-        feature_world = fallback_world
-    insertion_in_hand = fallback_in_hand if feature_world is None else np.linalg.inv(world_hand) @ feature_world
+    # The nearest post-lift mask is useful as a presence check, but partial masks
+    # include tray or gripper pixels and produced 17--22 mm collision spheres
+    # in the wrong hand-frame direction. Move the complete pre-grasp cloud by
+    # the measured rigid grasp transform instead.
+    attachment_points = (
+        world_hand
+        @ np.column_stack((attachment_in_grasp, np.ones(len(attachment_in_grasp)))).T
+    ).T[:, :3]
+    # The rigid pre-grasp transform remains the functional feature. A prior
+    # wrist-cloud projection changed its along-shaft distance from 46--65 mm
+    # to 9--18 mm because a partial mask's median was treated as the shaft
+    # origin. The close-up insertion node may replace this transform when it
+    # observes a complete leading end; a partial hold-verification cloud may not.
+    insertion_in_hand = fallback_in_hand
     insertion_in_hand = _snap_to_jaw_axis(insertion_in_hand)
     return {
         "insertion_in_hand": _matrix_pose(insertion_in_hand),
         "attached_object": _attachment_spheres(attachment_points, world_hand),
     }
+

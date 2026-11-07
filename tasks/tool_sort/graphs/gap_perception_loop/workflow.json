@@ -18,9 +18,6 @@
         },
         "destination_bounds_json": {
           "$ref": "layout.destination_bounds_json"
-        },
-        "attempted_json": {
-          "$ref": "layout.attempted_json"
         }
       }
     },
@@ -450,7 +447,7 @@
               "$ref": "in.bin_floor_z"
             },
             "standoff": 0.12,
-            "grasp_z_offset": 0.02
+            "grasp_z_offset": 0.014
           }
         },
         "rotate_align": {
@@ -464,11 +461,14 @@
         },
         "descend": {
           "type": "tool",
-          "tool": "robot.go_to_pose",
+          "tool": "robot.move_cartesian_until_contact",
           "inputs": {
             "pose": {
               "$ref": "compute_grasp.grasp_pose"
-            }
+            },
+            "max_steps": 1000,
+            "stall_steps": 60,
+            "stall_epsilon": 0.0002
           }
         },
         "observe": {
@@ -588,11 +588,14 @@
         },
         "descend": {
           "type": "tool",
-          "tool": "robot.go_to_pose",
+          "tool": "robot.move_cartesian_until_contact",
           "inputs": {
             "pose": {
               "$ref": "compute_concave_grasp.grasp_pose"
-            }
+            },
+            "max_steps": 1000,
+            "stall_steps": 60,
+            "stall_epsilon": 0.0002
           }
         },
         "observe": {
@@ -646,7 +649,8 @@
             },
             "object_name": {
               "$ref": "in.target_name"
-            }
+            },
+            "floor_m": 0.005
           }
         },
         "close": {
@@ -748,6 +752,20 @@
         }
       },
       "nodes": {
+        "lift": {
+          "type": "script",
+          "script": "scripts/lift_grasped.py",
+          "inputs": {
+            "target_obb": {
+              "$ref": "in.target_obb"
+            }
+          }
+        },
+        "go_home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
+        },
         "transport_move": {
           "type": "script",
           "script": "scripts/transport_descend_linear.py",
@@ -784,6 +802,14 @@
       "edges": [
         [
           "START",
+          "lift"
+        ],
+        [
+          "lift",
+          "go_home"
+        ],
+        [
+          "go_home",
           "transport_move"
         ],
         [

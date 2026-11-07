@@ -1,0 +1,74 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; What every syringe_packing variant shares: the VAB-industrial `syringe`
+; export, the convention it was staged under, the scenery the loader used to
+; add in Python -- the instrument tray and the invisible floor it is stood
+; on, the room dressing -- and the bare look every reported number was taken
+; under. A variant's document says what differs: its objects, its budget, its
+; goal, where the tray and the syringes stand (poses/<variant>.json) and, for
+; a layout sweep, which shifted workcell its foreign-robot hosts stand in.
+; ---------------------------------------------------------------------------
+(define (suite syringe_packing)
+  (:language Post a single-use syringe through the aperture of a sealed sharps box (Franka Panda))
+  (:staging
+    ; `sharps_vab_industrial@v1`, not `vab_industrial@v1`: the same convention
+    ; in every field except the camera rig, which reads at 1280x960 where
+    ; tool_sort reads 640x480 -- the detection resolution the insertion
+    ; planner depends on and the reported numbers were measured at.
+    (:profile sharps_vab_industrial@v1)
+    (:export vab_syringe_packing/tray_pair)
+    ; No (:collider ...) clause, deliberately -- but not for the reason it once
+    ; had. Every syringe now collides on the CoACD decomposition of the mesh it
+    ; draws (records.py's SYRINGE_COLLISION_PATHS, reached through the `syringe`
+    ; record's own build), so there is nothing here for a blanket collider word
+    ; to say. The export's authored box, which this replaces, was 23.6 mm across
+    ; its whole 150 mm -- the mesh's own bound -- so the pads closed on a slab
+    ; and never reached the 11 mm barrel. The export's own free body is dropped
+    ; per document, (:export ... (:strip-free-bodies true)): it carries that box,
+    ; and a body cannot hold two opinions about its collider.
+    ; One arm, and the arena arrives with its robot welded in.
+    (:arms 1)
+    (:monolithic true)
+    ; The graphs were written and measured with the tool servoed at about
+    ; 0.12 m/s (0.4 of the OSC law's 0.31 m/s cruise); stated here so it does
+    ; not depend on the host. A servo turn used to span two or three simulator
+    ; steps with the setpoint law advanced once per turn, so the speed every
+    ; leg was tuned against was whatever the machine gave; the servo now
+    ; counts every step, and this keeps the paper's graphs at the speed the
+    ; paper measured them at.
+    (:servo-speed-mps 0.12)
+  )
+  ; Scenery every variant stands in. The tray is drawn as VAB-industrial's own
+  ; mesh and collides as an invisible floor slab and four walls (records.py),
+  ; because the mesh's convex hull would fill the pan solid; the dressing_* pieces are
+  ; visual-only room furniture so the record-time video reads as a room
+  ; (assets/scenery.py says why each is where it is).
+  (:fixtures
+    syringe_tray - instrument_tray
+    syringe_tray_floor - instrument_tray_floor
+    ; The four walls the drawn tray did not have. Until these the mesh was
+    ; decorative and the floor slab was the whole of the collision, so a syringe
+    ; pushed sideways left the pan straight through a wall a camera can see.
+    syringe_tray_wall_xpos - instrument_tray_wall_xpos
+    syringe_tray_wall_xneg - instrument_tray_wall_xneg
+    syringe_tray_wall_ypos - instrument_tray_wall_ypos
+    syringe_tray_wall_yneg - instrument_tray_wall_yneg
+    dressing_floor - sharps_dressing_floor
+    dressing_wall_west - sharps_dressing_wall_west
+    dressing_wall_north - sharps_dressing_wall_north
+    dressing_pedestal - sharps_dressing_pedestal
+  )
+  (:artifacts
+    ; A bare RenderSpec, deliberately: each backend's own defaults, which is
+    ; the light every reported number for this suite was measured under.
+    ; assets/look.py records what the house room's fill light did to the
+    ; wrist-view masks.
+    (:render "look:BARE")
+  )
+  (:provenance
+    (:source "AUTOLab-GaP-NVIDIA-Collaboration/VAB-industrial ToolSortPickPlace, robosuite 1.4.0,
+              MuJoCo 3.3.3, seed 0, `put_the_syringe_in_the_sharps_box` problem. Regions and goals
+              transcribed into the documents beside this file; see their headers for what
+              'reconstructed' means and why a round trip through them proves less than it looks.")
+  )
+)

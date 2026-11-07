@@ -12,6 +12,7 @@ task evaluator establishes whether the free endpoint and peg seats succeeded.
 """
 
 import json
+import math
 import os
 import sys
 from pathlib import Path
@@ -37,8 +38,20 @@ cleanly and there is no reason to sit near the noise:
 Both terminals come back in the nineties and the third candidate is a quarter of
 that, so half is a floor with nothing near it."""
 
-BLOCK_MIN_PX = 3400
-"""Smallest mask, in pixels, that can be a terminal.
+BLOCK_MIN_PX = 2667
+"""Smallest mask, in pixels, that can be a terminal: 1,500 px on the benchmark's view.
+
+**Lowered from 3,400 (1,912 px at 720 rows) for cable_routing/L2.** The port's
+mask at plug time on ``port_medium`` reads 1,651-2,055 px on the 720-row view
+(three full cells, palette); 2 of 90 episodes fell under 1,912 and never carried
+the end. The spools reach 1,786 px there, so no floor separates the two any more,
+and none has to: :func:`run` takes the block furthest from the anchored end,
+which is the port whenever the port is in the list. 2,667 at the reference focal
+length is 1,500 px at 720 rows, the value of the dev repo's own fix for this
+(AUTOLab-GaP-NVIDIA-Collaboration ``lgulich/cable-port-floor``, 138b438). See
+``docs/validation/cable_routing_l2.md``.
+
+What follows is the floor's original derivation, at 3,400.
 
 The prompt is not perfectly exclusive -- ``"orange block"`` also returns the
 spools further down its ranking -- and shape words are a weak separator between
@@ -63,7 +76,35 @@ that trivially right rather than wrong. The disambiguation stays because a board
 seen from another angle may still return both.
 
 3,400 sits between 2,779 and 4,766 with 22 per cent of margin below and 40 above,
-which is a floor with something on either side of it."""
+which is a floor with something on either side of it.
+
+**These are pixels of ONE camera**: the suite's ``cable`` view, 1280x960 at
+``fov_y`` 50 degrees (fx = fy = 1029.4 px). Read through :func:`block_min_px`,
+which scales it to the frame actually being read."""
+
+BLOCK_REF_FOCAL_PX = 0.5 * 960 / math.tan(math.radians(50.0 / 2))
+"""Focal length [px] of the camera :data:`BLOCK_MIN_PX` was measured on (1029.4).
+
+**The floor is a solid angle, not a pixel count.** A mask's pixel count scales
+with ``fx * fy`` at a fixed pose, and the benchmark's ``yam_station_cable@v1``
+renders the same ``cable`` pose and the same 50-degree ``fov_y`` at 1280x720,
+so fx = fy = 772.0 and every mask is (720/960)^2 = 0.5625 of what the floor
+was set on. Measured on port_easy, same scenes rendered both ways (palette):
+
+    1280x960   port 3,744-3,965 px   spools <= 2,957   floor 3,400
+    1280x720   port 2,098-2,218 px   spools <= 1,703   floor 3,400 -- the port too
+
+so the terminal was never detected and the endpoint insertion never ran. The
+old delivery's own run of this cell on the 960-row view found the port on
+30/30 scenes (3,416-4,523 px). Scaled by ``fx * fy``, the same floor is
+1,912 px at 720 rows: between the populations, as it was set to be. (Since
+lowered to 2,667, i.e. 1,500 px at 720 rows; see :data:`BLOCK_MIN_PX`.)"""
+
+
+def block_min_px(K) -> float:
+    """:data:`BLOCK_MIN_PX`, as pixels of the camera whose intrinsics are ``K``."""
+    K = np.asarray(K, dtype=np.float64).reshape(3, 3)
+    return BLOCK_MIN_PX * float(K[0, 0]) * float(K[1, 1]) / BLOCK_REF_FOCAL_PX**2
 
 PORT_INSET = 0.004
 """How far short of the port's centre the carry aims [m].
@@ -108,6 +149,74 @@ CARRY_Z = 0.070
 
 #: Seconds of settle after the jaws open, so the rod is measured at rest.
 SETTLE = 30
+
+PORT_KEEPOUT = 0.040
+"""How close an OPEN fingertip may come to the perceived port's centre [m].
+
+The terminal grasp takes the tail 15 mm from its tip, jaws across the cable and
+fully open (each fingertip ``grip_open_m`` = 47.5 mm out). After the weave the
+tip usually lies 40-90 mm from the port, so a fingertip often comes down on the
+fitting and the jaws stall there, measured at 70 mm apart where on air they
+close fully in the same 48 steps. The lift then carries nothing. Measured over
+the 30 cable_routing/L1 episodes (cell protocol, ``fast``), the nearer open
+fingertip was:
+
+    end did not move (stalled)       7.0, 14.1, 27.2, 29.6, 31.9 mm   from the port centre
+    end carried or delivered         33.8 mm and up, two at 25-26
+
+and over the same cell on the 960-row view the stalls reached 33.4 mm.
+
+The fitting is a 32 mm square (half-diagonal 22.6 mm) with 12.5 mm walls.
+40 mm leaves a fingertip's width outside it and clears every stall seen. The grasp
+point is kept, and the jaws open only as far as keeps both
+fingertips out of the keep-out (:func:`clear_of_port`, down to
+:data:`JAW_MIN_REACH`)."""
+
+
+def jaws_clear_port(grasp_xy, tangent, port_xy, reach) -> bool:
+    """Whether both open fingertips of a grasp across ``tangent`` stay :data:`PORT_KEEPOUT` off the port."""
+    if tangent is None or port_xy is None:
+        return True
+    t = np.asarray(tangent, dtype=float).reshape(-1)[:2]
+    if not np.all(np.isfinite(t)) or float(np.linalg.norm(t)) < 1e-9:
+        return True
+    t = t / np.linalg.norm(t)
+    normal = np.array([-t[1], t[0]])
+    g, p = np.asarray(grasp_xy, dtype=float)[:2], np.asarray(port_xy, dtype=float)[:2]
+    return all(float(np.linalg.norm(g + s * float(reach) * normal - p)) >= PORT_KEEPOUT for s in (1.0, -1.0))
+
+
+JAW_MIN_REACH = 0.015
+"""Narrowest pre-grasp opening per finger the terminal grasp will use [m].
+
+30 mm between the fingertips around a 7 mm cable: 11 mm of lateral slack each side,
+against the 10 mm grasp residual the plan is accepted at and the few millimetres the
+visible-tail fit is off by."""
+
+
+def jaw_reach_clearing_port(grasp_xy, tangent, port_xy, reach_max):
+    """The widest opening per finger, at most ``reach_max``, whose fingertips clear the port; None if none does."""
+    r = float(reach_max)
+    while r >= JAW_MIN_REACH - 1e-9:
+        if jaws_clear_port(grasp_xy, tangent, port_xy, r):
+            return r
+        r -= 0.001
+    return None
+
+
+def clear_of_port(candidates, port_xy, reach):
+    """``candidates`` in order, each with the opening ``_reach`` that clears the port.
+
+    The designed order is kept (the tail 15 mm from its tip first). A candidate only
+    moves to the back when no opening down to :data:`JAW_MIN_REACH` clears the port.
+    Returns the candidates, how many moved back, and how many open narrower than full.
+    """
+    ok, blocked = [], []
+    for c in candidates:
+        r = jaw_reach_clearing_port(c["xy"], c.get("tangent"), port_xy, reach)
+        (ok if r is not None else blocked).append(dict(c, _reach=float(reach if r is None else r)))
+    narrowed = sum(1 for c in ok if c["_reach"] < float(reach) - 1e-9)
+    return ok + blocked, len(blocked), narrowed
 
 
 class Output(TypedDict):
@@ -188,15 +297,17 @@ def _blocks(ctx: NodeContext, camera: str) -> list[list[float]]:
 
     found = ctx.tool("sam3.segment_text", image=rgb, query=BLOCK_QUERY, max_results=0)
     _sc = [round(float(v), 2) for v in (found.get("scores") or [])]
-    _ar = [int(np.asarray(m).sum()) for m in (found.get("masks") or [])[:6]]
+    _ar = [int((np.asarray(m) > 0).sum()) for m in (found.get("masks") or [])[:6]]
+    min_px = block_min_px(K)
     print(f"[plug] sam3 {BLOCK_QUERY!r}: {len(_sc)} masks, top scores {_sc[:6]}, "
-          f"top areas {_ar}  (need score>={BLOCK_SCORE}, area>={BLOCK_MIN_PX})", flush=True)
+          f"top areas {_ar}  (need score>={BLOCK_SCORE}, area>={min_px:.0f} = "
+          f"{BLOCK_MIN_PX} at fx {BLOCK_REF_FOCAL_PX:.1f}, here fx {K[0, 0]:.1f})", flush=True)
     out: list[list[float]] = []
     for mask, score in zip(found.get("masks") or [], found.get("scores") or []):
         if float(score) < BLOCK_SCORE:
             continue
         v, u = np.nonzero(np.asarray(mask) > 0)
-        if len(u) < BLOCK_MIN_PX:
+        if len(u) < min_px:
             continue
         d = depth[v, u]
         ok = np.isfinite(d) & (d > 1e-4)
@@ -210,7 +321,7 @@ def _blocks(ctx: NodeContext, camera: str) -> list[list[float]]:
     return out
 
 
-def _regrasp_free_end(ctx, support, free, here, curve, port_xy):
+def _regrasp_free_end(ctx, support, free, here, curve, port_xy, reach=0.0475):
     """Clear the hand and establish a fresh, directly observed terminal grasp."""
     diagnostic = {"regrasp_attempted": False,
                   "tracked_end_to_hand_m": float(np.linalg.norm(np.asarray(free)[:2]-here[:2]))}
@@ -229,7 +340,7 @@ def _regrasp_free_end(ctx, support, free, here, curve, port_xy):
         pose = dict(ee.get("pose", ee))
         pose["position"] = dict(x=float(here[0]), y=float(here[1]), z=float(here[2]+.055))
         ctx.tool("cable.set_gripper", width=-1.0, arm=arm)
-        ctx.tool("robot.go_to_pose", arm_id=arm_id, pose=pose, max_steps=160)
+        ctx.tool("robot.go_to_pose", arm_id=arm_id, pose=pose, max_steps=400)  # 6.7 s at 60 Hz control steps
         fresh = observe_terminal_tail(ctx, port_xy)
         diagnostic["tail_after_clear"] = fresh
         candidates = [dict(c, _source='visible tail')
@@ -258,6 +369,9 @@ def _regrasp_free_end(ctx, support, free, here, curve, port_xy):
                                '_source': 'RTX centreline endpoint'})
         if not candidates:
             raise ValueError("the inboard grasp is not visible after clearing the hand")
+        candidates, blocked, narrowed = clear_of_port(candidates, port_xy, reach)
+        diagnostic["candidates_jaws_on_port"] = blocked
+        diagnostic["candidates_opened_narrower"] = narrowed
         retry = choice = None
         source = ''
         for candidate in candidates:
@@ -281,6 +395,8 @@ def _regrasp_free_end(ctx, support, free, here, curve, port_xy):
                 break
         if retry is None:
             raise ValueError("the visible tail grasp is not reachable within 10 mm")
+        jaw = float(choice.get('_reach', reach))
+        diagnostic['terminal_jaw_open_m'] = jaw
         choice = {k: v for k, v in choice.items() if not str(k).startswith('_')}
         diagnostic['terminal_initial_grasp'] = choice
         arm = str(retry.get('arm_name', arm))
@@ -294,6 +410,9 @@ def _regrasp_free_end(ctx, support, free, here, curve, port_xy):
             if source == 'visible tail'
             else [float(v) for v in np.asarray(free).reshape(-1)[:3]]
         )
+        # Open only as far as keeps both fingertips off the port (PORT_KEEPOUT),
+        # on the hand that is about to take the tail.
+        ctx.tool("cable.set_gripper", width=jaw, arm=arm)
         for stage in retry['stages']:
             ctx.tool("robot.execute_trajectory", trajectory=stage["trajectory"],
                      arm_id=arm_id, max_steps_per_waypoint=15)
@@ -315,7 +434,7 @@ def terminal_release_height(surface, port_top_z, grasp_tcp_z, cable_axis_z):
     return max(float(surface), float(port_top_z) + offset + 0.002)
 
 
-def _correct_terminal(ctx, support, curve, port, surface, clear_y):
+def _correct_terminal(ctx, support, curve, port, surface, clear_y, reach=0.0475):
     """One measured correction after release, with an endpoint-relative target."""
     result={"terminal_correction_attempted": False}
     seen=observe_terminal_tail(ctx,port[:2]);result['terminal_tail_after_release']=seen
@@ -327,8 +446,9 @@ def _correct_terminal(ctx, support, curve, port, surface, clear_y):
         result['terminal_correction_reason']='visible endpoint is within 35 mm of the port centre'
         return result
     arm=str(support['arm_name']);arm_id=int(support['arm_id']);retry=None;choice=None
+    grasps,result['terminal_correction_jaws_on_port'],result['terminal_correction_opened_narrower']=clear_of_port(seen['grasps'],port[:2],reach)
     # A tip beyond the arm envelope may have a reachable point farther inboard.
-    for candidate in seen['grasps']:
+    for candidate in grasps:
         try:
             plan=ctx.tool('cable.plan_support',rod=curve.tolist(),grasp_xy=candidate['xy'],grasp_axis_z=candidate['axis_z'],grasp_tangent=candidate.get('tangent'))
         except Exception as exc:
@@ -339,11 +459,13 @@ def _correct_terminal(ctx, support, curve, port, surface, clear_y):
     if retry is None:
         result['terminal_correction_reason']='no visible inboard grasp is reachable within 8 mm'
         return result
+    jaw=float(choice.get('_reach',reach));result['terminal_correction_jaw_open_m']=jaw
+    choice={k:v for k,v in choice.items() if not str(k).startswith('_')}
     result['terminal_correction_attempted']=True;result['terminal_correction_grasp']=choice
     target=np.asarray(port[:2])-(np.asarray(seen['endpoint'])[:2]-np.asarray(choice['xy']))
     result['terminal_correction_hand_target_xy']=target.tolist()
     try:
-        ctx.tool('cable.set_gripper',width=-1.0,arm=arm)
+        ctx.tool('cable.set_gripper',width=jaw,arm=arm)
         for stage in retry['stages']:
             ctx.tool('robot.execute_trajectory',trajectory=stage['trajectory'],arm_id=arm_id,max_steps_per_waypoint=15)
         ctx.tool('cable.set_gripper',width=float(retry.get('close',.003)),arm=arm)
@@ -352,7 +474,7 @@ def _correct_terminal(ctx, support, curve, port, surface, clear_y):
         rotation=dict(pose['rotation']);position=pose['position']
         def move(x,y,z):
             goal=np.array([x,y,z],dtype=float)
-            ctx.tool('robot.go_to_pose',arm_id=arm_id,max_steps=240,pose={
+            ctx.tool('robot.go_to_pose',arm_id=arm_id,max_steps=600,pose={  # 10 s at 60 Hz control steps
                 'position':dict(zip(('x','y','z'),map(float,goal))),'rotation':rotation})
             observed=ctx.tool('robot.get_ee_pose',arm_id=arm_id);at=observed.get('pose',observed)['position']
             error=float(np.linalg.norm(goal-np.array([at[k] for k in ('x','y','z')])))
@@ -374,7 +496,7 @@ def _correct_terminal(ctx, support, curve, port, surface, clear_y):
         ctx.tool('cable.set_gripper',width=.0475,arm=arm)
         ctx.tool('cable.wait_steps',steps=30)
         try:
-            ctx.tool('robot.go_to_pose',arm_id=arm_id,max_steps=200,pose={
+            ctx.tool('robot.go_to_pose',arm_id=arm_id,max_steps=500,pose={  # 8.3 s at 60 Hz control steps
                 'position':dict(x=float(port[0]-.10),y=float(clear_y),z=float(surface+.12)),
                 'rotation':dict(w=0.,x=1.,y=0.,z=0.)})
         except Exception as exc:
@@ -435,7 +557,7 @@ def run(ctx: NodeContext, scene: str = "", arm_id: int = 0,
     ee = ctx.tool("robot.get_ee_pose", arm_id=int(arm_id))
     p = (ee.get("pose", ee)).get("position", {})
     here = np.array([float(p.get(k, 0.0)) for k in ("x", "y", "z")])
-    end_grasp = _regrasp_free_end(ctx, support, free, here, curve, port[:2])
+    end_grasp = _regrasp_free_end(ctx, support, free, here, curve, port[:2], reach=grip_open_m)
     if end_grasp.get("regrasp_failed"):
         return {"exit": "unplugged", "detail": end_grasp["regrasp_reason"],
                 "port": json.dumps(port), **end_grasp}
@@ -501,9 +623,17 @@ def run(ctx: NodeContext, scene: str = "", arm_id: int = 0,
         # leaving the jaws clear of its hood.
         endpoint = np.asarray(observed_tail["endpoint"], dtype=float)[:2]
         inset[:2] = endpoint_relative_target(inset[:2], endpoint, here[:2])
-    if len(stations) == 4:
-        axis_z = float(np.median(curve[:, 2]))
-        inset[2] = terminal_release_height(surface, float(port[2]), surface, axis_z)
+    # INTO THE CHANNEL ON BOTH TIERS. VABAR v1.0 let Medium go with the cable axis
+    # 2 mm above the port's rim and skipped the correction below; on the staged
+    # cable_routing/L2 (840 mm rod, ~290 mm of tail behind the end) the end then
+    # sprang out of the port box on every episode looked at, within 80 steps of
+    # release on the two recorded -- the rod reached the box 30 times in 30 and the
+    # end stayed 3-4.
+    # Those two Medium-only branches arrived with the dev repo's 7e837ed, on the
+    # 720 mm rod and a camera that found the port, and never ran here before the
+    # L1 floor fix. Easy's sequence -- release at the grasp height, between the
+    # walls, then one measured correction -- keeps the end on L2 too
+    # (docs/validation/cable_routing_l2.md).
 
     # ROUTE AROUND THE SEATS, NOT ACROSS THEM.
     #
@@ -553,7 +683,7 @@ def run(ctx: NodeContext, scene: str = "", arm_id: int = 0,
         for drop in (0.0, 0.020, 0.040):
             z = float(target[2]) - drop
             try:
-                ctx.tool("robot.go_to_pose", arm_id=int(arm_id), max_steps=160, pose={
+                ctx.tool("robot.go_to_pose", arm_id=int(arm_id), max_steps=400, pose={  # 6.7 s at 60 Hz control steps
                     "position": {"x": float(target[0]), "y": float(target[1]), "z": z},
                       "rotation": carry_rotation})
                 if drop:
@@ -596,8 +726,7 @@ def run(ctx: NodeContext, scene: str = "", arm_id: int = 0,
     # Observe the released tip after the retreat disturbance has settled. An
     # airborne tip can be outside the bench-height detector's accepted band.
     ctx.tool("cable.wait_steps", steps=120)
-    correction = ({'terminal_correction_attempted': False} if len(stations) == 4 else
-                  _correct_terminal(ctx, support, curve, port, surface, clear_y))
+    correction = _correct_terminal(ctx, support, curve, port, surface, clear_y, reach=grip_open_m)
 
     # WHAT THIS LINE IS A CLAIM ABOUT. The hand, and only the hand.
     #

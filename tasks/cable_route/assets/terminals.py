@@ -48,7 +48,7 @@ from robosimstudio_materials.rod import fixture_shape_cfg
 
 from robosimstudio.core.math import quat_to_mat
 from robosimstudio.core.render.finish import finish_for
-from robosimstudio.domains.static.entity import EntityStatic, episode_xform
+from robosimstudio.domains.static.entity import EntityStatic, PlacedAtBuild
 
 from .fixtures import CLEAT_POST_RADIUS
 
@@ -118,7 +118,7 @@ grey belongs.
 """
 
 
-class EntityCableTerminal(EntityStatic):
+class EntityCableTerminal(PlacedAtBuild, EntityStatic):
     """The anchor bracket: two rails, a hood over the end, and a saddle clamp.
 
     The rod is welded to the world here (``RodSpec.anchors``), and this is what
@@ -130,29 +130,47 @@ class EntityCableTerminal(EntityStatic):
     that axis and the spec's yaw aims it, so one class serves an anchor at either
     end of a bench and a board an episode has turned. Nothing here reads a world
     coordinate.
+
+    **One body per world in a replicated build**, like the pegs
+    (:class:`~robosimstudio.domains.static.posts.EntityPost`). Every
+    ``port_easy`` episode draws its own anchor and port pose, and a fitting
+    drawn world-hung (``body=-1``) is the build episode's in every world of a
+    fleet -- so the wave planner keyed every episode apart and a wave held one
+    instance. Claiming the body lets a wave hold many, each world's fittings
+    placed at build (:class:`~robosimstudio.domains.static.entity.PlacedAtBuild`:
+    the rod's island mirrors them as proxies when it is built) and again at
+    reset. A single-world build is unchanged: it never claims the body, and
+    every shape is still world-hung at the episode's pose.
     """
 
+    claims_body = True
+    """``build`` below claims its per-world body before drawing; see :class:`~robosimstudio.domains.static.posts.EntityPost`."""
+
     def build(self, builder: newton.ModelBuilder, episode) -> None:
-        # The base class resolves the episode's pose at the top of its own
-        # ``build``; this one overrides ``build`` and must do it too, or a
-        # sampler that places the terminals moves their scored regions and
-        # leaves the fittings behind. The same trap ``EntityPeg`` records.
-        self.xform_now = episode_xform(self.spec, episode)
+        # The episode's pose (the base class resolves it at the top of its own
+        # ``build``; skipping it moves the scored regions and leaves the
+        # fittings behind -- the trap ``EntityPeg`` records), and in a
+        # replicated build a body to carry it per world.
+        self._claim_body(builder, episode)
         del episode
         self._parts: dict[int, tuple[float, float, float]] = {}
-        placed = self.placed(self.xform_now)
-        self._draw(
-            builder,
-            np.asarray(placed[:3], dtype=np.float64),
-            np.asarray(placed[3:7], dtype=np.float64),
-        )
+        if self.on_body:
+            # The assembly is drawn in the body's own frame; the body stands
+            # where the episode put the fitting.
+            origin = np.zeros(3, dtype=np.float64)
+            quat = np.array([0.0, 0.0, 0.0, 1.0], dtype=np.float64)
+        else:
+            placed = self.placed(self.xform_now)
+            origin = np.asarray(placed[:3], dtype=np.float64)
+            quat = np.asarray(placed[3:7], dtype=np.float64)
+        self._draw(builder, origin, quat)
 
     # ------------------------------------------------------------------ parts
     def _box(self, builder, origin, quat, *, centre, half, collides=True, shade=None, tag=""):
         """One box of the assembly, stated in the terminal's own frame."""
         world = origin + quat_to_mat(quat) @ np.asarray(centre, dtype=np.float64)
         shape = builder.add_shape_box(
-            body=-1,
+            body=self.body,
             xform=wp.transform(wp.vec3(*[float(v) for v in world]), wp.quat(*[float(v) for v in quat])),
             hx=float(half[0]),
             hy=float(half[1]),
@@ -195,7 +213,7 @@ class EntityCableTerminal(EntityStatic):
             centre = (-0.5 * half_x, sign * (TERMINAL_CHANNEL + half_y), 2.0 * half_z + TERMINAL_SCREW_H)
             world = origin + rot @ np.asarray(centre, dtype=np.float64)
             shape = builder.add_shape_cylinder(
-                body=-1,
+                body=self.body,
                 xform=wp.transform(wp.vec3(*[float(v) for v in world]), wp.quat(*[float(v) for v in quat])),
                 radius=TERMINAL_SCREW_R,
                 half_height=TERMINAL_SCREW_H,
@@ -368,7 +386,7 @@ class EntityCableCleat(EntityCableTerminal):
         # the asset's ``shaft`` feature is declared about.
         post_c = np.asarray((0.0, 0.0, 2.0 * CLEAT_FOOT[2] + 0.5 * CLEAT_POST_H), dtype=np.float64)
         shape = builder.add_shape_cylinder(
-            body=-1,
+            body=self.body,
             xform=wp.transform(
                 wp.vec3(*[float(v) for v in origin + rot @ post_c]),
                 wp.quat(*[float(v) for v in quat]),
@@ -393,7 +411,7 @@ class EntityCableCleat(EntityCableTerminal):
         for sign in (-1.0, +1.0):
             centre = np.asarray((0.0, sign * CLEAT_BOLT_Y, 2.0 * CLEAT_FOOT[2] + CLEAT_BOLT_H), dtype=np.float64)
             bolt = builder.add_shape_cylinder(
-                body=-1,
+                body=self.body,
                 xform=wp.transform(
                     wp.vec3(*[float(v) for v in origin + rot @ centre]),
                     wp.quat(*[float(v) for v in quat]),

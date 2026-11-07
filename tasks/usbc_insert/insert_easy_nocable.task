@@ -1,0 +1,85 @@
+; Easy, cable-free: insert_easy without the plug cable (a measured speed variant).
+; Same sampler (so the same episode ids are the same layouts), goal, reward,
+; cameras, graphs and budget as insert_easy; only the cable and the physics
+; arrangement differ. Measured against insert_easy in
+; docs/validation/fast_usbc_insert.md, which is the only place this document's
+; claim to "the same task, faster" is made -- and where it is qualified.
+
+(define (problem INSERT_THE_USB_C_PLUG_EASY_NOCABLE)
+
+  (:suite usbc_insert)
+
+  (:language insert the USB-C plug into the receptacle)
+
+  (:staging
+    (:scene bench_075)
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left))
+    (:control-mode ee_pose_abs)
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    ; insert_easy's usbc_bulkhead_960hz@v1 with CUDA graph capture back on and
+    ; nothing else changed. Capture is legal here: the welded port is a plain
+    ; mesh, so the scene has no hydroelastic PAIR and Newton never builds the
+    ; narrow phase whose host read-back forced eager. See staging.py.
+    (:physics usbc_fast@v1)
+    (:cameras yam_station_usbc@v1)
+    (:episodes (:count 30) (:seed 0) (:sampler staging:USBC_EASY))
+    (:max-steps 9000)
+    (:arms 2)
+    (:terminate-on-success false)
+  )
+
+  ; insert_easy's objects minus `cables - usbc_plug_cable`. The goal never
+  ; reads the cable; what it costs is its 16 links of contacts on the bench,
+  ; the per-substep constraint rows they bring, and its pull on a released plug.
+  (:objects
+    plug   - usb_c_plug
+    rig    - usbc_contact_rig
+  )
+
+  (:fixtures
+    bench - usbc_bench
+    port  - usb_c_port
+  )
+
+  (:init)
+
+  (:goal
+    (And
+      (>= (insertion plug port.bore) 0.0104)
+      (<= (insertion:lat plug port.bore) 0.0087931792)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+      (> (tcp-distance plug) 0.04)
+    )
+  )
+
+  (:reward
+    (progress (insertion plug port.bore)
+              (:gate 0.0104)
+              (:gated-by (<= (insertion:lat plug port.bore) 0.0087931792))))
+
+  (:observe
+    (gripped plug.body)
+    (insertion:mate_gap plug port.bore)
+    (tcp-distance plug)
+  )
+
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "usbc_insert/insert_easy, minus the plug cable, on the fast arrangement")
+    (:note "A speed variant, not a benchmark cell of its own, and not the one the
+            fast config picked (that is insert_easy on usbc_fast@v1). It matched
+            insert_easy on every instance run, gt and cell protocol, but its plug
+            missed the gt grasp on ep 10084 in 2/3 runs where the cabled plug never
+            did, and its L2 sibling is measurably less steady. Episode ids are
+            insert_easy's (same sampler, same seed). Measurements in
+            docs/validation/fast_usbc_insert.md.")
+  )
+)

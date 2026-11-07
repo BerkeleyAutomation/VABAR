@@ -1,0 +1,3 @@
+python -m vabar run --task tool_hanging/wrenches_level1 --episodes 1 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --bus-timeout 180 --max-steps 8500
+python -m vabar run --task tool_hanging/scissors_level1 --episodes 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --bus-timeout 180 --max-steps 8500
+python -m vabar run --task tool_hanging/pliers_level1 --episodes 3 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --bus-timeout 180 --max-steps 8500

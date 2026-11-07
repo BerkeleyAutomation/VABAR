@@ -1,0 +1,5 @@
+# The registered winners, by name, through the same harness: proves the staging.py
+# registrations are the measured candidates (fast_tune.json records what was built).
+tool_hanging th_fast routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+syringe_packing sp_winner routine_ts_syringe :: --task tool_sort/syringe --solve routine
+tool_sort ts_winner routine_l1_1 :: --task tool_sort/level1_1 --solve routine

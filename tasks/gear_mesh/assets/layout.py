@@ -494,7 +494,8 @@ def start_poses_for(variant: str) -> dict[str, Any]:
     A tier's file is :func:`start_poses` of its stations, unchanged. A drawn
     variant's carries one more entry, ``board``, stating the plate centre and
     the chain's turn as the ``pose``/``quat`` pair ``SpecGearBoard`` reads, so
-    the loader's overlay moves the board the way it moves a gear.
+    the loader's overlay moves the board the way it moves a gear -- and, for a
+    row whose chain bends, the ``bends`` the spec's ``chain`` walks.
     """
     if variant in TIERS:
         return start_poses(TIERS[variant], SEEDED.get(variant, ()))
@@ -507,6 +508,18 @@ def start_poses_for(variant: str) -> dict[str, Any]:
         "pose": [float(row.board_xy[0]), float(row.board_xy[1]), 0.0],
         "quat": [float(v) for v in yaw_quat(row.board_yaw)],
     }
+    if row.bends:
+        # The chain's turns ride in the same entry as its placement: the loader's
+        # overlay hands any field the built spec has straight to it, so a bent
+        # board is built bent rather than described bent and built straight.
+        # Without this line every medium (L2) document's header, its variants.json
+        # row and its plate said the chain turns at each station while the board
+        # was built straight: the board record is bound to the station tuple
+        # alone and the overlay copied only the plate's pose and quaternion.
+        # Ported from the dev repo (74e0cfd8, 2026-09-10, after the snapshot this
+        # suite was exported from); the published v1.0 L2 numbers were measured
+        # on bent boards.
+        objects["board"]["bends"] = [float(b) for b in row.bends]
     return {"objects": objects}
 
 

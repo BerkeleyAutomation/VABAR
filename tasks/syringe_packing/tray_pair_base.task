@@ -1,0 +1,101 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; A SUPERSET BASE. Not a problem anybody measures: a model for a wave to build.
+;
+; WHAT IT IS FOR. A wave is W worlds of ONE model, so the 32 documents of this
+; tier -- which differ in how many syringes are racked, where they start and
+; which slice of the sharps box counts as in -- were 32 models and 32
+; processes. Every one of their syringe names is a subset of the 2 below, and
+; nothing else they differ in is built into a model: a start layout is written
+; per world at reset, a region is geometry resolved per document, and a step
+; budget is per world. So they can all run as worlds of this, each activating
+; its own syringes and floating the rest six metres up.
+;
+; WHY A NEW DOCUMENT rather than pointing the tier at its richest instance. The
+; union needs bigger constraint buffers -- an eight-syringe model demands njmax
+; ~3209 against the 1024 the shipped arrangement gives, and MuJoCo-Warp answers
+; the overflow by printing and dropping rows -- and putting those buffers on a
+; shipped document would change that document's own serial numbers. This states
+; (:physics vab_sharps_union@v1); the 32 instances keep the profile's, so their
+; serial column is exactly what it was and a wave's numbers are a column of
+; their own.
+;
+; THE GOAL IS THE UNION'S, and it is masked per episode: an instance running
+; four syringes is scored on four clauses, not four of 2
+; (robosimstudio_bench.goals.goal.mask_condition). The start poses are one
+; instance's and are overwritten per world at reset, so which one is arbitrary
+; -- it is the pose a parked body is measured from and nothing else.
+; ---------------------------------------------------------------------------
+
+(define (problem TRAY_PAIR_BASE)
+  (:domain robosuite)
+
+  (:language pick up each syringe from the instrument tray, one at a time, and
+             drop it through the hole in the top of the yellow sharps disposal
+             box, until both are in the box)
+
+  (:staging
+    (:profile sharps_vab_industrial@v1)
+    (:export vab_tool_sort/syringe (:strip-free-bodies true))
+    ; The union's buffers. See the header.
+    (:physics vab_sharps_union@v1)
+    (:start-poses poses/tray_pair_both_t00.json)
+    (:max-steps 22800)
+  )
+
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    syringe_box - sharps_box
+  )
+
+  (:objects
+    syringe_0 syringe_pack_0 - syringe
+  )
+
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        (:ranges ((-0.037638 -0.111298 0.051362 0.054702)))
+    )
+  )
+
+  (:init)
+
+  (:goal
+    (and
+      (In syringe_0 syringe_box_region)
+      (In syringe_pack_0 syringe_box_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSharpsDisposal")
+    (:tools   "tools:register_syringe_packing_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus over the AUTOLab-GaP-NVIDIA-Collaboration/
+              VAB-industrial ToolSortPickPlace `syringe` export (robosuite 1.4.0,
+              MuJoCo 3.3.3, seed 0). The goal and regions are
+              put_the_syringe_in_the_sharps_box's; the tray and the spare restate
+              the scenery of VAB-industrial's put_ten_syringes_in_the_sharps_box
+              without its all-ten goal.")
+    (:note "Formerly the loader-only variant `ten_syringes`, which aliased the
+            single-syringe document and built the tray and the spare in Python.
+            The instrument tray mesh is VAB-industrial's own (add-all-syringes-
+            sharps-box branch, assets/objects/_utils/make_tray.py), vendored
+            under assets/instrument_tray.")
+  )
+)

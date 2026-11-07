@@ -20,7 +20,6 @@ import logging
 import os
 import re
 import sys
-from pathlib import Path
 from typing import Any, TypedDict
 
 import numpy as np
@@ -307,6 +306,7 @@ def _filter_spent(
     attempts: list[dict[str, Any]] | None,
     crop_x: float,
     crop_y: float,
+    max_attempts: int = 3,
 ) -> list[dict[str, Any]]:
     if not attempts:
         return detections
@@ -316,7 +316,8 @@ def _filter_spent(
         b = _box(det)
         rx = (float(b["x2"]) - float(b["x1"])) / 2.0
         ry = (float(b["y2"]) - float(b["y1"])) / 2.0
-        if _matching_attempt(attempts, cx + crop_x, cy + crop_y, rx, ry) is None:
+        entry = _matching_attempt(attempts, cx + crop_x, cy + crop_y, rx, ry)
+        if entry is None or int(entry.get("attempts", 0)) < max_attempts:
             kept.append(det)
     return kept
 
@@ -490,17 +491,15 @@ def _assign_label(
         "vlm.query",
         image=img,
         prompt=(
-            f"What is the object shown? Which of these destination labels matches it best: "
-            f"{label_str}? "
-            "Reply exactly: LABEL: <label>."
+            f"What is the object shown? Pick the closest matching label from this list: "
+            f"{label_str}. "
+            "You must pick one — reply exactly: LABEL: <label>."
         ),
     )["text"]
     m = re.search(r"LABEL\s*:\s*(.+)", str(resp), re.I)
     if not m:
         return None
     raw = m.group(1).strip().rstrip(".")
-    if raw.lower() == "none":
-        return None
     key = _normalize(raw)
     if key in normalized and key not in excluded:
         return key, raw
@@ -533,7 +532,7 @@ def run(
     allowed_labels: str = "",
     exclusion_mode: str = "label",
     attempted_json: str = "[]",
-    max_attempts_per_instance: int = 2,
+    max_attempts_per_instance: int = 3,
     max_total_attempts: int = 40,
     settled_margin_m: float = 0.0,
     min_box_px: float = 8.0,
@@ -596,19 +595,22 @@ def run(
     # Collapse near-duplicate bin boxes (DINO fires on both the inner and outer
     # bin walls as separate detections; IoU NMS keeps the higher-confidence one).
     item_detections = _drop_near_duplicates(item_detections, iou_thresh=0.5)
-    # Drop whichever bin box survives — identified as any box whose interior
-    # contains the centres of >= 2 other detections (i.e. it wraps the tools).
+    # Drop bin-sized boxes: any detection covering more than 30% of the source
+    # crop must be the bin itself, since every object fits inside the bin.
+    crop_area = float(crop_w * crop_h)
+    item_detections = [
+        d for d in item_detections
+        if (lambda b: max(0.0, b["x2"] - b["x1"]) * max(0.0, b["y2"] - b["y1"]))(_box(d)) < 0.30 * crop_area
+    ]
+    # Drop whichever bin box survives via containment — identified as any box
+    # whose interior contains the centres of >= 3 other detections.
     item_detections = _drop_containers(item_detections, min_contained=3)
 
-    # Visualize all DINO candidates on the source crop for debugging.
+    # Returned as an output, not written here: the runtime saves every
+    # `*_overlay` into the episode's own trace. A `Path.cwd()/outputs/debug`
+    # write is one path shared by every process, so a sweep running thirty
+    # documents at once has thirty selections overwriting one file.
     dino_candidates_overlay = _draw_candidates(source_crop, item_detections)
-    try:
-        from PIL import Image as PILImage
-        _debug_dir = Path.cwd() / "outputs" / "debug"
-        _debug_dir.mkdir(parents=True, exist_ok=True)
-        PILImage.fromarray(dino_candidates_overlay).save(_debug_dir / "dino_candidates_overlay.png")
-    except Exception:
-        pass
 
     # Bin-bounds filter: reject detections whose centre falls outside the actual
     # source-bin box (not the padded crop margin). Disabled for now — in
@@ -633,7 +635,7 @@ def run(
         return result
 
     # Remove spent positions from the candidate pool
-    candidates = _filter_spent(item_detections, attempts, crop_x, crop_y)
+    candidates = _filter_spent(item_detections, attempts, crop_x, crop_y, max_attempts_per_instance)
     if not candidates:
         result = _finished(attempts)
         result["dino_candidates_overlay"] = dino_candidates_overlay
@@ -754,6 +756,7 @@ def run(
     if mask is None:
         logger.warning("select_pair: no candidate produced a valid grasp — retry")
         result = _empty_result("retry")
+        result["attempted_json"] = json.dumps(attempts) if by_instance else ""
         result["dino_candidates_overlay"] = dino_candidates_overlay
         return result
 

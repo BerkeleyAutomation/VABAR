@@ -21,7 +21,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-import hero_run  # noqa: F401 -- the presentation cameras, as a patch
+import hero_run
+
 import vabar
 
 vabar.install()  # VABAR's task root, before the registry first loads

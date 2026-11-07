@@ -45,10 +45,10 @@ packages = ["vabar"]
 # this environment resolves to exactly what that commit was tested with. One
 # stack serves all six suites.
 [tool.uv.sources]
-robosimstudio = { git = "https://github.com/robosimstudio/robosimstudio.git", rev = "d9b2e442fd86dd10b6e4659993a7febad4cf5ef9" }
+robosimstudio = { git = "https://github.com/KeplerC/robosimstudio.git", rev = "39b7a6e75ddfbd1f68ebb7242caf098804da6774" }
 ovrtx = { index = "nvidia" }
-graph-as-policy = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "09e45f8de27bc1a29629382ed7c2b9b4b384b3d6" }
-graph-as-policy-core = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "09e45f8de27bc1a29629382ed7c2b9b4b384b3d6", subdirectory = "gap-core" }
+graph-as-policy = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "06dd6193e13eab816123febef1369deda0849d91" }
+graph-as-policy-core = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "06dd6193e13eab816123febef1369deda0849d91", subdirectory = "gap-core" }
 nvidia-curobo = { git = "https://github.com/NVlabs/curobo.git", tag = "v0.8.0" }
 
 [[tool.uv.index]]

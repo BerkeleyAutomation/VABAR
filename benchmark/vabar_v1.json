@@ -189,9 +189,160 @@
     "20000"
    ],
    "env": {},
-   "selection": "not frozen in this release",
-   "notes": "Level 2 (cluttered tools) instance documents are not part of this release yet.",
-   "instances": []
+   "selection": "benchmark/tool_sort/level2: the 30 frozen documents, each a registered variant (episode 0).",
+   "notes": "",
+   "instances": [
+    {
+     "id": "tool_sort/level2_1",
+     "task": "tool_sort/level2_1",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_2",
+     "task": "tool_sort/level2_2",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_3",
+     "task": "tool_sort/level2_3",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_4",
+     "task": "tool_sort/level2_4",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_5",
+     "task": "tool_sort/level2_5",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_6",
+     "task": "tool_sort/level2_6",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_7",
+     "task": "tool_sort/level2_7",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_8",
+     "task": "tool_sort/level2_8",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_9",
+     "task": "tool_sort/level2_9",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_10",
+     "task": "tool_sort/level2_10",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_11",
+     "task": "tool_sort/level2_11",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_12",
+     "task": "tool_sort/level2_12",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_13",
+     "task": "tool_sort/level2_13",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_14",
+     "task": "tool_sort/level2_14",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_15",
+     "task": "tool_sort/level2_15",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_16",
+     "task": "tool_sort/level2_16",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_17",
+     "task": "tool_sort/level2_17",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_18",
+     "task": "tool_sort/level2_18",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_19",
+     "task": "tool_sort/level2_19",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_20",
+     "task": "tool_sort/level2_20",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_21",
+     "task": "tool_sort/level2_21",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_22",
+     "task": "tool_sort/level2_22",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_23",
+     "task": "tool_sort/level2_23",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_24",
+     "task": "tool_sort/level2_24",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_25",
+     "task": "tool_sort/level2_25",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_26",
+     "task": "tool_sort/level2_26",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_27",
+     "task": "tool_sort/level2_27",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_28",
+     "task": "tool_sort/level2_28",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_29",
+     "task": "tool_sort/level2_29",
+     "episode": 0
+    },
+    {
+     "id": "tool_sort/level2_30",
+     "task": "tool_sort/level2_30",
+     "episode": 0
+    }
+   ]
   },
   "tool_hanging/L1": {
    "task_class": "Tool Hanging",
@@ -3379,7 +3530,7 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level1: the 30 `dispose_both_syringes_from_the_tray_tNN` trials, registered as `tray_pair_both_tNN`.",
+   "selection": "benchmark/syringe_packing/level1: the 30 `tray_pair_both_tNN` trials, registered as `tray_pair_both_tNN`.",
    "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
    "instances": [
     {
@@ -3549,7 +3700,7 @@
     "180"
    ],
    "env": {},
-   "selection": "benchmark/syringe_packing/level2: the 30 `dispose_the_syringe_from_the_cluttered_tray_tNN` trials, registered as `tray_clutter_tNN`.",
+   "selection": "benchmark/syringe_packing/level2: the 30 `tray_clutter_tNN` trials, registered as `tray_clutter_tNN`.",
    "notes": "The frozen copies under benchmark/ state profile vab_industrial@v1; the suite's documents, which are what run, state @v2.",
    "instances": [
     {

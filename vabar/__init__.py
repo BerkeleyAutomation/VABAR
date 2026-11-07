@@ -2,12 +2,16 @@
 """VABAR: the Variational Automation Benchmark for Agentic Robotics, on RoboSimStudio.
 
 The benchmark is the six suites under ``tasks/``; this package is only what the
-upstream library does not ship. Two calls connect the two:
+upstream library does not ship. Three calls connect the two:
 
 * :func:`install_routines` runs on import. Every suite's ``staging.py`` imports
   this package, so any process that scans the VABAR task root (a pool worker, a
   fleet, the studio, upstream's own ``scripts/bench_run.py --task-root``) can
   lower the ``(:routine ...)`` documents the suites ship.
+* :func:`vabar.config.activate_from_env` runs on import too, for the same
+  reason: the experiment config ``$VABAR_CONFIG`` names (``default`` when unset)
+  rewrites the registered variants it overrides -- physics, cameras, budget --
+  in every such process, workers included. See :mod:`vabar.config`.
 * :func:`install` additionally points RoboSimStudio's task registry at
   ``tasks/``, and is what the CLI and the studio launcher call first.
 """
@@ -75,3 +79,7 @@ def install(*, only: bool = True) -> Path:
 
 
 install_routines()
+
+from .config import activate_from_env  # after REPO and TASKS, which it reads
+
+activate_from_env()

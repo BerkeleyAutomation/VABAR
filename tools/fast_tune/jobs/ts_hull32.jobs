@@ -1,0 +1,7 @@
+# tool_sort: the 32-vertex hull cap's routines (it was 1.3x on idle).
+tool_sort ts_hull32 routine_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_sort ts_hull32 routine_l1_2 :: --task tool_sort/level1_2 --solve routine
+tool_sort ts_hull32 routine_l1_3 :: --task tool_sort/level1_3 --solve routine
+tool_sort ts_ss4 routine_l1_12 :: --task tool_sort/level1_12 --solve routine
+tool_sort ts_ss6 routine_l1_12 :: --task tool_sort/level1_12 --solve routine
+tool_sort ts_ref routine_l1_12 :: --task tool_sort/level1_12 --solve routine

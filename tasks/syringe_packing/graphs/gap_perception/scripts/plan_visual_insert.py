@@ -1,10 +1,15 @@
 """Reobserve the held syringe and plan a straight feature-to-aperture insertion."""
 
+import os
+import sys
 from typing import Any, TypedDict
 
 import numpy as np
 from gap import NodeContext
 from scipy.spatial.transform import Rotation
+
+# Helpers shared by this graph's scripts live beside them.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 class Output(TypedDict):
@@ -19,17 +24,16 @@ def _matrix(pose: dict[str, Any]) -> np.ndarray:
     return matrix
 
 
-def _visible_tip(ctx: NodeContext, observation: dict[str, Any], object_description: str,
-                 direction_marker_description: str) -> np.ndarray | None:
+def _visible_tip(
+    ctx: NodeContext, observation: dict[str, Any], object_description: str, direction_marker_description: str
+) -> np.ndarray | None:
     """Return the best wrist-observed physical syringe endpoint."""
     best = None
     for camera in observation.get("cameras", []):
         if "eye_in_hand" not in camera.get("name", ""):
             continue
         syringe = ctx.tool("sam3.segment_text", image=camera["rgb"], query=object_description, max_results=3)
-        cap = ctx.tool(
-            "sam3.segment_text", image=camera["rgb"], query=direction_marker_description, max_results=3
-        )
+        cap = ctx.tool("sam3.segment_text", image=camera["rgb"], query=direction_marker_description, max_results=3)
         score = float((syringe.get("scores") or [0.0])[0])
         if not syringe.get("masks") or not cap.get("masks") or score < 0.04:
             continue
@@ -40,12 +44,17 @@ def _visible_tip(ctx: NodeContext, observation: dict[str, Any], object_descripti
     if best is None:
         return None
     _, camera, syringe_mask, cap_mask = best
+
     def points(mask):
         cloud = ctx.tool(
-            "geometry.mask_to_world_points", mask=np.asarray(mask, dtype=np.uint8),
-            depth=camera["depth"], intrinsics=camera["intrinsics"], camera_pose=camera["pose"],
+            "geometry.mask_to_world_points",
+            mask=np.asarray(mask, dtype=np.uint8),
+            depth=camera["depth"],
+            intrinsics=camera["intrinsics"],
+            camera_pose=camera["pose"],
         )["points"]
         return np.asarray(cloud["points"], dtype=np.float64).reshape(-1, 3)
+
     syringe_points, cap_points = points(syringe_mask), points(cap_mask)
     if len(syringe_points) < 20 or len(cap_points) < 6:
         return None
@@ -61,9 +70,30 @@ def _visible_tip(ctx: NodeContext, observation: dict[str, Any], object_descripti
 HELD_MAX_DISTANCE_M = 0.15
 """Farthest a syringe cloud may sit from the hand and still be the held one [m]."""
 
+LEADING_END_MAX_LATERAL_M = 0.02
+LEADING_END_ALONG_M = (0.045, 0.11)
+"""Where a perceived leading end may sit in the hand frame: on the held barrel's
+axis (the aperture axis after the turn), and ahead of the TCP by what a 150 mm
+syringe gripped near its centre allows. That is 65-85 mm, plus +/-20 mm of station
+error. A detection outside this band is ignored, and the hand-map offset is used.
 
-def _visible_leading_end(ctx: NodeContext, observation: dict[str, Any], object_description: str,
-                         hand: np.ndarray, axis: np.ndarray) -> np.ndarray | None:
+``tray_clutter_t03``, second syringe (2026-09-13): the wrist "red cap" detection
+picked a cap in the scene below, 34 mm off the barrel's axis, and moved the
+approach target 140 mm away. Sweep s3 ``t06``: the side view put the end 25 mm
+ahead of the TCP against the hand map's 57 mm. The descent grew from the 60 mm
+the yaw search had probed to 92 mm, and cuRobo refused it at 95%."""
+
+
+def _plausible_end(feature_hand: np.ndarray, rotation: np.ndarray, axis: np.ndarray) -> bool:
+    along_axis = rotation.T @ axis
+    along = float(feature_hand @ along_axis)
+    lateral = float(np.linalg.norm(feature_hand - along * along_axis))
+    return LEADING_END_ALONG_M[0] <= along <= LEADING_END_ALONG_M[1] and lateral <= LEADING_END_MAX_LATERAL_M
+
+
+def _visible_leading_end(
+    ctx: NodeContext, observation: dict[str, Any], object_description: str, hand: np.ndarray, axis: np.ndarray
+) -> np.ndarray | None:
     """The held syringe's end that leads along ``axis``, seen from a fixed side camera.
 
     The perception twin of the ground-truth graph's ``lowest_z``: the barrel
@@ -72,38 +102,34 @@ def _visible_leading_end(ctx: NodeContext, observation: dict[str, Any], object_d
     end that will meet the hole. Aimed directly, this replaces a guess about
     where the flange end sits relative to the tip.
     """
+    from perception_checks import detect, crop_for_world_box, rod_like
+
     best = None
     for camera in observation.get("cameras", []):
         if camera.get("name") != "agentview" or "depth" not in camera:
             continue
-        detected = ctx.tool("sam3.segment_text", image=camera["rgb"], query=object_description, max_results=3)
-        for mask, score in zip(detected.get("masks") or [], detected.get("scores") or []):
-            if float(score) < 0.04:
+        # Enlarge the held object in the image before asking for its endpoint.
+        # Masks are restored to the original camera calibration for RGB-D.
+        crop = crop_for_world_box(camera, hand - [0.16, 0.16, 0.18], hand + [0.16, 0.16, 0.16])
+        detections = detect(ctx, camera, crop=crop, prompt=object_description, floor=0.04)
+        for detected in detections:
+            if not rod_like(detected):
                 continue
-            cloud = ctx.tool(
-                "geometry.mask_to_world_points", mask=np.asarray(mask, dtype=np.uint8),
-                depth=camera["depth"], intrinsics=camera["intrinsics"], camera_pose=camera["pose"],
-            )["points"]
-            points = np.asarray(cloud["points"], dtype=np.float64).reshape(-1, 3)
+            # Horizontal gripper fingers are not the nearly upright held shaft.
+            if abs(float(detected["axis"] @ axis)) < 0.85:
+                continue
+            points = detected["points"]
+            points = points[np.linalg.norm(points - hand, axis=1) <= HELD_MAX_DISTANCE_M]
             if len(points) < 20:
                 continue
             distance = float(np.linalg.norm(np.median(points, axis=0) - hand))
-            if distance <= HELD_MAX_DISTANCE_M and (best is None or distance < best[0]):
-                best = (distance, points)
-    if best is None:
-        return None
-    # The mask's cloud can carry background pixels metres away; only points
-    # within a barrel's reach of the hand can be the held syringe, and only
-    # an end within that reach is believed.
-    points = best[1]
-    points = points[np.linalg.norm(points - hand, axis=1) <= HELD_MAX_DISTANCE_M]
-    if len(points) < 20:
-        return None
-    along = points @ axis
-    end = np.median(points[along >= np.percentile(along, 95)], axis=0)
-    if float(np.linalg.norm(end - hand)) > HELD_MAX_DISTANCE_M:
-        return None
-    return end
+            along = points @ axis
+            end = np.median(points[along >= np.percentile(along, 95)], axis=0)
+            if float((end - hand) @ axis) < 0.015:
+                continue
+            if best is None or distance < best[0]:
+                best = (distance, end)
+    return None if best is None else best[1]
 
 
 def run(
@@ -116,7 +142,7 @@ def run(
     world_config: dict[str, Any],
     attached_object: dict[str, Any],
     relation: str = "shaft_into_aperture",
-    object_description: str = "syringe",
+    object_description: str = "medical syringe",
     direction_marker_description: str = "red needle cap of syringe",
 ) -> Output:
     if relation not in {"shaft_into_aperture", "tip_through_aperture", "insert_through"}:
@@ -144,13 +170,23 @@ def run(
     aim_source = "tip offset" if tip_leads else "tip offset mirrored"
     # Best: the leading end seen from the side, whichever end it is. Next: the
     # red cap from the wrist, when the tip leads. Last: the offset above.
-    leading = _visible_leading_end(ctx, observation, object_description, ee_matrix[:3, 3], axis)
-    if leading is not None:
+    # The hand map's registered offset leads whenever it is itself plausible.
+    # Measured against the simulator's mesh end at the transit pose (sweep s3):
+    # hand map 57.0 / 68.4 mm ahead of the TCP against true 58.4 / 64.0 mm, while
+    # the side view read 24.8 / 49.1 mm. The side view under-reads because the
+    # fingers hide the barrel's upper half. Its short reads cost t06 its approach
+    # (refused 92 mm descent) and t07 its seat (-23 mm). Perception now only
+    # replaces an implausible hand-map offset.
+    leading = None if _plausible_end(feature_hand, rotation, axis) else _visible_leading_end(
+        ctx, observation, object_description, ee_matrix[:3, 3], axis)
+    if _plausible_end(feature_hand, rotation, axis):
+        aim_source = "hand map" if tip_leads else "hand map mirrored"
+    elif leading is not None and _plausible_end(rotation.T @ (leading - ee_matrix[:3, 3]), rotation, axis):
         feature_hand = rotation.T @ (leading - ee_matrix[:3, 3])
         aim_source = "side view"
     elif tip_leads:
         visible_tip = _visible_tip(ctx, observation, object_description, direction_marker_description)
-        if visible_tip is not None:
+        if visible_tip is not None and _plausible_end(rotation.T @ (visible_tip - ee_matrix[:3, 3]), rotation, axis):
             feature_hand = rotation.T @ (visible_tip - ee_matrix[:3, 3])
             aim_source = "wrist cap"
 
@@ -160,12 +196,20 @@ def run(
 
     # The clearance-motion skill already translated to the staging pose above
     # the aperture. This plan contains only local approach and engagement.
-    targets = [center - 0.020 * axis, center + 0.035 * axis]
+    # Bring the tracked endpoint to the aperture plane. The measured physical
+    # mesh extends another 5--11 mm beyond this conservative endpoint; gravity
+    # completes the drop after release while the Robotiq fingers stay clear of
+    # the lid.
+    # Cross the rim in 10 mm checked phases. Endpoint contact allowances carve
+    # bounded volumes around the held syringe at each phase boundary; one
+    # 40 mm leg left an uncarved gap at the rim and cuRobo rejected an otherwise
+    # physical insertion at 56--75% of the stroke.
+    targets = [center + depth * axis for depth in (-0.020, -0.010, 0.0)]
     waypoints = []
     for index, target in enumerate(targets):
         waypoint = {
             "pose": {"position": hand_for(target), "rotation": dict(ee["rotation"])},
-            # Both legs are straight, orientation-locked strokes along the
+            # Every leg is a straight, orientation-locked stroke along the
             # fixture axis: the hand is already directly above the aperture, so
             # the approach is a 60 mm descent and nothing else. As a free
             # joint-space goal it was measured re-solving the arm into another
@@ -175,8 +219,10 @@ def run(
             "cartesian": True,
             "mode": "planned_linear",
         }
-        if index == len(targets) - 1:
+        if index > 0:
+            waypoint["allow_start_contact"] = True
             waypoint["allow_goal_contact"] = True
+            waypoint["contact_margin"] = 0.008
         waypoints.append(waypoint)
     return {
         "placement_plan": {
@@ -184,6 +230,14 @@ def run(
             "world_config": world_config,
             "attached_object": attached_object,
             "aim_source": aim_source,
-            "leading_end_in_hand": {"x": float(feature_hand[0]), "y": float(feature_hand[1]), "z": float(feature_hand[2])},
+            "leading_end_in_hand": {
+                "x": float(feature_hand[0]),
+                "y": float(feature_hand[1]),
+                "z": float(feature_hand[2]),
+            },
+            "aperture": dict(aperture),
+            "fixture_axis": dict(fixture_axis),
+            "rim_z": float(rim_z),
         }
     }
+

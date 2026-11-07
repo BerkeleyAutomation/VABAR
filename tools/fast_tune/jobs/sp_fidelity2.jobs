@@ -1,0 +1,11 @@
+# syringe_packing cheap fidelity, round 2 (with sweep.py --drift): 8 substeps, which round 1
+# did not have (6 tripled the clutter tray's settled drift, 4 multiplied it by eight), and
+# the combinations of the survivors.
+syringe_packing sp_ss8 drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss8 routine_ts_hammer :: --task tool_sort/hammer --solve routine
+syringe_packing sp_ss8_noccd drift_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 1500
+syringe_packing sp_ss8_noccd routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ss8_noccd routine_ts_hammer :: --task tool_sort/hammer --solve routine
+syringe_packing sp_ss6 drift_l2b :: --task syringe_packing/tray_clutter_t03 --solve idle --max-steps 1500
+syringe_packing sp_ref drift_l2b :: --task syringe_packing/tray_clutter_t03 --solve idle --max-steps 1500
+syringe_packing sp_ss8 drift_l2b :: --task syringe_packing/tray_clutter_t03 --solve idle --max-steps 1500

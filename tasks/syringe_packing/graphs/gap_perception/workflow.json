@@ -1,26 +1,43 @@
 {
   "version": 3,
   "meta": {
-    "name": "sharps_disposal_gap_perception",
-    "description": "Tool-hanging-shaped RGB-D pipeline: separately perceive syringe and aperture features, grasp, map the held tip into TCP, collision-aware reorient, mate directed tip with opening, release, and visually verify.",
+    "name": "syringe_packing_gap_perception_v2",
+    "description": "Perceive the sharps-box aperture once, then repeatedly detect, grasp, transport, insert, release, and verify syringes until no syringe remains on the tray.",
     "composes": {
       "target_sg": "perceiving-functional-features",
       "fixture_sg": "perceiving-functional-features",
       "collision_world_sg": "perceiving-objects",
       "grasp_sg": "grasping-direct-ik",
       "hand_map_sg": "registering-held-objects",
-      "carry_plan_sg": "planning-held-object-motion",
       "carry_sg": "executing-held-object-motion",
       "insert_plan_sg": "planning-held-object-motion",
       "remaining_sg": "perceiving-objects",
       "verify_sg": "perceiving-objects"
     },
-    "composes_note": "Subgraphs listed in `composes` run this graph's own scripts for the named skill, so they are labelled `generic`: graph-as-policy's SK1/SK2 contract reserves a bundle label for subgraphs that run that bundle's canonical scripts."
+    "composes_note": "Subgraphs listed in `composes` run this graph's own scripts for the named skill, so they are labelled `generic`: graph-as-policy's SK1/SK2 contract reserves a bundle label for subgraphs that run that bundle's canonical scripts.",
+    "provenance": "RoboSimStudio-dev syringe_packing/gap_perception_v2 at origin/main 1cd9f76a (473d7f9, fbe20d4, ee4ad93), = AUTOLab-GaP-NVIDIA-Collaboration syringe_packing branch 028911d plus ee4ad93. Replaces the 2026-09-10 graph; see docs/validation/dev_history_merge.md."
+  },
+  "requires": {
+    "tools": [
+      "geometry.build_world_config",
+      "geometry.compute_feature_mate",
+      "geometry.filter_and_compute_obb",
+      "geometry.mask_to_world_points",
+      "sam3.segment_text"
+    ]
   },
   "nodes": {
     "target": {
       "type": "subgraph",
-      "ref": "target_sg"
+      "ref": "target_sg",
+      "inputs": {
+        "aperture": {
+          "$ref": "fixture.aperture_center"
+        },
+        "rim_z": {
+          "$ref": "fixture.rim_z"
+        }
+      }
     },
     "fixture": {
       "type": "subgraph",
@@ -56,6 +73,12 @@
         },
         "needle_cap_center": {
           "$ref": "target.cap_center"
+        },
+        "support_z": {
+          "$ref": "target.support_z"
+        },
+        "jaw_clearance_m": {
+          "$ref": "target.jaw_clearance_m"
         }
       }
     },
@@ -190,26 +213,50 @@
           "inputs": {}
         }
       ]
+    },
+    "unjam": {
+      "type": "subgraph",
+      "ref": "unjam_sg",
+      "inputs": {
+        "aperture": {
+          "$ref": "fixture.aperture_center"
+        },
+        "rim_z": {
+          "$ref": "fixture.rim_z"
+        }
+      }
+    },
+    "verify_again": {
+      "type": "subgraph",
+      "ref": "verify_sg",
+      "inputs": {
+        "aperture": {
+          "$ref": "fixture.aperture_center"
+        },
+        "rim_z": {
+          "$ref": "fixture.rim_z"
+        }
+      }
     }
   },
   "edges": [
     [
       "START",
-      "target"
+      "fixture"
     ]
   ],
   "conditional_edges": {
     "target": {
       "router_field": "exit",
       "mapping": {
-        "found": "fixture",
+        "found": "collision_world",
         "not_found": "abort"
       }
     },
     "fixture": {
       "router_field": "exit",
       "mapping": {
-        "found": "collision_world",
+        "found": "target",
         "not_found": "abort"
       }
     },
@@ -273,6 +320,9 @@
       "router_field": "exit",
       "mapping": {
         "verified": "remaining",
+        "clear": "remaining",
+        "blocked": "unjam",
+        "uncertain": "abort",
         "failed": "abort"
       }
     },
@@ -280,14 +330,35 @@
       "router_field": "exit",
       "mapping": {
         "more": "target",
-        "none": "done"
+        "none": "done",
+        "uncertain": "abort"
+      }
+    },
+    "unjam": {
+      "router_field": "exit",
+      "mapping": {
+        "done": "verify_again",
+        "failed": "verify_again"
+      }
+    },
+    "verify_again": {
+      "router_field": "exit",
+      "mapping": {
+        "verified": "remaining",
+        "clear": "remaining",
+        "blocked": "abort",
+        "uncertain": "abort",
+        "failed": "abort"
       }
     }
   },
   "subgraphs": {
     "target_sg": {
       "skill": "generic",
-      "inputs": {},
+      "inputs": {
+        "aperture": "Vec3",
+        "rim_z": "float"
+      },
       "outputs": {
         "target_obb": {
           "$ref": "perceive.target_obb"
@@ -309,6 +380,12 @@
         },
         "functional_feature": {
           "$ref": "perceive.functional_feature"
+        },
+        "support_z": {
+          "$ref": "perceive.support_z"
+        },
+        "jaw_clearance_m": {
+          "$ref": "perceive.jaw_clearance_m"
         }
       },
       "nodes": {
@@ -324,7 +401,13 @@
             "observation": {
               "$ref": "observe"
             },
-            "object_description": "syringe",
+            "aperture": {
+              "$ref": "in.aperture"
+            },
+            "rim_z": {
+              "$ref": "in.rim_z"
+            },
+            "object_description": "medical syringe",
             "direction_marker_description": "red needle cap of syringe",
             "feature_type": "tip"
           }
@@ -517,11 +600,13 @@
       "inputs": {
         "target_obb": "OrientedBoundingBox",
         "target_cloud": "PointCloud",
-        "needle_cap_center": "Vec3"
+        "needle_cap_center": "Vec3",
+        "support_z": "float",
+        "jaw_clearance_m": "float"
       },
       "outputs": {
         "grasp_pose": {
-          "$ref": "geometry.grasp_pose"
+          "$ref": "execute.grasp_pose"
         }
       },
       "nodes": {
@@ -544,57 +629,31 @@
             },
             "needle_cap_center": {
               "$ref": "in.needle_cap_center"
-            }
-          }
-        },
-        "plan_align": {
-          "type": "tool",
-          "tool": "motion.plan_joint",
-          "inputs": {
-            "pose": {
-              "$ref": "geometry.align_pose"
             },
-            "orientation": "lock"
-          }
-        },
-        "execute_align": {
-          "type": "tool",
-          "tool": "robot.execute_trajectory",
-          "inputs": {
-            "trajectory": {
-              "$ref": "plan_align.trajectory"
+            "support_z": {
+              "$ref": "in.support_z"
+            },
+            "jaw_clearance_m": {
+              "$ref": "in.jaw_clearance_m"
             }
           }
         },
-        "plan_descend": {
-          "type": "tool",
-          "tool": "motion.plan_linear",
+        "execute": {
+          "type": "script",
+          "script": "scripts/grasp_checked.py",
           "inputs": {
-            "end": {
+            "grasp_pose": {
               "$ref": "geometry.grasp_pose"
             },
-            "orientation": "lock"
-          }
-        },
-        "execute_descend": {
-          "type": "tool",
-          "tool": "robot.execute_trajectory",
-          "inputs": {
-            "trajectory": {
-              "$ref": "plan_descend.trajectory"
-            }
-          }
-        },
-        "close": {
-          "type": "tool",
-          "tool": "robot.set_grip",
-          "inputs": {
+            "align_pose": {
+              "$ref": "geometry.align_pose"
+            },
             "object_width_m": {
               "$ref": "geometry.object_width_m"
             },
-            "squeeze_m": 0.005,
-            "ramp_steps": 40,
-            "settle_steps": 80
+            "preclose_width_m": {
+              "$ref": "geometry.preclose_width_m"
+            }
           }
         },
         "grasped": {
@@ -612,26 +671,10 @@
         ],
         [
           "geometry",
-          "plan_align"
+          "execute"
         ],
         [
-          "plan_align",
-          "execute_align"
-        ],
-        [
-          "execute_align",
-          "plan_descend"
-        ],
-        [
-          "plan_descend",
-          "execute_descend"
-        ],
-        [
-          "execute_descend",
-          "close"
-        ],
-        [
-          "close",
+          "execute",
           "grasped"
         ],
         [
@@ -671,6 +714,11 @@
           "script": "scripts/lift_held.py",
           "inputs": {}
         },
+        "verify_grasp": {
+          "type": "script",
+          "script": "scripts/verify_grasp.py",
+          "inputs": {}
+        },
         "observe": {
           "type": "tool",
           "tool": "robot.get_observation",
@@ -705,6 +753,10 @@
         ],
         [
           "lift",
+          "verify_grasp"
+        ],
+        [
+          "verify_grasp",
           "observe"
         ],
         [
@@ -790,7 +842,7 @@
       "on_error": "infeasible"
     },
     "carry_plan_sg": {
-      "skill": "generic",
+      "skill": "planning-held-object-motion",
       "inputs": {
         "held_feature_in_tcp": "Se3Pose",
         "fixture_feature": "Se3Pose",
@@ -805,7 +857,7 @@
       "nodes": {
         "plan": {
           "type": "script",
-          "script": "scripts/plan_wrist_turn_carry.py",
+          "script": "scripts/plan_clearance_motion.py",
           "inputs": {
             "held_feature_in_tcp": {
               "$ref": "in.held_feature_in_tcp"
@@ -937,7 +989,7 @@
               "$ref": "in.attached_object"
             },
             "relation": "shaft_into_aperture",
-            "object_description": "syringe",
+            "object_description": "medical syringe",
             "direction_marker_description": "red needle cap of syringe"
           }
         },
@@ -992,12 +1044,29 @@
           "script": "scripts/release_and_retract.py",
           "inputs": {
             "final_pose": {
-              "$ref": "execute.final_pose"
+              "$ref": "seat.final_pose"
             }
           }
         },
         "placed": {
           "type": "noop"
+        },
+        "observe_seat": {
+          "type": "tool",
+          "tool": "robot.get_observation",
+          "inputs": {}
+        },
+        "seat": {
+          "type": "script",
+          "script": "scripts/verify_seated.py",
+          "inputs": {
+            "observation": {
+              "$ref": "observe_seat"
+            },
+            "placement_plan": {
+              "$ref": "in.placement_plan"
+            }
+          }
         }
       },
       "edges": [
@@ -1007,6 +1076,14 @@
         ],
         [
           "execute",
+          "observe_seat"
+        ],
+        [
+          "observe_seat",
+          "seat"
+        ],
+        [
+          "seat",
           "release"
         ],
         [
@@ -1061,7 +1138,7 @@
             "rim_z": {
               "$ref": "in.rim_z"
             },
-            "object_description": "syringe"
+            "object_description": "medical syringe"
           }
         }
       },
@@ -1087,10 +1164,11 @@
         "router_field": "status",
         "success_values": [
           "more",
-          "none"
+          "none",
+          "uncertain"
         ]
       },
-      "on_error": "none"
+      "on_error": "uncertain"
     },
     "verify_sg": {
       "skill": "generic",
@@ -1120,13 +1198,19 @@
             }
           }
         },
-        "verified": {
-          "type": "noop"
+        "home": {
+          "type": "tool",
+          "tool": "robot.go_home",
+          "inputs": {}
         }
       },
       "edges": [
         [
           "START",
+          "home"
+        ],
+        [
+          "home",
           "observe"
         ],
         [
@@ -1135,17 +1219,56 @@
         ],
         [
           "check",
-          "verified"
-        ],
-        [
-          "verified",
           "END"
         ]
       ],
       "exit": {
-        "router_field": null,
+        "router_field": "status",
         "success_values": [
-          "verified"
+          "verified",
+          "clear",
+          "blocked",
+          "uncertain"
+        ]
+      },
+      "on_error": "failed"
+    },
+    "unjam_sg": {
+      "skill": "generic",
+      "inputs": {
+        "aperture": "Vec3",
+        "rim_z": "float"
+      },
+      "outputs": {},
+      "nodes": {
+        "push": {
+          "type": "script",
+          "script": "scripts/unjam_aperture.py",
+          "inputs": {
+            "aperture": {
+              "$ref": "in.aperture"
+            },
+            "rim_z": {
+              "$ref": "in.rim_z"
+            }
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "push"
+        ],
+        [
+          "push",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "status",
+        "success_values": [
+          "done",
+          "failed"
         ]
       },
       "on_error": "failed"

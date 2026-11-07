@@ -7,12 +7,12 @@ Two halves now, and the split is where the reuse is.
 **The cursor is not here any more.** "Which of this problem's goals should I do
 next" is the ``.bddl`` file's ``(:goal)`` conjunction read against the
 evaluator's verdict, and nothing in that sentence is about tools or bins -- so
-:class:`~robosimstudio.policies.graph.sim_tools.GoalCursor` lives beside the other
+:class:`~robosimstudio_policy_agent.sim_tools.GoalCursor` lives beside the other
 tools that read nothing but the goal tree and the snapshot. This suite's copy
 was the source it was promoted from, unchanged in behaviour: the same
 containment pairs in document order, the same two-pass retry cap, the same
-``attempt`` the grasp node fans its yaw on. ``astro`` registers the promoted one
-and ships no tools module of its own, which is the point of moving it.
+``attempt`` the grasp node fans its yaw on. Every suite that needs it registers
+the promoted one, which is the point of moving it.
 
 **``sim.get_container`` stays**, because it is not a fact about goals. It reads
 the export's own container sidecar to say whether a region belongs to a sealed
@@ -33,10 +33,10 @@ from typing import Any
 
 from robosimstudio_policy_agent.sim_tools import register_goal_cursor
 
-__all__ = ["SharpsDisposalTools", "register_sharps_disposal_tools"]
+__all__ = ["SharpsDisposalTools", "register_syringe_packing_tools"]
 
 
-def register_sharps_disposal_tools(registry, env, bus) -> None:
+def register_syringe_packing_tools(registry, env, bus) -> None:
     """Register this suite's privileged tools on a GaP tool registry.
 
     Args:
@@ -68,7 +68,7 @@ class SharpsDisposalTools:
         filled the same way. A compartment is open from above, so releasing a
         tool over it works. A sharps box is a sealed shell whose lid is solid
         everywhere except one hole: a tool let go flat over it lands *on* the
-        lid, which is what ``sharps_disposal/syringe`` did on its first end-to-end run
+        lid, which is what ``syringe_packing/tray_pair`` did on its first end-to-end run
         -- the graph completed every node, reported success, and scored zero.
 
         The reference fills one by standing the tool on end over the hole and
