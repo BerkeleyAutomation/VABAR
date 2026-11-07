@@ -98,7 +98,9 @@ shared_gb = 6.5
 
 [suites.syringe_packing]
 # The reference pairing: the export's Panda wearing a Robotiq 2F-85, the hand the graph was written and measured on.
-flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq"]
+# The bus timeout is the one the cells set: under the lockstep clock, a bare `vabar run` on the default 30 s dies at
+# step 1 while the first SAM 3 call and planner start up.
+flags = ["--scene", "robosuite_bench", "--embodiment", "panda_robotiq", "--bus-timeout", "180"]
 # Tiled scored the same as RTX on this scene, needs no shader warmup and holds
 # less than half the GPU memory (docs/validation/syringe_working_scene.md).
 renderer = "tiled"

@@ -79,6 +79,39 @@ responsible and it cost no score that time. The other three full cells at 1024 p
 physics was silently wrong while it lasted. Raising the buffers cost no measurable step rate (122 against 126 steps/s,
 about 32 MiB per scene).
 
+### `default` on RTX, before tiled
+
+One run of each full cell, `vabar bench --config default`, 2026-11-06: RTX observations, lockstep clock, unchanged graph,
+6 MPS workers on one 48 GB GPU, shared tool servers.
+
+| Cell | Whole instances | Mean reward | Syringes posted | Wall, all in | Before this change (`fast`) | Paper |
+| --- | --- | --- | --- | --- | --- | --- |
+| Level 1 | **28/30 (93%)** | 0.967 | 58/60 | 29.5 min | 7-13/30 | 87.0% |
+| Level 2 | **14/30 (47%)** | 0.786 | 138/176 | 82 min | 0/30, reward 0.27 | 63.0% |
+
+These compare a changed setup with earlier numbers, so they are not like for like: the scene, hand, graph and runtime all
+differ from the paper's. This is one run per cell, other cells swing widely between runs, and it does not separate
+which of the scene changes matters most. The "before" column ran 8 workers under `fast`.
+
+**Failures, Level 1 (2):** `could not perceive 'medical syringe'` (1), and `verify_grasp` finding no syringe in either
+camera (1).
+
+**Failures, Level 2 (16):**
+
+| Cause | Instances |
+| --- | --- |
+| Graph ended at `abort` with no failing node recorded, not yet diagnosed | 6 |
+| `could not perceive 'medical syringe'` | 4 |
+| Grasp approach tracking off by 13-18 mm, so release is refused | 3 |
+| `verify_grasp` finding no syringe in either camera | 2 |
+| cuRobo refusing the aperture approach | 1 |
+
+`tray_clutter_t19` posts 1 of 5 here and did in an earlier RTX-camera run. `t25` posts none. Level 2 is below the paper,
+so the suite still has open failures.
+
+A bare `vabar run` on the default 30 s bus timeout failed at step 1 under the lockstep clock, so `default.toml` now
+sets the cells' 180 s for this suite. That flag has not been rerun end to end outside `vabar bench`.
+
 ## Not done
 
 - **Overlapping starts.** Seven L2 layouts start with a pair of hulls overlapping by up to 2 mm. Four of them kick a
