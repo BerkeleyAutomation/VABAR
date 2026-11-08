@@ -176,6 +176,21 @@ Studio has these panels:
 
 You can also drive the arms by hand, record a take and export video.
 
+## Running VABAR in Isaac Lab Arena
+
+The [`isaaclab_arena/`](isaaclab_arena/) folder runs the same tasks and reference graphs in
+[Isaac Lab Arena](https://github.com/isaac-sim/IsaacLab-Arena) on Isaac Sim, through an adapter
+that executes this repository's graphs unmodified. It has its own environment and setup:
+
+```bash
+cd isaaclab_arena
+git lfs pull
+./setup.sh
+uv run vabar-arena run isaaclab_arena_gap/experiment_configs/gear_insertion/vabar_gear_insertion_easy_gap_baseline.yaml
+```
+
+See [`isaaclab_arena/README.md`](isaaclab_arena/README.md) for requirements, credentials and results.
+
 ## The benchmark
 
 The benchmark has twelve cells: six task classes × two levels, with 30 seeded
@@ -270,6 +285,7 @@ benchmark/              frozen instance documents and manifests; vabar_v1.json, 
 robot_skills/           the cable-task GaP skill bundles
 vabar/                  what RoboSimStudio does not ship: the routine hook, the CLI, the benchmark runner
 docs/                   running graphs, cable tasks, validation records
+isaaclab_arena/         the same benchmark in Isaac Lab Arena (own setup; see its README)
 ```
 
 ## How VABAR uses RoboSimStudio
