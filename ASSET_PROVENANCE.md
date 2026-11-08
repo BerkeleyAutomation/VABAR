@@ -109,5 +109,6 @@ files inherit the rows above.
 | `vabar__cable_routing_board/`, `vabar__cable_routing_peg/` | ManipulationNet `mnet_client` Cable Management Benchmark CAD | Apache-2.0 (`LICENSE` beside each) |
 | `vabar__cable_routing_terminals/` | follows `tasks/cable_route/assets/terminals.py` | same licence as this repository (`LICENSE` beside it) |
 | `vabar__usbc_port/`, `vabar__usbc_bulkhead/`, `vabar__usbc_easy_plug/`, `vabar__usbc_easy_port/` | converted from `tasks/usbc_insert/assets/usbc/` (`uksangyoo/newton_tasks` @ `2b081aa`) | as the cable-insertion row above: **TODO-before-public** |
-| `vabar__fr3_workcell_table/`, `vabar__yam_workcell_table/`, `vabar__yam_usbc_fixtures/`, `vabar__gear_mesh_mat/`, `vabar__hdr_shadow_receiver/` | authored in-repo (primitives; this repository's workcell dimensions) | same licence as this repository; **TODO-before-public:** confirm none reuses third-party meshes |
+| `vabar__yam_usbc_fixtures/` | bench and cradles converted from the RSS version's `tasks/usbc_insert/bulkhead.task` scene | as the cable-insertion row above: **TODO-before-public** |
+| `vabar__fr3_workcell_table/`, `vabar__yam_workcell_table/`, `vabar__gear_mesh_mat/`, `vabar__hdr_shadow_receiver/` | authored in-repo (primitives; this repository's workcell dimensions) | same licence as this repository; **TODO-before-public:** confirm none reuses third-party meshes |
 | warehouse HDR dome light (`empty_warehouse_hdr.py`) | resolved at run time from Isaac Lab Arena's asset URL and not redistributed | n/a |
