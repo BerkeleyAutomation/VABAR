@@ -526,8 +526,7 @@ enabled.
   `isaaclab_arena_vabar/src/isaaclab_arena_vabar/environments/README.md`. `--check` validates the
   committed README and animations without starting Isaac Sim; `--resume <outputs/environment-docs/run-...>`
   continues an interrupted campaign.
-- Curated environments and assets are maintained by hand; see
-  [adr/0001](adr/0001-maintain-industrial-workcell-assets-by-hand.md).
+- Curated environments and assets are maintained by hand.
 
 ## 12. Common Failures
 
