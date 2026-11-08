@@ -92,32 +92,11 @@ until you stop it.
 
 ## Run VABAR with your own policy
 
-The tasks don't depend on GaP: any Isaac Lab Arena policy can run them, and Arena scores it the
-same way. Copy one of the experiment YAMLs and replace its `policy:` block with your policy. For
-example, with Arena's built-in `zero_action` policy:
-
-```yaml
-runs:
-  gear_easy_zero_action:
-    environment:
-      type: vabar_gear_insertion__easy
-      enable_cameras: true
-    environment_builder:
-      placement_seed: 42
-    policy:
-      type: zero_action
-    rollout_limit:
-      num_episodes: 1
-    num_rebuilds: 1
-```
-
-```bash
-uv run vabar-arena run path/to/my_experiment.yaml --skip-setup
-```
-
-Arena's [policy guide](https://isaac-sim.github.io/IsaacLab-Arena/release/0.3.1/pages/concepts/policy/index.html)
-shows how to write a policy. [docs/SETUP.md](docs/SETUP.md#evaluate-your-own-policy) lists each robot's
-observations and actions.
+You can also run your own policy on VABAR. The tasks are regular Isaac Lab Arena environments, so
+any Arena policy can run them and is scored the same way; see Arena's
+[policy guide](https://isaac-sim.github.io/IsaacLab-Arena/release/0.3.1/pages/concepts/policy/index.html)
+and [experiment guide](https://isaac-sim.github.io/IsaacLab-Arena/release/0.3.1/pages/concepts/concept_arena_experiments.html)
+for how to write a policy and point an experiment at it.
 
 ## Further reading
 
