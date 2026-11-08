@@ -1,0 +1,102 @@
+external_yaml: gear_env_config.yaml
+env_name: easy_pair
+embodiment:
+  id: robot
+  registry_name: vabar__fr3_robotiq_2f85
+  params:
+    # AUTOLab's FR3 cell starts its arm at home, and its connector reads the resting
+    # tool height from wherever the arm is when a graph first asks.
+    initial_joint_pose: [0.0, 0.19634954084936207, 0.0, -2.617993877991494, 0.0, 2.941592653589793, 0.7853981633974483]
+    camera_rig: gear_mesh
+    initial_pose:
+      position_xyz: [-0.5, -0.1, 0.912]
+      rotation_xyzw: [0.0, 0.0, 0.0, -1.0]
+background:
+  id: background
+  registry_name: vabar__fr3_workcell_table
+  params:
+    initial_pose:
+      position_xyz: [-0.5, -0.1, 0.912]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+objects:
+- id: hdr_shadow_receiver
+  registry_name: vabar__hdr_shadow_receiver
+  params: {}
+- id: empty_warehouse_hdr_light
+  registry_name: vabar__empty_warehouse_dome_light
+  params: {}
+- id: gear_mat
+  registry_name: vabar__gear_mesh_mat
+  params: {}
+- id: board
+  registry_name: vabar__gear_mesh_board_20
+  params: {}
+- id: gear_a
+  registry_name: vabar__gear_mesh_20t
+  params: {}
+- id: gear_b
+  registry_name: vabar__gear_mesh_20t
+  params: {}
+object_references:
+- id: table
+  parent_id: background
+  prim_path: placement_surface
+  object_type: base
+  params: {}
+relations:
+- kind: is_anchor
+  subject: table
+  params: {}
+- kind: "on"
+  subject: gear_mat
+  reference: table
+  params: {clearance_m: 0.001}
+- kind: at_position
+  subject: gear_mat
+  params: {x: -0.0309982590563552, y: 0.0155650225211777, relation_loss_weight: 1000.0}
+- kind: rotate_around_solution
+  subject: gear_mat
+  params: {yaw_rad: 0.0}
+- kind: "on"
+  subject: board
+  reference: table
+  params: {clearance_m: 0.001}
+- kind: at_position
+  subject: board
+  params: {x: 0.0990017409436448, y: 0.0155650225211777, relation_loss_weight: 1000.0}
+- kind: rotate_around_solution
+  subject: board
+  params: {yaw_rad: 1.5707963267948966}
+- kind: "on"
+  subject: gear_a
+  reference: gear_mat
+  params: {clearance_m: 0.001, edge_margin_m: 0.008}
+- kind: at_position
+  subject: gear_a
+  params: {x: -0.0309982590563552, y: -0.0344349774788223, relation_loss_weight: 1000.0}
+- kind: rotate_around_solution
+  subject: gear_a
+  params: {yaw_rad: 0.0}
+- kind: "on"
+  subject: gear_b
+  reference: gear_mat
+  params: {clearance_m: 0.001, edge_margin_m: 0.008}
+- kind: at_position
+  subject: gear_b
+  params: {x: -0.0309982590563552, y: 0.0655650225211777, relation_loss_weight: 1000.0}
+- kind: rotate_around_solution
+  subject: gear_b
+  params: {yaw_rad: 0.0}
+task:
+  composition: atomic
+  description: put both gears on their pegs so they mesh, then press the red button at the near end of the board to start them
+  subtasks:
+  - kind: GearMeshTask
+    params:
+      board: board
+      gears: [gear_a, gear_b]
+      gear_teeth: 20
+      target_offsets_xyz:
+      - [0.032, 0.0, 0.008]
+      - [0.077, 0.0, 0.008]
+      episode_length_s: 200.0

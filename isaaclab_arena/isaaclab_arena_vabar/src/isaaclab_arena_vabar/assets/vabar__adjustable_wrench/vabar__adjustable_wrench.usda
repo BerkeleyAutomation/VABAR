@@ -1,0 +1,38 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__adjustable_wrench_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "adjustable_wrench_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Inertia of the voxelised visual mesh at uniform density and the delivered mass. The
+            # centre of mass is the model's: the delivered one sat 55 mm from the mesh's
+            # uniform-density centre. The delivered inertia was 1.6/3.2/3.1x this on its principal
+            # axes (above the physical limit for this shape). Mass unchanged.
+            point3f physics:centerOfMass = (-0.00044019275, 0.030351625, -7.171312e-05)
+            float3 physics:diagonalInertia = (6.7552924e-05, 0.0026403379, 0.0027005709)
+            float physics:mass = 0.45000001
+            quatf physics:principalAxes = (0.0015492503, 0.77360889, 0.63366083, 0.00091645711)
+
+            over "adjustable_wrench_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__chrome_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

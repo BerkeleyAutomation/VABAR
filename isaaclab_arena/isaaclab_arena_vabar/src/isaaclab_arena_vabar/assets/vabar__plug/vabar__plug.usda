@@ -1,0 +1,36 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+    prepend references = @simready_usd/sm_vabar__plug_01.usd@</RootNode>
+)
+{
+    bool physics:rigidBodyEnabled = 1
+
+    over Scope "PhysicsMaterials" {
+        over Material "physics_mat_m_opaque__plastic__glossy_white_a01" {
+            float physics:restitution = 0
+        }
+    }
+
+    over "Geometry_obj_00" {
+        over "Geometry_mesh_00" {
+            bool physics:collisionEnabled = 0
+        }
+    }
+
+    def Mesh "SourceCollisionMesh" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        prepend references = @source_collision_mesh.usdc@</Asset/Geometry>
+    ) {
+        rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__glossy_white_a01>
+        double xformOp:rotateX = 90
+        uniform token[] xformOpOrder = ["xformOp:rotateX"]
+    }
+}

@@ -1,0 +1,47 @@
+# AUTOLab v1.0's cable_route/gt (graphs/weave) run through
+# RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+runs:
+  vabar_cable_routing_easy_gap:
+    environment:
+      type: vabar_cable_routing__easy
+      enable_cameras: true
+      # The first instance of v1.0's cable_routing cell (episode 10009).
+      layout_seed: 10009
+    environment_builder:
+      placement_seed: 42
+    policy:
+      type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+      robot_profile: yam_bimanual_linear
+      gap_control_frequency_hz: 60
+      gap_graph: cable_route/gt
+      gap_inputs:
+        # AUTOLab's easy document: its gt graph is graphs/weave.
+        autolab_task: cable_route/port_easy
+      gap_work_arm: right
+      # The document's fixtures, as Arena's scene names them. Their poses are the static
+      # layout AUTOLab's compiled scene hands the cable tools under --no-privileged too.
+      gap_scene_statics:
+        peg0: peg_0
+        peg1: peg_1
+        anchor: anchor
+        port: port
+      gap_workspace:
+        surface_z: 0.767
+      # v1.0 scores after the graph ends and 60 settle steps (--settle-steps 60), win or lose.
+      # The RSS adapter steps those 60 itself before the graph process exits, so Arena adds none.
+      graph_success_settle_s: 0.0
+      graph_failure_settle_s: 0.0
+      auto_spawn: true
+      gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+      gap_host: 127.0.0.1
+      gap_io_timeout_s: 600
+      policy_device: cuda
+      gap_camera: top_camera
+      gap_bridge_camera: overhead
+      gap_wrist_camera: right_wrist_camera
+      gap_wrist_bridge_camera: wrist
+      gap_aux_camera: cable_camera
+      gap_aux_bridge_camera: cable
+    rollout_limit:
+      num_episodes: 1
+    num_rebuilds: 1

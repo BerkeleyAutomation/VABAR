@@ -1,0 +1,317 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__safety_glasses_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "industrial_safety_glasses_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Inertia of the voxelised visual mesh at uniform density and the delivered mass. The
+            # centre of mass is the model's: the delivered one sat 25 mm from the mesh's
+            # uniform-density centre. The delivered inertia was 2.8/2.1/2.4x this on its principal
+            # axes (94% of the physical limit for this shape). Mass unchanged.
+            point3f physics:centerOfMass = (-0.0019210432, -0.046765448, 0.0061581857)
+            float3 physics:diagonalInertia = (6.475174e-05, 0.0001318431, 0.00017807373)
+            float physics:mass = 0.04052301
+            quatf physics:principalAxes = (0.99989016, 0.0073769542, -7.9307303e-05, 0.012854666)
+
+            over "industrial_safety_glasses_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_hulls.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01> (
+                    bindMaterialAs = "strongerThanDescendants"
+                )
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_002" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_003" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_004" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_005" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_006" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_007" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_008" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_009" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_010" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_011" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_012" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_013" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_014" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_015" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_016" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_017" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_018" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_019" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_020" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_021" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_022" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_023" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_024" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_025" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_026" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_027" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_028" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_029" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_030" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_031" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_032" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_033" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_034" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_035" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_036" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_037" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_038" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_039" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+
+                over "Hull_040" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+                double3 xformOp:scale = (0.1653839973, 0.1628360031, 0.0671060001)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_trans__glass__scratchedGlossy_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+
+    def Cube "DropCollisionProxy" (
+        active = false
+        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+    ) {
+        double size = 1
+        token purpose = "guide"
+        rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_trans__glass__scratchedGlossy_a01>
+        double3 xformOp:scale = (0.1653839973, 0.1628360031, 0.0671060001)
+        uniform token[] xformOpOrder = ["xformOp:scale"]
+    }
+}

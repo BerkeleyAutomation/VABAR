@@ -1,0 +1,19 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__drill_01.usd@</RootNode>
+) {
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__blackDirty_c01" {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+    }
+}

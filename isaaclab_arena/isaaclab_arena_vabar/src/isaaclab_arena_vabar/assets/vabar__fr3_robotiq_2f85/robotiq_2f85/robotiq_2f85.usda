@@ -1,0 +1,97 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "robotiq_2f85"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "robotiq_2f85" (
+    prepend apiSchemas = ["GeomModelAPI"]
+    assetInfo = {
+        string name = "robotiq_2f85"
+    }
+    kind = "component"
+    prepend payload = @./Payload/Contents.usda@
+)
+{
+    float3[] extentsHint = [(-0.07728081, -0.0375, -0.0030000014), (0.07728081, 0.0375, 0.1592492), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.07728081, -0.0375, 0.0074428157), (0.07728081, 0.0375, 0.1592492)]
+
+    over "Geometry"
+    {
+        over "robotiq_base"
+        {
+            over "robotiq_left_driver"
+            {
+                over "left_driver_joint"
+                {
+                    custom double newton:angular:limitDamping = 6.981317007977318
+                    custom double newton:angular:limitStiffness = 698.1317007977318
+                }
+            }
+
+            over "robotiq_left_spring_link"
+            {
+                over "left_spring_link_joint"
+                {
+                    custom double newton:angular:limitDamping = 1.7453292519943295
+                    custom double newton:angular:limitStiffness = 43.63323129985824
+                }
+
+                over "robotiq_left_follower"
+                {
+                    over "left_follower"
+                    {
+                        custom double newton:angular:limitDamping = 6.981317007977318
+                        custom double newton:angular:limitStiffness = 698.1317007977318
+                    }
+                }
+            }
+
+            over "robotiq_right_driver"
+            {
+                over "right_driver_joint"
+                {
+                    custom double newton:angular:limitDamping = 6.981317007977318
+                    custom double newton:angular:limitStiffness = 698.1317007977318
+                }
+            }
+
+            over "robotiq_right_spring_link"
+            {
+                over "right_spring_link_joint"
+                {
+                    custom double newton:angular:limitDamping = 1.7453292519943295
+                    custom double newton:angular:limitStiffness = 43.63323129985824
+                }
+
+                over "robotiq_right_follower"
+                {
+                    over "right_follower_joint"
+                    {
+                        custom double newton:angular:limitDamping = 6.981317007977318
+                        custom double newton:angular:limitStiffness = 698.1317007977318
+                    }
+                }
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "fingers_actuator"
+        {
+            uniform double[] mjc:biasPrm = [0, -100, -10, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 255
+            uniform double mjc:ctrlRange:min = 0
+            uniform double mjc:forceRange:max = 5
+            uniform double mjc:forceRange:min = -5
+            uniform double[] mjc:gainPrm = [0.3137255, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+    }
+}

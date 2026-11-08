@@ -1,0 +1,9 @@
+[submodule "isaaclab_arena/external/IsaacLab-Arena"]
+	path = isaaclab_arena/external/IsaacLab-Arena
+	url = https://github.com/isaac-sim/IsaacLab-Arena.git
+[submodule "isaaclab_arena/external/gap/graph-as-policy"]
+	path = isaaclab_arena/external/gap/graph-as-policy
+	url = https://github.com/graph-robots/graph-as-policy.git
+[submodule "isaaclab_arena/external/gap/open-robot-skills"]
+	path = isaaclab_arena/external/gap/open-robot-skills
+	url = https://github.com/graph-robots/open-robot-skills.git

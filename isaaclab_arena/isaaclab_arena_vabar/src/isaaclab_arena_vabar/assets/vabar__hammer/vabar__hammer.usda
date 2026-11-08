@@ -1,0 +1,219 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsMassAPI", "PhysicsRigidBodyAPI"]
+    prepend references = @simready_usd/sm_vabar__hammer_01.usd@</RootNode>
+)
+{
+    # Two-material inertia of the voxelised visual mesh at the delivered mass: its metal
+    # parts 5.0x as dense as the handle, the split closest to the delivered centre of
+    # mass. The centre of mass is the model's: the delivered one sat 7 mm from any
+    # metal/handle density split of this mesh. The delivered inertia was 1.8/1.3/1.4x this
+    # on its principal axes. Mass unchanged.
+    point3f physics:centerOfMass = (0.0066401129, -4.9340997e-05, 0.10602963)
+    float3 physics:diagonalInertia = (0.0014976419, 0.0031271136, 0.0042692466)
+    float physics:mass = 1.3450763
+    quatf physics:principalAxes = (0.52250094, -0.52136226, -0.47853295, -0.47558425)
+    bool physics:rigidBodyEnabled = 1
+
+    over "Geometry" {
+        over "hammer_0_handle_vis_obj_00" {
+            over "hammer_0_handle_vis_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_handle.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__rubber__new_black_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__rubber__new_black_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__rubber__new_black_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__rubber__new_black_a01>
+                double3 xformOp:scale = (0.0419999985, 0.0419999985, 0.2060000030)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+
+        over "hammer_0_face_vis_obj_00" {
+            over "hammer_0_face_vis_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_face.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                double3 xformOp:scale = (0.0229994952, 0.0484987078, 0.0484987115)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+
+        over "hammer_0_claw_vis_obj_00" {
+            over "hammer_0_claw_vis_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_claw.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                double3 xformOp:scale = (0.0481507601, 0.0481325043, 0.0485043143)
+                double3 xformOp:translate = (0.0001767771, -0.0000610389, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+
+        over "hammer_0_head_vis_obj_00" {
+            over "hammer_0_head_vis_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_head.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                double3 xformOp:scale = (0.0909974155, 0.0484987078, 0.0484987078)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+
+        over "hammer_0_neck_vis_obj_00" {
+            over "hammer_0_neck_vis_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_neck.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+
+                over "Hull_002" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__powderMidgloss_gray_a01>
+                double3 xformOp:scale = (0.0144997527, 0.0431789671, 0.0431789671)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__rubber__new_black_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+
+        over "physics_mat_m_opaque__metal__powderMidgloss_gray_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

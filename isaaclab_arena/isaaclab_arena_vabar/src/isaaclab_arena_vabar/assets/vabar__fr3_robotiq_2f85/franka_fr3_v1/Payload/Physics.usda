@@ -1,0 +1,702 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1"
+{
+    def Scope "Physics"
+    {
+        def Material "PhysicsMaterial" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI", "MjcMaterialAPI"]
+        )
+        {
+            float newton:rollingFriction = 0.0001
+            float newton:torsionalFriction = 0.005
+            float physics:dynamicFriction = 1
+        }
+
+    }
+
+    def "Geometry"
+    {
+        def "base" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI"]
+        )
+        {
+            def PhysicsFixedJoint "PhysicsFixedJoint"
+            {
+                rel physics:body0 = </franka_fr3_v1>
+                rel physics:body1 = </franka_fr3_v1/Geometry/base>
+                point3f physics:localPos0 = (0, 0, 0)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (1, 0, 0, 0)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+
+            def "fr3_link0" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsFilteredPairsAPI"]
+            )
+            {
+                prepend rel physics:filteredPairs = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1>
+
+                over "link0_0" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_1" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_2" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_3" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_4" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_5" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "link0_6" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 2
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    bool physics:collisionEnabled = 0
+                    float physics:density = 1000
+                }
+
+                over "fr3_link0_collision" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                    uniform int mjc:group = 3
+                    float newton:contactGap = 0
+                    uniform token physics:approximation = "convexHull"
+                    float physics:mass = 0
+                }
+
+                def PhysicsFixedJoint "PhysicsFixedJoint"
+                {
+                    rel physics:body0 = </franka_fr3_v1/Geometry/base>
+                    rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0>
+                    point3f physics:localPos0 = (0, 0, 0)
+                    point3f physics:localPos1 = (0, 0, 0)
+                    quatf physics:localRot0 = (1, 0, 0, 0)
+                    quatf physics:localRot1 = (1, 0, 0, 0)
+                }
+
+                def "fr3_link1" (
+                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                )
+                {
+                    point3f physics:centerOfMass = (4.128e-7, -0.0181251, -0.0386036)
+                    float3 physics:diagonalInertia = (0.0239286, 0.0227246, 0.00610634)
+                    float physics:mass = 2.92747
+                    quatf physics:principalAxes = (0.998098, -0.0605364, 0.00380499, 0.0110109)
+
+                    over "fr3_link1_collision" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                        uniform int mjc:group = 3
+                        float newton:contactGap = 0
+                        uniform token physics:approximation = "convexHull"
+                        float physics:mass = 0
+                    }
+
+                    over "link1" (
+                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                        uniform int mjc:group = 2
+                        float newton:contactGap = 0
+                        uniform token physics:approximation = "convexHull"
+                        bool physics:collisionEnabled = 0
+                        float physics:density = 1000
+                    }
+
+                    def PhysicsRevoluteJoint "fr3_joint1" (
+                        prepend apiSchemas = ["MjcJointAPI"]
+                    )
+                    {
+                        uniform double mjc:actuatorfrcrange:max = 87
+                        uniform double mjc:actuatorfrcrange:min = -87
+                        uniform double mjc:armature = 0.195
+                        uniform double mjc:damping = 0.21
+                        uniform double mjc:frictionloss = 1.137
+                        uniform token physics:axis = "Z"
+                        rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0>
+                        rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1>
+                        point3f physics:localPos0 = (0, 0, 0.333)
+                        point3f physics:localPos1 = (0, 0, 0)
+                        quatf physics:localRot0 = (1, 0, 0, 0)
+                        quatf physics:localRot1 = (1, 0, 0, 0)
+                        float physics:lowerLimit = -157.20242
+                        float physics:upperLimit = 157.20242
+                    }
+
+                    def "fr3_link2" (
+                        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                    )
+                    {
+                        point3f physics:centerOfMass = (0.00318289, -0.0743222, 0.00881461)
+                        float3 physics:diagonalInertia = (0.0629567, 0.0411924, 0.0246371)
+                        float physics:mass = 2.93554
+                        quatf physics:principalAxes = (0.50259894, 0.58443695, -0.46599793, 0.43436593)
+
+                        over "link2" (
+                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                        )
+                        {
+                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                            uniform int mjc:group = 2
+                            float newton:contactGap = 0
+                            uniform token physics:approximation = "convexHull"
+                            bool physics:collisionEnabled = 0
+                            float physics:density = 1000
+                        }
+
+                        over "fr3_link2_collision" (
+                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                        )
+                        {
+                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                            uniform int mjc:group = 3
+                            float newton:contactGap = 0
+                            uniform token physics:approximation = "convexHull"
+                            float physics:mass = 0
+                        }
+
+                        def PhysicsRevoluteJoint "fr3_joint2" (
+                            prepend apiSchemas = ["MjcJointAPI"]
+                        )
+                        {
+                            uniform double mjc:actuatorfrcrange:max = 87
+                            uniform double mjc:actuatorfrcrange:min = -87
+                            uniform double mjc:armature = 0.195
+                            uniform double mjc:damping = 0.21
+                            uniform double mjc:frictionloss = 1.137
+                            uniform token physics:axis = "Z"
+                            rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1>
+                            rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2>
+                            point3f physics:localPos0 = (0, 0, 0)
+                            point3f physics:localPos1 = (0, 0, 0)
+                            quatf physics:localRot0 = (-0.70710677, 0.70710677, 0, 0)
+                            quatf physics:localRot1 = (1, 0, 0, 0)
+                            float physics:lowerLimit = -102.19848
+                            float physics:upperLimit = 102.19848
+                        }
+
+                        def "fr3_link3" (
+                            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                        )
+                        {
+                            point3f physics:centerOfMass = (0.0407016, -0.00482006, -0.0289731)
+                            float3 physics:diagonalInertia = (0.0267409, 0.0189869, 0.0171587)
+                            float physics:mass = 2.2449
+                            quatf physics:principalAxes = (0.92102545, -0.24416113, 0.1552721, 0.26074514)
+
+                            over "link3_0" (
+                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                uniform int mjc:group = 2
+                                float newton:contactGap = 0
+                                uniform token physics:approximation = "convexHull"
+                                bool physics:collisionEnabled = 0
+                                float physics:density = 1000
+                            }
+
+                            over "link3_1" (
+                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                uniform int mjc:group = 2
+                                float newton:contactGap = 0
+                                uniform token physics:approximation = "convexHull"
+                                bool physics:collisionEnabled = 0
+                                float physics:density = 1000
+                            }
+
+                            over "fr3_link3_collision" (
+                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                uniform int mjc:group = 3
+                                float newton:contactGap = 0
+                                uniform token physics:approximation = "convexHull"
+                                float physics:mass = 0
+                            }
+
+                            def PhysicsRevoluteJoint "fr3_joint3" (
+                                prepend apiSchemas = ["MjcJointAPI"]
+                            )
+                            {
+                                uniform double mjc:actuatorfrcrange:max = 87
+                                uniform double mjc:actuatorfrcrange:min = -87
+                                uniform double mjc:armature = 0.195
+                                uniform double mjc:damping = 0.21
+                                uniform double mjc:frictionloss = 1.137
+                                uniform token physics:axis = "Z"
+                                rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2>
+                                rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3>
+                                point3f physics:localPos0 = (0, -0.316, 1.6543612e-24)
+                                point3f physics:localPos1 = (0, 0, 0)
+                                quatf physics:localRot0 = (-0.70710677, -0.70710677, 0, 0)
+                                quatf physics:localRot1 = (1, 0, 0, 0)
+                                float physics:lowerLimit = -166.19786
+                                float physics:upperLimit = 166.19786
+                            }
+
+                            def "fr3_link4" (
+                                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                            )
+                            {
+                                point3f physics:centerOfMass = (-0.0459101, 0.0630493, -0.00851879)
+                                float3 physics:diagonalInertia = (0.05139, 0.0372717, 0.0160047)
+                                float physics:mass = 2.6156
+                                quatf physics:principalAxes = (0.43801817, 0.80331135, 0.009378124, 0.4034142)
+
+                                over "link4_0" (
+                                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                )
+                                {
+                                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                    uniform int mjc:group = 2
+                                    float newton:contactGap = 0
+                                    uniform token physics:approximation = "convexHull"
+                                    bool physics:collisionEnabled = 0
+                                    float physics:density = 1000
+                                }
+
+                                over "link4_1" (
+                                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                )
+                                {
+                                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                    uniform int mjc:group = 2
+                                    float newton:contactGap = 0
+                                    uniform token physics:approximation = "convexHull"
+                                    bool physics:collisionEnabled = 0
+                                    float physics:density = 1000
+                                }
+
+                                over "fr3_link4_collision" (
+                                    prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                )
+                                {
+                                    rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                    uniform int mjc:group = 3
+                                    float newton:contactGap = 0
+                                    uniform token physics:approximation = "convexHull"
+                                    float physics:mass = 0
+                                }
+
+                                def PhysicsRevoluteJoint "fr3_joint4" (
+                                    prepend apiSchemas = ["MjcJointAPI"]
+                                )
+                                {
+                                    uniform double mjc:actuatorfrcrange:max = 87
+                                    uniform double mjc:actuatorfrcrange:min = -87
+                                    uniform double mjc:armature = 0.195
+                                    uniform double mjc:damping = 0.21
+                                    uniform double mjc:frictionloss = 1.137
+                                    uniform token physics:axis = "Z"
+                                    rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3>
+                                    rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4>
+                                    point3f physics:localPos0 = (0.0825, 0, 0)
+                                    point3f physics:localPos1 = (0, 0, 0)
+                                    quatf physics:localRot0 = (0.70710677, 0.70710677, 0, 0)
+                                    quatf physics:localRot1 = (1, 0, 0, 0)
+                                    float physics:lowerLimit = -174.29948
+                                    float physics:upperLimit = -8.697499
+                                }
+
+                                def "fr3_link5" (
+                                    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                                )
+                                {
+                                    point3f physics:centerOfMass = (-0.00160396, 0.0292536, -0.0972966)
+                                    float3 physics:diagonalInertia = (0.0579335, 0.0449144, 0.0130634)
+                                    float physics:mass = 2.32712
+                                    quatf physics:principalAxes = (0.9190308, 0.12560397, 0.07515308, -0.36600292)
+
+                                    over "link5_0" (
+                                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                        uniform int mjc:group = 2
+                                        float newton:contactGap = 0
+                                        uniform token physics:approximation = "convexHull"
+                                        bool physics:collisionEnabled = 0
+                                        float physics:density = 1000
+                                    }
+
+                                    over "link5_1" (
+                                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                        uniform int mjc:group = 2
+                                        float newton:contactGap = 0
+                                        uniform token physics:approximation = "convexHull"
+                                        bool physics:collisionEnabled = 0
+                                        float physics:density = 1000
+                                    }
+
+                                    over "link5_2" (
+                                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                        uniform int mjc:group = 2
+                                        float newton:contactGap = 0
+                                        uniform token physics:approximation = "convexHull"
+                                        bool physics:collisionEnabled = 0
+                                        float physics:density = 1000
+                                    }
+
+                                    over "fr3_link5_collision" (
+                                        prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                        uniform int mjc:group = 3
+                                        float newton:contactGap = 0
+                                        uniform token physics:approximation = "convexHull"
+                                        float physics:mass = 0
+                                    }
+
+                                    def PhysicsRevoluteJoint "fr3_joint5" (
+                                        prepend apiSchemas = ["MjcJointAPI"]
+                                    )
+                                    {
+                                        uniform double mjc:actuatorfrcrange:max = 12
+                                        uniform double mjc:actuatorfrcrange:min = -12
+                                        uniform double mjc:armature = 0.074
+                                        uniform double mjc:damping = 0.21
+                                        uniform double mjc:frictionloss = 0.763
+                                        uniform token physics:axis = "Z"
+                                        rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4>
+                                        rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5>
+                                        point3f physics:localPos0 = (-0.0825, 0.384, 6.617445e-24)
+                                        point3f physics:localPos1 = (0, 0, 0)
+                                        quatf physics:localRot0 = (0.70710677, -0.70710677, 0, 0)
+                                        quatf physics:localRot1 = (1, 0, 0, 0)
+                                        float physics:lowerLimit = -160.8006
+                                        float physics:upperLimit = 160.8006
+                                    }
+
+                                    def "fr3_link6" (
+                                        prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                                    )
+                                    {
+                                        point3f physics:centerOfMass = (0.0597131, -0.0410295, -0.0101693)
+                                        float3 physics:diagonalInertia = (0.0175039, 0.0161123, 0.00193529)
+                                        float physics:mass = 1.81704
+                                        quatf physics:principalAxes = (0.6213009, 0.5526649, 0.5100109, 0.22008094)
+
+                                        over "link6_0" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_1" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_2" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_3" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_4" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_5" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_6" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "link6_7" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 2
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            bool physics:collisionEnabled = 0
+                                            float physics:density = 1000
+                                        }
+
+                                        over "fr3_link6_collision" (
+                                            prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                            uniform int mjc:group = 3
+                                            float newton:contactGap = 0
+                                            uniform token physics:approximation = "convexHull"
+                                            float physics:mass = 0
+                                        }
+
+                                        def PhysicsRevoluteJoint "fr3_joint6" (
+                                            prepend apiSchemas = ["MjcJointAPI"]
+                                        )
+                                        {
+                                            uniform double mjc:actuatorfrcrange:max = 12
+                                            uniform double mjc:actuatorfrcrange:min = -12
+                                            uniform double mjc:armature = 0.074
+                                            uniform double mjc:damping = 0.21
+                                            uniform double mjc:frictionloss = 0.44
+                                            uniform token physics:axis = "Z"
+                                            rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5>
+                                            rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6>
+                                            point3f physics:localPos0 = (0, 0, 0)
+                                            point3f physics:localPos1 = (0, 0, 0)
+                                            quatf physics:localRot0 = (0.70710677, 0.70710677, 0, 0)
+                                            quatf physics:localRot1 = (1, 0, 0, 0)
+                                            float physics:lowerLimit = 31.197552
+                                            float physics:upperLimit = 258.79932
+                                        }
+
+                                        def "fr3_link7" (
+                                            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+                                        )
+                                        {
+                                            point3f physics:centerOfMass = (0.00452258, 0.00862619, -0.0161633)
+                                            float3 physics:diagonalInertia = (0.000223836, 0.000223642, 5.64132e-7)
+                                            float physics:mass = 0.627143
+                                            quatf physics:principalAxes = (0.727579, 0.0978688, -0.24906, 0.63168)
+
+                                            over "link7_0" (
+                                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                                uniform int mjc:group = 2
+                                                float newton:contactGap = 0
+                                                uniform token physics:approximation = "convexHull"
+                                                bool physics:collisionEnabled = 0
+                                                float physics:density = 1000
+                                            }
+
+                                            over "link7_1" (
+                                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                                uniform int mjc:group = 2
+                                                float newton:contactGap = 0
+                                                uniform token physics:approximation = "convexHull"
+                                                bool physics:collisionEnabled = 0
+                                                float physics:density = 1000
+                                            }
+
+                                            over "link7_2" (
+                                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                                uniform int mjc:group = 2
+                                                float newton:contactGap = 0
+                                                uniform token physics:approximation = "convexHull"
+                                                bool physics:collisionEnabled = 0
+                                                float physics:density = 1000
+                                            }
+
+                                            over "link7_3" (
+                                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                                uniform int mjc:group = 2
+                                                float newton:contactGap = 0
+                                                uniform token physics:approximation = "convexHull"
+                                                bool physics:collisionEnabled = 0
+                                                float physics:density = 1000
+                                            }
+
+                                            over "fr3_link7_collision" (
+                                                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding:physics = </franka_fr3_v1/Physics/PhysicsMaterial>
+                                                uniform int mjc:group = 3
+                                                float newton:contactGap = 0
+                                                uniform token physics:approximation = "convexHull"
+                                                float physics:mass = 0
+                                            }
+
+                                            over "attachment_site" (
+                                                prepend apiSchemas = ["MjcSiteAPI"]
+                                            )
+                                            {
+                                                uniform int mjc:group = 4
+                                            }
+
+                                            def PhysicsRevoluteJoint "fr3_joint7" (
+                                                prepend apiSchemas = ["MjcJointAPI"]
+                                            )
+                                            {
+                                                uniform double mjc:actuatorfrcrange:max = 12
+                                                uniform double mjc:actuatorfrcrange:min = -12
+                                                uniform double mjc:armature = 0.074
+                                                uniform double mjc:damping = 0.21
+                                                uniform double mjc:frictionloss = 0.248
+                                                uniform token physics:axis = "Z"
+                                                rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6>
+                                                rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7>
+                                                point3f physics:localPos0 = (0.088, 0, 0)
+                                                point3f physics:localPos1 = (0, 0, 0)
+                                                quatf physics:localRot0 = (0.70710677, 0.70710677, 0, 0)
+                                                quatf physics:localRot1 = (1, 0, 0, 0)
+                                                float physics:lowerLimit = -172.79834
+                                                float physics:upperLimit = 172.79834
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

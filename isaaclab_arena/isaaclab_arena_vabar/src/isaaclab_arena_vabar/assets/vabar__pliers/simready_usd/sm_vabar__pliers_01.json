@@ -1,0 +1,17 @@
+{
+    "SimReady_Metadata": {
+        "asset_location": "sm_vabar__pliers_01.usd",
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "vabar__pliers",
+    "asset_name": "vabar__pliers",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "vabar__pliers.blend",
+    "usd_date_generated": "2026-08-27 17:32:44",
+    "used_dsrs_exporter": true
+}

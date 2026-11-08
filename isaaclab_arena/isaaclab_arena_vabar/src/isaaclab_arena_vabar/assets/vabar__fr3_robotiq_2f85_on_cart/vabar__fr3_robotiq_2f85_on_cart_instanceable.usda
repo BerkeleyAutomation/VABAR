@@ -1,0 +1,84 @@
+#usda 1.0
+(
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1" (
+    prepend references = @../vabar__fr3_robotiq_2f85/franka_fr3_robotiq_2f85_instanceable.usda@</franka_fr3_v1>
+)
+{
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                def Xform "cart_stand"
+                {
+                    double3 xformOp:translate = (0, 0, -0.912)
+                    double3 xformOp:scale = (0.8426980427817, 0.8426980427817, 0.8426980427817)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+
+                    def Xform "cart" (
+                        prepend references = @../vabar__fr3_cart_stand/vabar__fr3_cart_stand.usda@</Asset>
+                    )
+                    {
+                    }
+                }
+
+                over "fr3_link1"
+                {
+                    over "fr3_link2"
+                    {
+                        over "fr3_link3"
+                        {
+                            over "fr3_link4"
+                            {
+                                over "fr3_link5"
+                                {
+                                    over "fr3_link6"
+                                    {
+                                        over "fr3_link7"
+                                        {
+                                            over "robotiq_attach"
+                                            {
+                                                over "Geometry"
+                                                {
+                                                    over "robotiq_base"
+                                                    {
+                                                        # AUTOLab's 2F-85 (RoboSimStudio 2f85.xml) holds the spring link with 0.5 N.m/rad and 0.02
+                                                        # damping, ten times MuJoCo Menagerie v4's; GaP's shadow closes that hand on every FR3 task.
+                                                        over "robotiq_left_spring_link"
+                                                        {
+                                                            over "left_spring_link_joint"
+                                                            {
+                                                                uniform double mjc:damping = 0.02
+                                                                uniform double mjc:stiffness = 0.5
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_spring_link"
+                                                        {
+                                                            over "right_spring_link_joint"
+                                                            {
+                                                                uniform double mjc:damping = 0.02
+                                                                uniform double mjc:stiffness = 0.5
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

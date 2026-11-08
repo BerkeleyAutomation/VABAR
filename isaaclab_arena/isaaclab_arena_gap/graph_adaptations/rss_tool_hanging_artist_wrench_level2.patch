@@ -1,0 +1,69 @@
+Tool hanging v1.0 (18b974e) wrench medium on the RSS adapter: the easy adaptation (rss_tool_hanging_artist_wrench) for the level-2 graph, which reuses the easy graph's scripts. Registers Arena's artist ring spanner CAD (ring at +X), fits Arena's hook mesh, queries "wrench", carries at half transit speed on both wrench subgraphs. Patch paths are relative to AUTOLab's tool_hanging/graphs directory.
+
+--- a/gap_perception/scripts/perceive_fixture.py
++++ b/gap_perception/scripts/perceive_fixture.py
+@@ -359,8 +359,13 @@ def run(ctx: NodeContext, observation: dict[str, Any], target_kind: str = "",
+     fixture_feature["usable_length"] = shaft_length
+     if profile.get("mating_profile"):
+         fixture_feature["mating_profile"] = dict(profile["mating_profile"])
+-    return {
++    result = {
+         "fixture_kind": "hook", "fixture_obb": obb, "fixture_mask": mask, "fixture_cloud": cloud,
+         "hook_tip": tip_dict, "fixture_axis": axis_dict,
+         "fixture_feature": fixture_feature,
+     }
++    if target_kind == "wrench":
++        from isaaclab_arena_gap.tool_hanging_asset_profile import refine_artist_hook
++
++        return refine_artist_hook(result)
++    return result
+--- a/gap_perception/scripts/perceive_target.py
++++ b/gap_perception/scripts/perceive_target.py
+@@ -298,6 +298,9 @@ def run(ctx: NodeContext, observation: dict[str, Any],
+         feature_type: str | None = None,
+         object_kind: str | None = None,
+         feature_profiles: list[dict[str, Any]] | None = None) -> Output:
++    from isaaclab_arena_gap.tool_hanging_asset_profile import artist_wrench_profiles
++
++    feature_profiles = artist_wrench_profiles(feature_profiles)
+     camera = _overhead(observation)
+     if not feature_profiles:
+         raise ValueError("feature_profiles must declare object semantics and geometry strategies")
+--- a/gap_perception_level2/workflow.json
++++ b/gap_perception_level2/workflow.json
+@@ -2111,7 +2111,7 @@
+                 "escape_distance_m": 0.06,
+                 "time_scale": 1.25,
+                 "lift_speed_scale": 1.0,
+-                "transit_speed_scale": 1.0,
++                "transit_speed_scale": 0.5,
+                 "use_attachment": false,
+                 "use_world": false,
+                 "max_attempts": 3,
+@@ -2817,7 +2817,7 @@
+             "source_categories": [
+               {
+                 "kind": "wrench",
+-                "query": "adjustable wrench",
++                "query": "wrench",
+                 "aliases": [
+                   "wrench"
+                 ]
+@@ -3966,7 +3966,7 @@
+                 "escape_distance_m": 0.06,
+                 "time_scale": 1.25,
+                 "lift_speed_scale": 1.0,
+-                "transit_speed_scale": 1.0,
++                "transit_speed_scale": 0.5,
+                 "use_attachment": false,
+                 "use_world": false,
+                 "max_attempts": 3,
+@@ -4672,7 +4672,7 @@
+             "source_categories": [
+               {
+                 "kind": "wrench",
+-                "query": "adjustable wrench",
++                "query": "wrench",
+                 "aliases": [
+                   "wrench"
+                 ]

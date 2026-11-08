@@ -81,7 +81,7 @@ registries = ["robot_skills", "../open-robot-skills"]
 
 [tool.ruff]
 line-length = 120
-extend-exclude = ["tasks", "robot_skills", "vabar/_upstream", "vabar/cable/curve_tools.py", "vabar/cable/trackdlo_skeleton.py"]
+extend-exclude = ["tasks", "robot_skills", "vabar/_upstream", "vabar/cable/curve_tools.py", "vabar/cable/trackdlo_skeleton.py", "isaaclab_arena"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

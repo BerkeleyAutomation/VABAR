@@ -1,0 +1,31 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/6.0/Isaac/SimReady/Industrial/Warehouse/Equipment/Cart_Computer_A01_01/sm_cart_computer_a01_01.usd@
+    variants = {
+        string Physics = "none"
+    }
+    prepend variantSets = "Physics"
+)
+{
+    over "Geometry"
+    {
+        over "sm_cart_computer_a01_obj_00" (
+            delete apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+        ) { }
+        over "sm_counter_top_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_tire1_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_tire2_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_tire3_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_tire4_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_wheel1_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_wheel2_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_wheel3_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+        over "sm_wheel4_a01_obj_00" (delete apiSchemas = ["PhysicsRigidBodyAPI"]) { }
+    }
+}

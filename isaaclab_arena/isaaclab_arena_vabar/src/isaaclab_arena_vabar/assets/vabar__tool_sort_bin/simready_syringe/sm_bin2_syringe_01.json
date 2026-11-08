@@ -1,0 +1,17 @@
+{
+    "SimReady_Metadata": {
+        "asset_location": "sm_bin2_syringe_01.usd",
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "bin2_syringe",
+    "asset_name": "bin2_syringe",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "bin2_syringe.blend",
+    "usd_date_generated": "2026-08-27 16:56:12",
+    "used_dsrs_exporter": true
+}
