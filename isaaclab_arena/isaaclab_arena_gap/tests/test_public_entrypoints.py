@@ -312,17 +312,120 @@ def test_arena_runner_exposes_policy_completion_to_task_scoring(
     assert env.unwrapped.external_policy_termination_requested() == (True,)
 
 
-def test_arena_show_closes_app_when_rejecting_non_newton(fake_newton_cfg) -> None:
+def _recording_app() -> SimpleNamespace:
+    app = SimpleNamespace(exit_codes=[])
+    app.close = lambda exit_code=0: app.exit_codes.append(exit_code)
+    return app
 
-    app = SimpleNamespace(closed=False)
-    app.close = lambda: setattr(app, "closed", True)
+
+def test_arena_show_closes_app_when_rejecting_non_newton(
+    fake_newton_cfg, capsys
+) -> None:
+    app = _recording_app()
     env_cfg = SimpleNamespace(sim=SimpleNamespace(physics=object()))
 
-    from isaaclab_arena_gap.arena_show import _guarded_setup, _require_newton
+    from isaaclab_arena_gap.arena_show import _closing_simulation_app, _require_newton
 
     with pytest.raises(TypeError, match="supports only Newton"):
-        _guarded_setup(app, lambda: _require_newton(env_cfg, "Test environment"))
-    assert app.closed
+        with _closing_simulation_app(app):
+            _require_newton(env_cfg, "Test environment")
+    # Kit's close() may end the process itself, so the failure status must reach
+    # it and the traceback must already be printed.
+    assert app.exit_codes == [1]
+    stderr = capsys.readouterr().err
+    assert "Traceback (most recent call last)" in stderr
+    assert "supports only Newton" in stderr
+
+
+def test_arena_show_reports_usage_errors_with_their_status(capsys) -> None:
+    app = _recording_app()
+
+    from isaaclab_arena_gap.arena_show import _closing_simulation_app
+
+    with pytest.raises(SystemExit):
+        with _closing_simulation_app(app):
+            raise SystemExit("Unknown environment 'nope'")
+    assert app.exit_codes == [1]
+    assert "Unknown environment 'nope'" in capsys.readouterr().err
+
+
+def test_arena_show_clears_only_episode_terms(monkeypatch) -> None:
+    class TerminationTermCfg(SimpleNamespace):
+        pass
+
+    class RecorderTermCfg(SimpleNamespace):
+        pass
+
+    class HDF5DatasetFileHandler:
+        pass
+
+    managers_module = ModuleType("isaaclab.managers")
+    managers_module.TerminationTermCfg = TerminationTermCfg
+    managers_module.RecorderTermCfg = RecorderTermCfg
+    isaaclab_package = ModuleType("isaaclab")
+    isaaclab_package.__path__ = []
+    monkeypatch.setitem(sys.modules, "isaaclab", isaaclab_package)
+    monkeypatch.setitem(sys.modules, "isaaclab.managers", managers_module)
+
+    recorders = SimpleNamespace(
+        dataset_file_handler_class_type=HDF5DatasetFileHandler,
+        dataset_export_dir_path="/tmp/isaaclab/logs",
+        dataset_filename="dataset",
+        dataset_export_mode=1,
+        export_in_record_pre_reset=True,
+        export_in_close=False,
+        dataset_compression=True,
+        success_rate=RecorderTermCfg(),
+        object_pose=RecorderTermCfg(),
+    )
+    env_cfg = SimpleNamespace(
+        terminations=SimpleNamespace(time_out=TerminationTermCfg(), success=None),
+        recorders=recorders,
+    )
+
+    from isaaclab_arena_gap.arena_show import _clear_episode_terms
+
+    _clear_episode_terms(env_cfg)
+
+    assert vars(env_cfg.terminations) == {"time_out": None, "success": None}
+    assert recorders.success_rate is None
+    assert recorders.object_pose is None
+    # Isaac Lab's recorder manager instantiates this class while building the env.
+    assert recorders.dataset_file_handler_class_type is HDF5DatasetFileHandler
+    assert recorders.dataset_export_dir_path == "/tmp/isaaclab/logs"
+    assert recorders.dataset_filename == "dataset"
+    assert recorders.dataset_export_mode == 1
+    assert recorders.export_in_record_pre_reset is True
+    assert recorders.export_in_close is False
+    assert recorders.dataset_compression is True
+
+
+def test_arena_show_clears_episode_terms_in_dict_configs(monkeypatch) -> None:
+    class TerminationTermCfg(SimpleNamespace):
+        pass
+
+    class RecorderTermCfg(SimpleNamespace):
+        pass
+
+    managers_module = ModuleType("isaaclab.managers")
+    managers_module.TerminationTermCfg = TerminationTermCfg
+    managers_module.RecorderTermCfg = RecorderTermCfg
+    isaaclab_package = ModuleType("isaaclab")
+    isaaclab_package.__path__ = []
+    monkeypatch.setitem(sys.modules, "isaaclab", isaaclab_package)
+    monkeypatch.setitem(sys.modules, "isaaclab.managers", managers_module)
+
+    env_cfg = SimpleNamespace(
+        terminations={"time_out": TerminationTermCfg()},
+        recorders={"dataset_filename": "dataset", "success_rate": RecorderTermCfg()},
+    )
+
+    from isaaclab_arena_gap.arena_show import _clear_episode_terms
+
+    _clear_episode_terms(env_cfg)
+
+    assert env_cfg.terminations == {"time_out": None}
+    assert env_cfg.recorders == {"dataset_filename": "dataset", "success_rate": None}
 
 
 def test_public_registration_delegates_and_is_idempotent(monkeypatch) -> None:
@@ -394,3 +497,42 @@ def test_cli_rejects_unsupported_preset(preset: str) -> None:
 
     with pytest.raises(SystemExit):
         cli.main(["--dry-run", "show", "--skip-setup", "--presets", preset])
+
+
+SHOW_LAUNCHER = ROOT / "scripts" / "run_arena_show.sh"
+LIVE = os.environ.get("ISAAC_CAP_RUN_LIVE_TESTS") == "1"
+
+
+def _show(*args: str) -> subprocess.Popen:
+    return subprocess.Popen(
+        [str(SHOW_LAUNCHER), *args, "--headless"],
+        cwd=ROOT.parent,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+
+@pytest.mark.live
+@pytest.mark.skipif(not LIVE, reason="set ISAAC_CAP_RUN_LIVE_TESTS=1 to open show")
+def test_show_builds_and_holds_a_registered_environment() -> None:
+    process = _show("--env", "vabar_tool_sorting__easy_1")
+    output = []
+    try:
+        for line in process.stdout:
+            output.append(line)
+            if "[show] holding" in line:
+                break
+    finally:
+        process.kill()
+        process.wait(timeout=60)
+    assert any("[show] holding" in line for line in output), "".join(output[-80:])
+
+
+@pytest.mark.live
+@pytest.mark.skipif(not LIVE, reason="set ISAAC_CAP_RUN_LIVE_TESTS=1 to open show")
+def test_show_failure_exits_nonzero() -> None:
+    process = _show("--env", "vabar_no_such_environment")
+    output, _ = process.communicate(timeout=900)
+    assert process.returncode != 0, output[-4000:]
+    assert "Unknown environment 'vabar_no_such_environment'" in output

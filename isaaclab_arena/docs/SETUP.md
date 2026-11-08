@@ -113,9 +113,9 @@ registers them with Arena at startup.
 
 ```bash
 git clone --branch vabar-robosimstudio \
-  git@github.com:BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration.git
+  https://github.com/BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration.git
 cd AUTOLab-GaP-NVIDIA-Collaboration/isaaclab_arena
-git lfs pull
+git lfs pull  # only needed if the clone skipped LFS files
 ```
 
 All later commands run from that `isaaclab_arena/` directory. To reproduce a recorded evaluation,
@@ -176,7 +176,8 @@ environment; `./setup.sh` prepares that environment link.
 
 Anthropic can use `ANTHROPIC_API_KEY`. Vertex uses `GAP_VLM_PROVIDER=vertex`, project/region/model
 variables, and Application Default Credentials. `HF_TOKEN` must belong to a Hugging Face account
-that has been granted access to the gated `facebook/sam3` weights. The Docker builder also falls
+that has been granted access to the gated `facebook/sam3` weights. It is needed only for their first
+download; a token stored by `hf auth login` works in its place. The Docker builder also falls
 back to tokens from `gh auth token` and `hf auth token`; it passes both through BuildKit secrets and
 does not persist them in an image layer.
 
@@ -407,8 +408,8 @@ uv run vabar-arena show --env vabar_tool_sorting__easy_1
 uv run vabar-arena show --env vabar_tool_hanging__wrench_easy --viz kit --enable_cameras
 ```
 
-Add `--skip-setup` when the environments are already prepared. Do not add a backend preset; the
-registered factory owns the Newton profile. Inspection holds the robot still and disables scoring
+Add `--skip-setup` when the environments are already prepared. Do not add `--presets` with `--env`;
+the registered factory owns the Newton profile and a preset replaces it. Inspection holds the robot still and disables scoring
 and recorders.
 
 ### Evaluate your own policy

@@ -109,7 +109,7 @@ def _parser() -> argparse.ArgumentParser:
         "scene",
         nargs="?",
         default=None,
-        help="Scene YAML (default: the easy wrench scene).",
+        help="Graph scene YAML (default: the easy wrench scene).",
     )
     show.add_argument(
         "--env",
@@ -125,20 +125,19 @@ def _parser() -> argparse.ArgumentParser:
         "--presets",
         default=None,
         choices=("newton",),
-        help="Newton physics preset. Direct scene YAML defaults to 'newton'.",
+        help=(
+            "Physics preset for a scene YAML, which already defaults to 'newton'. "
+            "Leave it off with --env: registered environments configure their own "
+            "Newton profile and a preset replaces it."
+        ),
     )
     show.add_argument(
-        "--job",
-        default=None,
-        help="Job name to inspect when the supplied JSON contains multiple jobs.",
-    )
-    show.add_argument(
-        "--seed", type=int, default=None, help="Override the job's simulation seed."
+        "--seed", type=int, default=None, help="Simulation and placement seed."
     )
     show.add_argument(
         "--enable_cameras",
         action="store_true",
-        help="Instantiate the scene's cameras even when the job disables them.",
+        help="Instantiate the scene's cameras (slower; off unless the scene enables them).",
     )
     _add_visualizer_option(show)
     show.add_argument(
@@ -284,7 +283,7 @@ def _run_show(
     args: argparse.Namespace, parser: argparse.ArgumentParser, forwarded: Sequence[str]
 ) -> None:
     if args.env is not None and args.scene is not None:
-        parser.error("show accepts either a scene/job path or --env, not both")
+        parser.error("show accepts either a scene YAML or --env, not both")
 
     scene = None
     if args.env is None:
@@ -303,10 +302,8 @@ def _run_show(
     show_args = list(forwarded)
     if show_args[:1] == ["--"]:
         show_args.pop(0)
-    for option in ("job", "seed"):
-        value = getattr(args, option, None)
-        if value is not None:
-            show_args = [f"--{option}", str(value), *show_args]
+    if args.seed is not None:
+        show_args = ["--seed", str(args.seed), *show_args]
     if args.enable_cameras:
         show_args = ["--enable_cameras", *show_args]
     if args.presets:

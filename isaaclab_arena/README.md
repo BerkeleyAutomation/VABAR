@@ -29,12 +29,13 @@ is the score: a graph that finishes is not a success unless Arena's task check p
   about 4 GB. uv's package cache comes on top unless it is on the same filesystem.
 - **Read access to the VABAR repository** (branch `vabar-robosimstudio`). The other pinned sources
   are public.
-- **Credentials**, needed before `./setup.sh` because its final check looks for them:
-  - a VLM API key, as `GAP_VLM_API_KEY`;
-  - a Hugging Face token, as `HF_TOKEN`, for an account that has been granted access to the
-    gated [`facebook/sam3`](https://huggingface.co/facebook/sam3) model.
+- **Credentials**:
+  - a VLM API key, as `GAP_VLM_API_KEY`. Setup's final check requires it.
+  - a Hugging Face token, only for the first download of the gated
+    [`facebook/sam3`](https://huggingface.co/facebook/sam3) model, from an account granted access
+    to it: `HF_TOKEN` below, or a token stored by `hf auth login`.
 
-  Put both in a private file outside the repository; the launchers and the setup check read it:
+  Put them in a private file outside the repository; the launchers and the setup check read it:
 
   ```bash
   mkdir -p "$HOME/.config/gap"
@@ -56,7 +57,7 @@ From the root of the VABAR repository:
 
 ```bash
 cd isaaclab_arena
-git lfs pull
+git lfs pull  # only needed if the clone skipped LFS files
 ./setup.sh
 ```
 
@@ -77,6 +78,9 @@ Without `--skip-setup`, `run` first reruns `./setup.sh`, preflight included, to 
 environments are current. Once setup has succeeded you can skip that. Add `--no-headless` to watch
 in the Isaac Sim viewer. The first episode is slow while models load and shaders compile; an easy
 gear episode is about 3000 simulation steps.
+
+The score lands in `outputs/arena/<timestamp>/.../episode_results_rebuild0.jsonl`; a solved episode
+has `"success": true`.
 
 The full list of tasks and their experiment configs is in
 [docs/SETUP.md section 8](docs/SETUP.md#8-run-the-supported-pairs).
