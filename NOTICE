@@ -34,13 +34,12 @@ assets/embodiments/panda/
 Object meshes, fixtures and scans are listed with their sources, and with the
 licences still to be confirmed, in ASSET_PROVENANCE.md.
 
-isaaclab_arena/ runs VABAR on Isaac Lab Arena. Copyright (c) 2026 NVIDIA
-CORPORATION & AFFILIATES. Licensed under the Apache License, Version 2.0
-(see LICENSE). Files whose header names "The Isaac Lab Arena Project
+isaaclab_arena/ runs VABAR on Isaac Lab Arena. Licensed under the Apache
+License, Version 2.0 (see LICENSE). Files whose header names "The Isaac Lab Arena Project
 Developers" derive from Isaac Lab Arena
 (https://github.com/isaac-sim/IsaacLab-Arena), Apache License 2.0. The OmniPBR
 and OmniGlass material files (*.mdl) bundled with its object assets are
-Copyright NVIDIA Corporation, BSD 3-Clause License, as stated in each file.
+under the BSD 3-Clause License, as stated in each file.
 
 isaaclab_arena/ includes generated robot USDs of third-party robot models.
 Each keeps its own licence, in a LICENSE file beside the files it covers.

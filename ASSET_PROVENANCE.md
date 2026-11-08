@@ -81,7 +81,7 @@ bench (`vabar/backdrop.py`). Only the RTX renderer reads them.
 ## Isaac Lab Arena integration (`isaaclab_arena/`)
 
 Paths below are under `isaaclab_arena/isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/`.
-Code is Apache-2.0, Copyright NVIDIA ([LICENSE](LICENSE)); the robot models keep
+Code is Apache-2.0 ([LICENSE](LICENSE)); the robot models keep
 their own licences ([NOTICE](NOTICE)). Assets converted from this repository's
 files inherit the rows above.
 
@@ -100,7 +100,7 @@ files inherit the rows above.
 
 | Path | Source | Licence |
 | --- | --- | --- |
-| `vabar__{adjustable_wrench, battery, breadboard, bulkhead, clamp, combination_pliers, cutting_pliers, drill, flashlight, flathead_screwdriver, hammer, hanging_hammer_1, hanging_hammer_2, instrument_tray, insulating_tape, measuring_tape, phillips_screwdriver, plier_combination, plier_cutter, pliers, plug, round_nut, safety_glasses, scissor_pair_1, scissor_pair_2, screwdriver, screwdriver_grip, screwdriver_slim, slotted_screwdriver, syringe, syringe_blank, tape_measure, tool_sort_bin, tool_sort_table, utility_knife, wire_spool, wrench_ring_17, wrench_ring_19}/` | made by NVIDIA artists, modelled after this repository's objects; collision and mass edits in-repo. `syringe_blank` references `syringe` with a recoloured albedo (no red cap); it plays the role of the RSS version's spare syringe | Apache-2.0, Copyright NVIDIA. The bundled `*.mdl` materials are BSD-3-Clause, Copyright NVIDIA (header in each file) |
+| `vabar__{adjustable_wrench, battery, breadboard, bulkhead, clamp, combination_pliers, cutting_pliers, drill, flashlight, flathead_screwdriver, hammer, hanging_hammer_1, hanging_hammer_2, instrument_tray, insulating_tape, measuring_tape, phillips_screwdriver, plier_combination, plier_cutter, pliers, plug, round_nut, safety_glasses, scissor_pair_1, scissor_pair_2, screwdriver, screwdriver_grip, screwdriver_slim, slotted_screwdriver, syringe, syringe_blank, tape_measure, tool_sort_bin, tool_sort_table, utility_knife, wire_spool, wrench_ring_17, wrench_ring_19}/` | made by NVIDIA artists, modelled after this repository's objects; collision and mass edits in-repo. `syringe_blank` references `syringe` with a recoloured albedo (no red cap); it plays the role of the RSS version's spare syringe | Apache-2.0. The bundled `*.mdl` materials are BSD-3-Clause (header in each file) |
 | `vabar__multimeter/` | converted from `assets/vab_tool_sort/assets/industrial/multimeter/` | as the tool-sorting export row above: **TODO-before-public** |
 | `vabar__stainless_metal_table_a03/` | Isaac Sim 6.0 SimReady `Stainless_Metal_Table_A03`, referenced from NVIDIA's public asset server at run time and not redistributed | NVIDIA's Isaac Sim terms; no copy here |
 | `vabar__pegboard_rack/`, `vabar__hammer_holders/`, `vabar__wrench_hooks/`, `vabar__scissor_hooks/`, `vabar__plier_supports/`, `vabar__screwdriver_rack/` | converted from `tasks/tool_hanging/assets/` pegboards and holders | as the tool-hanging rows above: **TODO-before-public** |
