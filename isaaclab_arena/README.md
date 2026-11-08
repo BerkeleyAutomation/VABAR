@@ -1,6 +1,6 @@
 # VABAR on Isaac Lab Arena
 
-This folder runs the VABAR tasks and AUTOLab's reference GaP (Graph as Policy) graphs in
+This folder runs the VABAR tasks and the reference GaP (Graph as Policy) graphs of the RSS version in
 [Isaac Lab Arena](https://github.com/isaac-sim/IsaacLab-Arena) on Isaac Sim. The RSS version
 (RoboSimStudio, at the root of this repository) defines the tasks and graphs; this folder rebuilds
 the scenes in Arena and runs those graphs unmodified through the RSS adapter. Arena's episode JSONL
@@ -52,12 +52,10 @@ is the score: a graph that finishes is not a success unless Arena's task check p
 
 ## Quickstart
 
-Clone without `--recurse-submodules`; setup initializes only the submodules it needs.
+From the root of the VABAR repository:
 
 ```bash
-git clone --branch vabar-robosimstudio \
-  git@github.com:BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration.git
-cd AUTOLab-GaP-NVIDIA-Collaboration/isaaclab_arena
+cd isaaclab_arena
 git lfs pull
 ./setup.sh
 ```
@@ -67,7 +65,7 @@ version's environment (`.venv-autolab`), and the GaP skill environments. It ends
 check of the environments, credentials and GPU. The first run downloads tens of gigabytes; rerunning
 it is safe.
 
-Then run one episode of easy gear insertion with AUTOLab's `gear_mesh/gap_perception` graph:
+Then run one episode of easy gear insertion with the RSS graph `gear_mesh/gap_perception`:
 
 ```bash
 uv run vabar-arena run \
@@ -80,16 +78,8 @@ environments are current. Once setup has succeeded you can skip that. Add `--no-
 in the Isaac Sim viewer. The first episode is slow while models load and shaders compile; an easy
 gear episode is about 3000 simulation steps.
 
-The launcher prints its output directory, `outputs/arena/<timestamp>/`. The score is the episode
-JSONL in the run's subfolder; a successful episode has `"success": true`. Camera videos sit next to
-it, and the GaP graph trace is under `gap-trace/`:
-
-```bash
-find outputs/arena -name 'episode_results*.jsonl' -o -name '*.mp4'
-```
-
-Every supported task has a YAML under `isaaclab_arena_gap/experiment_configs/<task family>/`;
-[docs/SETUP.md section 8](docs/SETUP.md#8-run-the-supported-pairs) walks through them.
+The full list of tasks and their experiment configs is in
+[docs/SETUP.md section 8](docs/SETUP.md#8-run-the-supported-pairs).
 
 ## Inspect an environment
 
@@ -100,13 +90,11 @@ uv run vabar-arena show --env vabar_tool_sorting__easy_1 --skip-setup
 `show` builds the environment in the Isaac Sim viewer without a policy and holds the robot still
 until you stop it.
 
-## Evaluate your own policy
+## Run VABAR with your own policy
 
-The environments do not depend on GaP. Any Arena policy can run them, and Arena scores it the same
-way, in the episode JSONL. Copy a baseline YAML and replace its whole `policy:` block: set `type` to
-a registered Arena policy name or the dotted import path of your own policy class, and drop the GaP
-policy's keys (`gap_*`, `robot_profile`, `auto_spawn`, ...), which Arena rejects for any other
-policy. For example, Arena's built-in `zero_action` policy on easy gear insertion:
+The tasks don't depend on GaP: any Isaac Lab Arena policy can run them, and Arena scores it the
+same way. Copy one of the experiment YAMLs and replace its `policy:` block with your policy. For
+example, with Arena's built-in `zero_action` policy:
 
 ```yaml
 runs:
@@ -127,14 +115,9 @@ runs:
 uv run vabar-arena run path/to/my_experiment.yaml --skip-setup
 ```
 
-[docs/SETUP.md, "Evaluate your own policy"](docs/SETUP.md#evaluate-your-own-policy) explains how to
-make your own policy class importable and where each robot's observations and actions are defined.
-
-## Test
-
-The non-GPU tests and the setup preflight are in
-[docs/SETUP.md section 7](docs/SETUP.md#7-run-the-non-gpu-tests-and-preflight). Simulator tests are
-opt-in: set `ISAAC_CAP_RUN_LIVE_TESTS=1` and pass `-m live`.
+Arena's [policy guide](https://isaac-sim.github.io/IsaacLab-Arena/release/0.3.1/pages/concepts/policy/index.html)
+shows how to write a policy. [docs/SETUP.md](docs/SETUP.md#evaluate-your-own-policy) lists each robot's
+observations and actions.
 
 ## Further reading
 
