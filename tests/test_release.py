@@ -106,3 +106,11 @@ def test_tool_sort_blocked_descent_stops_on_a_stall():
         descend = workflow["subgraphs"][subgraph]["nodes"]["descend"]
         assert descend["tool"] == "robot.move_cartesian_until_contact"
         assert descend["inputs"]["stall_steps"] == 60
+
+
+def test_tool_hanging_landmark_beads_stay_out_of_the_cameras(tasks):
+    """The debugging beads render in every camera a perception graph or a policy reads; VABAR_LANDMARK_MARKERS=1 opts in."""
+    from robosimstudio_bench.taskbuild.registry import get_task
+
+    for doc in (vabar.TASKS / "tool_hanging").glob("*.task"):
+        assert all(not spec.visual_markers for spec in get_task(f"tool_hanging/{doc.stem}").objects), doc.stem

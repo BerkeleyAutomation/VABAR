@@ -47,10 +47,18 @@ viewer decor in :mod:`.decor` is drawn at it: one fact, one place.
 collider set: the automatic CoACD decomposition (default) or the hand-authored
 30-piece compound proxy, in an otherwise identical scene. Change only this
 value to compare them.
+
+**The landmark beads are off unless asked for.** The wrenches, scissors and
+screwdrivers can carry red and green beads on their ring centres, bow circles
+and tips (:data:`LANDMARK_MARKERS`). They do not collide, but they render in
+every camera, including the ones a perception graph or a learned policy reads,
+so a benchmark scene leaves them out. ``VABAR_LANDMARK_MARKERS=1`` puts them back
+for inspecting the landmarks in the Studio or a recording.
 """
 
 from __future__ import annotations
 
+import os
 from dataclasses import replace
 from pathlib import Path
 
@@ -457,6 +465,20 @@ def plier_support(name: str, y: float) -> StaticSpec:
 
 
 # ------------------------------------------------------ the tools, placed
+LANDMARK_MARKERS = os.environ.get("VABAR_LANDMARK_MARKERS", "").strip() not in ("", "0")
+"""Whether the tools carry their landmark beads (``VABAR_LANDMARK_MARKERS=1``).
+
+Off by default. The beads are a debugging overlay, and an overlay that every
+camera renders is part of the observation."""
+
+Marker = tuple[tuple[float, float, float], float, tuple[float, float, float]]
+
+
+def _markers(markers) -> tuple[Marker, ...]:
+    """``markers`` when :data:`LANDMARK_MARKERS` is set, otherwise none."""
+    return tuple(markers) if LANDMARK_MARKERS else ()
+
+
 def _wrench(
     name: str,
     record: AssetRecord,
@@ -468,9 +490,9 @@ def _wrench(
 ) -> ObjectSpec:
     """A wrench flat on the table with its closed ring boardward.
 
-    Red marks the measured centre; green beads trace the declared inner
-    radius. The overlay is lifted just above the wrench face so neither colour
-    is hidden inside the rendered steel.
+    With :data:`LANDMARK_MARKERS`, red marks the measured centre and green beads
+    trace the declared inner radius. The overlay is lifted just above the wrench
+    face so neither colour is hidden inside the rendered steel.
     """
     ring_center = tuple(record.feature("ring").payload["center"])
     inner_r = float(record.feature("ring").payload["inner_r"])
@@ -496,24 +518,26 @@ def _wrench(
         mass=mass,
         friction=1.5,
         color=color,
-        visual_markers=(
+        visual_markers=_markers(
             (
-                (ring_center[0], half_thickness + 0.0015, ring_center[2]),
-                0.005,
-                (1.0, 0.0, 0.0),
-            ),
-            *(
                 (
+                    (ring_center[0], half_thickness + 0.0015, ring_center[2]),
+                    0.005,
+                    (1.0, 0.0, 0.0),
+                ),
+                *(
                     (
-                        ring_center[0] + inner_r * float(np.cos(angle)),
-                        half_thickness + 0.0015,
-                        ring_center[2] + inner_r * float(np.sin(angle)),
-                    ),
-                    0.0011,
-                    (0.0, 1.0, 0.0),
-                )
-                for angle in np.linspace(0.0, 2.0 * np.pi, 24, endpoint=False)
-            ),
+                        (
+                            ring_center[0] + inner_r * float(np.cos(angle)),
+                            half_thickness + 0.0015,
+                            ring_center[2] + inner_r * float(np.sin(angle)),
+                        ),
+                        0.0011,
+                        (0.0, 1.0, 0.0),
+                    )
+                    for angle in np.linspace(0.0, 2.0 * np.pi, 24, endpoint=False)
+                ),
+            )
         ),
     )
 
@@ -587,7 +611,7 @@ def screwdriver_slim() -> ObjectSpec:
         quat=(0.0, 0.0, 1.0, 0.0),
         density=1800.0,
         friction=0.8,
-        visual_markers=(((0.175, 0.0, 0.0), 0.003, (1.0, 0.0, 0.0)),),
+        visual_markers=_markers((((0.175, 0.0, 0.0), 0.003, (1.0, 0.0, 0.0)),)),
     )
 
 
@@ -609,7 +633,7 @@ def screwdriver_grip() -> ObjectSpec:
         quat=(0.0, 0.0, 0.0, 1.0),
         density=1600.0,
         friction=0.8,
-        visual_markers=(((-0.100, -0.005697, 0.001303), 0.003, (1.0, 0.0, 0.0)),),
+        visual_markers=_markers((((-0.100, -0.005697, 0.001303), 0.003, (1.0, 0.0, 0.0)),)),
     )
 
 
@@ -641,10 +665,11 @@ def hanging_hammer_2() -> ObjectSpec:
     return _hammer("hammer_2", HANGING_HAMMER_2, -0.18, (0.05, 0.70, 1.00))
 
 
-def _scissor_ring_markers(
-    record: AssetRecord, face_z: float
-) -> tuple[tuple[tuple[float, float, float], float, tuple[float, float, float]], ...]:
-    """Red centres and green evaluated-radius circles for both handle rings."""
+def _scissor_ring_markers(record: AssetRecord, face_z: float) -> tuple[Marker, ...]:
+    """Red centres and green evaluated-radius circles for both handle rings,
+    when :data:`LANDMARK_MARKERS` is set."""
+    if not LANDMARK_MARKERS:
+        return ()
     markers = []
     for feature_name in ("bow", "bow_other"):
         loop = record.feature(feature_name).payload
