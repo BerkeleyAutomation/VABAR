@@ -50,8 +50,14 @@ def objects_centered_in_regions_and_released(
     robot_asset_name: str,
     gripper_joint_name: str,
     gripper_open_position_threshold: float,
+    parked_bounds_xyzxyz: Bounds | None = None,
 ) -> torch.Tensor:
-    """Return whether all objects are released, centered, and settled now."""
+    """Return whether all objects are released, centered, and settled now.
+
+    An object resting inside ``parked_bounds_xyzxyz`` (environment-local, axis-aligned) is not
+    part of this environment's trial and counts as done: a layout with fewer objects than the
+    scene parks the spare out of view and out of reach there.
+    """
     objects = tuple(env.scene[name] for name in object_names)
     regions = tuple(env.scene[name] for name in region_names)
     robot = env.scene[robot_asset_name]
@@ -91,11 +97,18 @@ def objects_centered_in_regions_and_released(
         angular_speed = torch.linalg.vector_norm(
             as_torch(object_instance.data.root_ang_vel_w), dim=-1
         )
-        pair_results.append(
+        done = (
             centered
             & (linear_speed <= linear_velocity_threshold)
             & (angular_speed <= angular_velocity_threshold)
         )
+        if parked_bounds_xyzxyz is not None:
+            local = center_positions_w - as_torch(env.scene.env_origins).to(center_positions_w)
+            parked_box = torch.as_tensor(
+                parked_bounds_xyzxyz, dtype=local.dtype, device=local.device
+            )
+            done = done | ((local >= parked_box[:3]) & (local <= parked_box[3:])).all(dim=-1)
+        pair_results.append(done)
 
     gripper_position = as_torch(robot.data.joint_pos)[:, gripper_joint_index]
     gripper_open = torch.abs(gripper_position) <= gripper_open_position_threshold
@@ -118,6 +131,7 @@ class ObjectsCenteredInRegionsTask(TaskBase):
         consecutive_success_steps: int = 10,
         episode_length_s: float = 480.0,
         task_description: str | None = None,
+        parked_bounds_xyzxyz: Bounds | None = None,
     ) -> None:
         for name, value in (
             ("linear_velocity_threshold", linear_velocity_threshold),
@@ -135,6 +149,13 @@ class ObjectsCenteredInRegionsTask(TaskBase):
         ):
             raise ValueError("consecutive_success_steps must be a positive integer")
         self._validate_regions(object_list, region_list, bounds_xyzxyz)
+        if parked_bounds_xyzxyz is not None:
+            self._validate_regions([None], [None], [parked_bounds_xyzxyz])
+        self.parked_bounds = (
+            None
+            if parked_bounds_xyzxyz is None
+            else tuple(float(value) for value in parked_bounds_xyzxyz)
+        )
         self.objects = list(object_list)
         self.regions = list(region_list)
         self.bounds = [
@@ -200,6 +221,7 @@ class ObjectsCenteredInRegionsTask(TaskBase):
                 "robot_asset_name": self.robot_asset_name,
                 "gripper_joint_name": self.gripper_joint_name,
                 "gripper_open_position_threshold": self.gripper_open_position_threshold,
+                "parked_bounds_xyzxyz": self.parked_bounds,
             },
         )
         settled = TrueForConsecutiveStepsCfg(

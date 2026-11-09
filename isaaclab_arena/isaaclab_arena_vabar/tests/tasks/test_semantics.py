@@ -702,3 +702,35 @@ def test_gear_mesh_targets_and_speed_gates_are_per_environment():
     assert term(env, **params).tolist() == [False, False]
     term.reset([1])
     assert term.latched.tolist() == [True, False]
+
+
+def test_tool_sort_counts_a_parked_object_as_absent() -> None:
+    from isaaclab_arena_vabar.tasks.tool_sorting.task import (
+        objects_centered_in_regions_and_released,
+    )
+
+    _, env = _tool_sort_term(center=(0.35, 0.88, 0.79), linear=(0.0, 0.0, 0.0))
+    env.scene = _SceneWithOrigins(env.scene, torch.zeros((1, 3)))
+    params = {
+        "object_names": ["hammer"],
+        "region_names": ["bin"],
+        "bounds_xyzxyz": [(-0.2, -0.2, 0.0, 0.2, 0.2, 0.2)],
+        "linear_velocity_threshold": 0.01,
+        "angular_velocity_threshold": 0.05,
+        "robot_asset_name": "robot",
+        "gripper_joint_name": "left_driver_joint",
+        "gripper_open_position_threshold": 0.1,
+    }
+    assert not objects_centered_in_regions_and_released(env, **params).item()
+    parked = {**params, "parked_bounds_xyzxyz": (0.2, 0.8, 0.7, 0.5, 0.95, 0.9)}
+    assert objects_centered_in_regions_and_released(env, **parked).item()
+    # Environment-local: the same object in a clone offset by 10 m is still parked.
+    env.scene.env_origins = torch.tensor([[10.0, 0.0, 0.0]])
+    env.scene["hammer"].data.root_com_pos_w[0, 0] += 10.0
+    assert objects_centered_in_regions_and_released(env, **parked).item()
+
+
+class _SceneWithOrigins(dict):
+    def __init__(self, entries, env_origins):
+        super().__init__(entries)
+        self.env_origins = env_origins

@@ -161,7 +161,7 @@ relations:
     edge_margin_m: 0.01
 task:
   composition: atomic
-  description: pick up all six syringes from the cluttered instrument tray and drop
+  description: pick up every syringe from the cluttered instrument tray and drop
     each through the hole in the yellow sharps disposal box
   subtasks:
   - kind: ObjectsCenteredInRegionsTask
@@ -219,3 +219,6 @@ task:
         - 0.134
       consecutive_success_steps: 50
       episode_length_s: 1368.0
+      # The RSS version's t08, t14 and t19 hold five syringes: the scene's sixth lies parked
+      # off to the side (syringe_disposal/tray_layouts.py PARKED_BOUNDS_XYZXYZ) and is not scored.
+      parked_bounds_xyzxyz: [0.2, 0.8, 0.7, 0.5, 0.95, 0.9]

@@ -227,6 +227,11 @@ Syringe both and cluttered lay their syringes out from AUTOLab's own trials (30 
 seed `s` starts env `e` from trial `(s + e) mod count`, so a seed always gives the same trial, and the
 seeds 42-51 sweep gives ten distinct pair trials and all seven clutter trials. The tray and box
 positions within their YAML boxes come from the relation solve for that seed.
+As in the RSS version, clutter trials t08, t14 and t19 hold five syringes (it drops the one
+lying across its tray wall and renumbers the rest, so the red-cap syringe takes the next
+place): the scene's sixth, a blank spare, lies parked on the table's far corner, out of the
+cameras' views and the arm's reach, and the scoring counts it as absent
+(`parked_bounds_xyzxyz`).
 
 The baseline catalog contains 22 one-episode, one-rebuild managed GaP remote jobs. Every managed
 GaP job runs through the RSS adapter (`isaaclab_arena_gap.rss_adapter`, launcher

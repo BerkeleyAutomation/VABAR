@@ -68,7 +68,7 @@ RESET_RANDOMIZATION = {
     "syringe_disposal/single.yaml": "Dispose of one syringe. The tray varies in a 10 x 10 cm XY region and the box in a 7 x 10 cm XY region; syringes use random on-tray positions with a 1 cm edge margin; fixed headings.",
     "syringe_disposal/both.yaml": "Dispose of both syringes, laid out as one of AUTOLab's 30 tray_pair trials: both barrels across the tray, 90 mm apart along it, the tray at 140 deg +/-25 deg. The tray varies in a 10 x 10 cm XY region and the box in a 7 x 10 cm XY region.",
     "syringe_disposal/designated.yaml": "Dispose of the red-cap syringe, leaving its blank spare. The tray varies in a 10 x 10 cm XY region and the box in a 7 x 10 cm XY region; syringes use random on-tray positions with a 1 cm edge margin; fixed headings.",
-    "syringe_disposal/cluttered.yaml": "Dispose of six syringes, one red-cap and five blank spares, in one of AUTOLab's six-syringe clutter layouts: a row along the tray, each barrel across it with up to 35 deg of yaw jitter, neighbours allowed to cross. The tray keeps AUTOLab's 140 deg heading and varies in a 10 x 10 cm XY region; the box varies in a 7 x 10 cm XY region.",
+    "syringe_disposal/cluttered.yaml": "Dispose of six syringes (five in three trials, the sixth parked), one red-cap and the rest blank spares, in one of AUTOLab's clutter layouts: a row along the tray, each barrel across it with up to 35 deg of yaw jitter, neighbours allowed to cross. The tray keeps AUTOLab's 140 deg heading and varies in a 10 x 10 cm XY region; the box varies in a 7 x 10 cm XY region.",
     "cable_routing/easy.yaml": (
         "`layout_seed` jointly samples the cable shape, its anchor, and the valid "
         "two-peg board. Seed 10009 is the regression layout."

@@ -66,10 +66,10 @@ The runtime environment paths are:
 Generated registration modules live under `assets/registrations/`.
 
 The four syringe tasks dispose one, both of two, the designated red-cap syringe
-beside a blank spare, or all six cluttered syringes. Tray and box positions vary
+beside a blank spare, or every cluttered syringe (six, or five in three trials). Tray and box positions vary
 by +/-5 cm in X/Y; `on` places syringes randomly with a 1 cm edge margin.
-Clutter lays its six syringes out in a row from one of AUTOLab's six-syringe clutter trials, each
-barrel across the tray with up to 35 deg of yaw jitter; the other tasks use fixed headings.
+Clutter lays its syringes out in a row from one of AUTOLab's clutter trials (in three of them the
+RSS version drops one, and Arena parks it off to the side), each barrel across the tray with up to 35 deg of yaw jitter; the other tasks use fixed headings.
 
 ## Inspect an environment
 

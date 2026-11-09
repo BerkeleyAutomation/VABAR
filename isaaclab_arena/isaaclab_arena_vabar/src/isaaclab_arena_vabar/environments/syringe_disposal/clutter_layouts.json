@@ -1,5 +1,5 @@
 {
- "source": "AUTOLab tasks/syringe_packing/start_poses/tray_clutter_tNN.json at 18b974e (make_tray_clutter_trials.py --count 30 --seed 5), the seven six-syringe trials. The current RSS version (poses/tray_clutter_tNN.json) drops syringe_0 from t08, t14 and t19 as lying across its tray wall; each lies at |y| <= 0.174 m, inside this tray's 0.197 m inner half-length, so all seven stay",
+ "source": "AUTOLab tasks/syringe_packing/start_poses/tray_clutter_tNN.json at 18b974e (make_tray_clutter_trials.py --count 30 --seed 5), the seven six-syringe trials, as the current RSS version lays them out (poses/tray_clutter_tNN.json): it drops syringe_0 from t08, t14 and t19 as lying across its tray wall and renumbers the rest, so those three trials hold five syringes and the scene's sixth is parked (tray_layouts.PARKED_XY)",
  "frame": "instrument tray: x across (0.2 m), y along (0.4 m); each syringe is [x_m, y_m, yaw_rad] of its origin, long axis = local +y",
  "layouts": [
   {
@@ -76,11 +76,6 @@
    "autolab_trial": 8,
    "syringes": [
     [
-     -0.0156,
-     0.1738,
-     1.7882
-    ],
-    [
      0.0001,
      0.0886,
      1.5136
@@ -111,11 +106,6 @@
    "autolab_trial": 14,
    "syringes": [
     [
-     0.0026,
-     0.1678,
-     1.8574
-    ],
-    [
      0.0177,
      0.0854,
      1.0623
@@ -145,11 +135,6 @@
   {
    "autolab_trial": 19,
    "syringes": [
-    [
-     -0.0008,
-     0.1664,
-     1.2882
-    ],
     [
      0.0031,
      0.1022,
