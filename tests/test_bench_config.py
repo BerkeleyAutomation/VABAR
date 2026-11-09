@@ -282,6 +282,25 @@ def test_vabar_run_applies_the_config_without_overriding_the_command_line(flags)
     assert argv == [*base, "--renderer", "auto"]  # v1.0's default for a vision run
     argv, _, _ = prepare(["--task", "tool_hanging/wrenches_level1", "--solve", "routine"], cfg.load("default"), flags)
     assert "--renderer" not in argv  # a run without cameras gets no renderer
+    record = ["--task", "tool_hanging/wrenches_level1", "--solve", "routine", "--record"]
+    argv, _, _ = prepare(record, cfg.load("default"), flags)
+    assert flags.value(argv, "--renderer") == "auto"  # --record's video comes from the renderer
+    argv, _, _ = prepare([*record, "--renderer", "tiled"], cfg.load("default"), flags)
+    assert flags.value(argv, "--renderer") == "tiled"
+
+
+@pytest.mark.parametrize("solve", ["routine", "idle", "mypkg.policy:MyPolicy"])
+def test_only_a_graph_gets_on_demand_observations(solve, flags):
+    """Upstream refuses --obs-render on-demand for any policy but a graph: the README's first command failed."""
+    for bench in (False, True):
+        add, dropped, fields = config_flags(
+            cfg.load("default"), "tool_hanging/wrenches_level1", solve=solve, vision=False, flags=flags, bench=bench
+        )
+        assert "--obs-render" not in add and not any("obs-render" in d for d in dropped) and "obs_render" not in fields
+    add, _, _ = config_flags(
+        cfg.load("default"), "tool_hanging/wrenches_level1", solve="graph", vision=True, flags=flags, bench=False
+    )
+    assert flags.value(add, "--obs-render") == "on-demand"
 
 
 # ----------------------------------------------------------------------------- refused waves

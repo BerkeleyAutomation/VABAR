@@ -185,6 +185,11 @@ def config_flags(
         value = runtime[key]
         if value in ("", 0):
             continue
+        if key == "obs_render" and value == "on-demand" and solve != "graph":
+            # Only a graph asks for its renders. Every other policy -- a routine,
+            # idle, your own class -- reads the cameras each step, and upstream
+            # refuses on-demand for it rather than let it act on frames from reset.
+            continue
         if flags.accepts(flag):
             if str(value) != str(flags.default(flag)):
                 add += [flag, str(value)]
@@ -218,8 +223,13 @@ def dropped_warning(config: cfg.Config, dropped: list[str], *, via_jobs: set[str
 
 
 def with_default_renderer(argv: list[str]) -> list[str]:
-    """A vision graph observes through cameras, and upstream's runner builds no renderer unless one is named."""
-    if _has(argv, "--perception", "vision") and not any(a.split("=")[0] in RENDER_FLAGS for a in argv):
+    """Upstream's runner builds no renderer unless one is named, and two kinds of run need one.
+
+    A vision graph observes through cameras, and ``--record`` writes its video from
+    the renderer: without one it keeps the state and no video at all.
+    """
+    wants_pictures = _has(argv, "--perception", "vision") or "--record" in argv
+    if wants_pictures and not any(a.split("=")[0] in RENDER_FLAGS for a in argv):
         return [*argv, "--renderer", "auto"]
     return argv
 
