@@ -41,6 +41,7 @@ def test_hanging_metrics_record_first_completed_episode_and_partial_ids(monkeypa
 
     task = ToolHangingTask.__new__(ToolHangingTask)
     task.goal_specs = ()
+    task.hands = ()
     env = SimpleNamespace(
         num_envs=2,
         device="cpu",
@@ -51,7 +52,7 @@ def test_hanging_metrics_record_first_completed_episode_and_partial_ids(monkeypa
     )
     monkeypatch.setattr(
         metrics,
-        "tool_hanging_goal_completion",
+        "tool_hanging_released_completion",
         lambda *a, **k: torch.tensor([[False, True], [True, True]]),
     )
     recorders = []

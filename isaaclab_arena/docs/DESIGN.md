@@ -70,7 +70,7 @@ repository, which encloses this folder, owns the reusable model and motion stack
 
 Every task uses the camera rig its AUTOLab suite stages, one rig per suite.
 Franka tasks use `gear_mesh_views@v2` (gear), `tool_sort_agentview@v3` (tool
-sorting) and `agentview@v2` (syringe). Their fixed views ride the FR3 base at
+sorting) and `sharps_agentview@v1` (syringe, formerly `agentview@v2`). Their fixed views ride the FR3 base at
 their RSS offset from the Panda base, and the tool-sorting and syringe
 rigs add a Robotiq wrist camera. YAM tasks use AUTOLab's YAM station, every
 camera 1280 x 720 at 30 Hz. Tool hanging uses the shared rig: its
@@ -469,10 +469,16 @@ selected explicitly, preserving relative CAD paths in evaluator images.
 
 ## Tool Hanging Scoring
 
-Every tool-hanging scene scores its final state exactly as AUTOLab v1.0 does: its suite does not end
-on success, and the goal (geometry, contact force of at least 0.2 N on the fixture, speed of at most
-0.15 m/s) is read on the step the episode ends, either when the policy stops or at the time limit.
-A goal met mid-insertion does not end the episode. As in AUTOLab, nothing checks release, so a tool
-still pressed against its fixture by a hand when time runs out passes if every clause holds. The RSS
-adapter already steps AUTOLab's 60 settle steps after the graph ends, so tool-hanging experiments
-add no `graph_success_settle_s` or `graph_failure_settle_s` of their own.
+Every tool-hanging scene scores the RSS version's goal (`tasks/tool_hanging/*_level{1,2}.task`):
+each tool's clause -- geometry, contact force of at least 0.2 N on the fixture, speed of at most
+0.15 m/s, and the release clause `(> (hands-clear TOOL) R)` -- holds for one second of simulated
+time (`hold-for 1.0`), and success ends the episode. `hands-clear` is the distance from the tool to
+the nearest tool centre of either YAM (`link_6` plus RoboSimStudio's `yam_linear_arena` grip
+offset). `R` follows the RSS rule -- the tool's radius off its collision hulls plus 15 mm, rounded
+up to the centimetre -- applied to Arena's own tools and measured from each tool's physical centre,
+the centre of its hulls' bounds (`release_point_xyz`): plier 0.10 m, scissors 0.10 m, screwdriver
+0.11 m and ring spanner 0.14 m. The RSS documents state 0.11, 0.10, 0.20 and 0.21 m about their own
+tools' origins; the screwdriver's sits at one end, and the RSS wrench is a larger tool. A tool held against its fixture, or one that
+slides off as it is let go, does not pass. The RSS adapter already steps AUTOLab's 60 settle steps
+after the graph ends, so tool-hanging experiments add no `graph_success_settle_s` or
+`graph_failure_settle_s` of their own.

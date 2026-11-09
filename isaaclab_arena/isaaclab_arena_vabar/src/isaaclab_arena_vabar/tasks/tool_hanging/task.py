@@ -22,14 +22,26 @@ from isaaclab_arena_vabar.numeric import is_finite_real
 
 from .geometry import LoopFeature, RodFeature
 from .metrics import ToolHangingFractionMetric
-from .terminations import HangingGoalSpec, tool_hanging_final_state_success
+from .terminations import HandTcp, HangingGoalSpec, tool_hanging_held_success
+
+
+YAM_TCPS = tuple(
+    HandTcp(robot_name=f"{side}_robot", body_name="link_6", offset_xyz=(0.0, -0.044, 0.13))
+    for side in ("left", "right")
+)
+"""Both YAM hands' tool centres: RoboSimStudio's ``yam_linear_arena`` grip point on ``link_6``,
+the hand the RSS adapter registers for Arena's tool-hanging crank hand."""
+
+RELEASE_HOLD_S = 1.0
+"""The RSS version's ``(hold-for 1.0 ...)`` around each tool's clause."""
 
 
 class ToolHangingTask(TaskBase):
     """Score graph-resolved tools and fixtures against numeric loop/rod goals.
 
-    The episode is scored on its final state, exactly as AUTOLab v1.0 scores tool hanging:
-    every goal holds on the last step.
+    As the RSS version scores tool hanging: every goal -- hung, in contact with its fixture,
+    at rest and released (no hand within the goal's ``hands_clear_m``) -- holds for
+    :data:`RELEASE_HOLD_S` of simulated time, and success ends the episode.
     """
 
     def __init__(
@@ -39,6 +51,8 @@ class ToolHangingTask(TaskBase):
         goals: Sequence[Mapping[str, Any]],
         episode_length_s: float | None = None,
         task_description: str | None = None,
+        hold_s: float = RELEASE_HOLD_S,
+        hands: tuple[HandTcp, ...] = YAM_TCPS,
     ):
         super().__init__(episode_length_s=episode_length_s, task_description=task_description)
         self.tools = tuple(tools)
@@ -59,6 +73,8 @@ class ToolHangingTask(TaskBase):
             )
             for goal in self.goal_specs
         )
+        self.hold_s = _threshold("hold_s", hold_s)
+        self.hands = tuple(hands)
         self.scene_config = self._make_scene_cfg()
         self.termination_cfg = TaskTerminationCfg(
             timeout_s=self.episode_length_s,
@@ -67,8 +83,8 @@ class ToolHangingTask(TaskBase):
                     name="tool_hanging",
                     predicate_sequence=[
                         TerminationTermCfg(
-                            func=tool_hanging_final_state_success,
-                            params={"goals": self.goal_specs},
+                            func=tool_hanging_held_success,
+                            params={"goals": self.goal_specs, "hands": self.hands, "hold_s": self.hold_s},
                         )
                     ],
                 )
@@ -95,7 +111,7 @@ class ToolHangingTask(TaskBase):
         return None
 
     def get_metrics(self) -> list[MetricBase]:
-        return [SuccessRateMetric(), ToolHangingFractionMetric(self.goal_specs)]
+        return [SuccessRateMetric(), ToolHangingFractionMetric(self.goal_specs, self.hands)]
 
 
 def _newton_fixture_contact_sensor(tool: Asset, fixtures: tuple[Asset, ...]) -> NewtonContactSensorCfg:
@@ -248,6 +264,9 @@ def _goal_spec(
         )
     contact_force_n = _threshold("contact_force_n", raw.get("contact_force_n", 0.2))
     speed_m_s = _threshold("speed_m_s", raw.get("speed_m_s", 0.15))
+    hands_clear_raw = raw.get("hands_clear_m")
+    hands_clear_m = None if hands_clear_raw is None else _threshold("hands_clear_m", hands_clear_raw)
+    release_point = _point("release_point_xyz", raw.get("release_point_xyz", (0.0, 0.0, 0.0)))
     return HangingGoalSpec(
         tool_name=tool_name,
         fixture_name=fixture_name,
@@ -267,6 +286,8 @@ def _goal_spec(
         containment_point_xyz=containment_point,
         contact_force_n=contact_force_n,
         speed_m_s=speed_m_s,
+        hands_clear_m=hands_clear_m,
+        release_point_xyz=release_point,
         alternative_fixture_names=fixture_names if len(fixture_names) > 1 else (),
     )
 

@@ -9,19 +9,20 @@ from isaaclab.utils.configclass import configclass
 from isaaclab_arena.metrics.metric_base import MetricBase
 from isaaclab_arena.metrics.metric_term_cfg import MetricTermCfg
 
-from .terminations import HangingGoalSpec, tool_hanging_goal_completion
+from .terminations import HandTcp, HangingGoalSpec, tool_hanging_released_completion
 
 
 class ToolHangingFractionRecorder(RecorderTerm):
-    """Record the current fraction of complete tool goals just before reset."""
+    """Record the current fraction of complete (hung and released) tool goals just before reset."""
 
     def __init__(self, cfg, env):
         super().__init__(cfg, env)
         self.name = cfg.name
         self.goals = cfg.goals
+        self.hands = cfg.hands
 
     def record_pre_reset(self, env_ids):
-        completed = tool_hanging_goal_completion(self._env, goals=self.goals)
+        completed = tool_hanging_released_completion(self._env, goals=self.goals, hands=self.hands)
         return self.name, completed[env_ids].to(torch.float32).mean(dim=-1)
 
 
@@ -30,6 +31,7 @@ class ToolHangingFractionRecorderCfg(RecorderTermCfg):
     class_type: type[RecorderTerm] = ToolHangingFractionRecorder
     name: str = "tool_hanging_fraction"
     goals: tuple[HangingGoalSpec, ...] = ()
+    hands: tuple[HandTcp, ...] = ()
 
 
 def compute_tool_hanging_fraction(recorded_metric_data: list[np.ndarray]) -> float:
@@ -49,11 +51,14 @@ class ToolHangingFractionMetric(MetricBase):
     name = "tool_hanging_fraction"
     recorder_term_name = "tool_hanging_fraction"
 
-    def __init__(self, goals: tuple[HangingGoalSpec, ...]):
+    def __init__(self, goals: tuple[HangingGoalSpec, ...], hands: tuple[HandTcp, ...] = ()):
         self.goals = goals
+        self.hands = hands
 
     def get_recorder_term_cfg(self) -> RecorderTermCfg:
-        return ToolHangingFractionRecorderCfg(name=self.recorder_term_name, goals=self.goals)
+        return ToolHangingFractionRecorderCfg(
+            name=self.recorder_term_name, goals=self.goals, hands=self.hands
+        )
 
     def get_metric_term_cfg(self) -> MetricTermCfg:
         return MetricTermCfg(
