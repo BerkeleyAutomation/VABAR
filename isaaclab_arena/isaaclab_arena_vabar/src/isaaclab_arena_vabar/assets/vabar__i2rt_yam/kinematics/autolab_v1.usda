@@ -1,0 +1,70 @@
+#usda 1.0
+(
+    """Reshape the YAM's chain into the one AUTOLab's GaP v1.0 plans on.
+
+    Opt-in: the `kinematics` axis's default `i2rt` is the real robot (I2RT
+    v1.2.4 onward, CAD-aligned), and this layer moves it away from that.
+
+    AUTOLab's RoboSimStudio embodiment `yam_i2rt` (cable routing, USB-C) is
+    composed from I2RT's interim yam.xml (2026-03 .. 2026-07, the AUTOLab pin
+    i2rt@c40b4125), which I2RT replaced in v1.2.4. Its PyRoKi IK checks its
+    URDF of that chain against the simulated arm at construction and refuses a
+    tool-link-to-TCP drift over 1.0 mm between two poses, falling back to
+    another solver. Against the default (`i2rt`) chain it measures 1.09 mm:
+
+      | in the base frame at q = 0       | i2rt (default) | AUTOLab yam_i2rt |
+      | shoulder (joint2) axis height    | 114.0 mm       | 112.5 mm         |
+      | joint4 -> joint5 axis offset     |  74.0 mm       |  70.385 mm       |
+      | wrist (joint5/6) lateral offset  |   0            |   3.589 mm       |
+      | joint6 axis height - joint4's    |   0            |  -0.199 mm       |
+
+    So a simulator standing in for AUTOLab's cell runs AUTOLab's solver only
+    on AUTOLab's chain. This layer makes it so by moving two bodies, each with
+    its whole subtree and its joint anchor:
+
+    - link_2 down 1.5 mm along joint1's axis: the shoulder height;
+    - link_5 by (-3.616, +3.589, -0.199) mm in the base frame at q = 0,
+      (3.616, 0.199, -3.589) mm in link_4's frame: the wrist offsets.
+
+    The two-pose drift against AUTOLab's yam_i2rt_arm.urdf is then under
+    0.01 mm. Meshes ride on their bodies, so the joints between link_4 and
+    link_5 and between link_1 and link_2 show a few-millimetre seam.
+    """
+)
+over "i2rt_yam"
+{
+    over "Geometry"
+    {
+        over "arm"
+        {
+            over "link_1"
+            {
+                over "link_2"
+                {
+                    double3 xformOp:translate = (0.000025, -0.02, 0.0394)
+
+                    over "joint2"
+                    {
+                        point3f physics:localPos0 = (0.000025, -0.02, 0.0394)
+                    }
+
+                    over "link_3"
+                    {
+                        over "link_4"
+                        {
+                            over "link_5"
+                            {
+                                double3 xformOp:translate = (-0.0703842, -0.0393005, -0.0035644)
+
+                                over "joint5"
+                                {
+                                    point3f physics:localPos0 = (-0.0703842, -0.0393005, -0.0035644)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

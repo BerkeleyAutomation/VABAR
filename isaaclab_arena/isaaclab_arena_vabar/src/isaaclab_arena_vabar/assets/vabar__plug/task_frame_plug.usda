@@ -1,0 +1,51 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+)
+{
+    bool physics:rigidBodyEnabled = 1
+
+    def Xform "ArtistFrame" (
+        prepend references = @simready_usd/sm_vabar__plug_01.usd@</RootNode>
+    )
+    {
+        # The admitted task rigid-body frame remains unchanged for scoring,
+        # precision insertion, and cable attachment. Only the replacement
+        # artist closure is corrected; local -X is world -Z under the source
+        # plug pose.
+        double xformOp:rotateX = -90
+        uniform token[] xformOpOrder = ["xformOp:rotateX"]
+
+        over Scope "PhysicsMaterials" {
+            over Material "physics_mat_m_opaque__plastic__glossy_white_a01" {
+                # Slightly raise the artist material's 0.4 grip friction while
+                # retaining stable free-drop triangle contact.
+                float physics:dynamicFriction = 0.6
+                float physics:restitution = 0
+                float physics:staticFriction = 0.6
+            }
+        }
+
+        over "Geometry_obj_00" {
+            over "Geometry_mesh_00" {
+                bool physics:collisionEnabled = 0
+            }
+        }
+
+        def Mesh "SourceCollisionMesh" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+            prepend references = @source_collision_mesh.usdc@</Asset/Geometry>
+        ) {
+            rel material:binding:physics = </Asset/ArtistFrame/PhysicsMaterials/physics_mat_m_opaque__plastic__glossy_white_a01>
+            double xformOp:rotateX = 90
+            uniform token[] xformOpOrder = ["xformOp:rotateX"]
+        }
+    }
+}

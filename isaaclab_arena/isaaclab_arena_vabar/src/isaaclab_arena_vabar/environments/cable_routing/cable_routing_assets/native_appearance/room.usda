@@ -1,0 +1,246 @@
+#usda 1.0
+(
+    defaultPrim = "root"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "root"
+{
+    double3 xformOp:translate = (-0.5875, 0, 0.017)
+    uniform token[] xformOpOrder = ["xformOp:translate"]
+
+    def Scope "scenery"
+    {
+        def Mesh "room_floor" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_1>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(-3.4, -4, 0), (-3.4, -4, 0.003), (-3.4, 4, 0.003), (-3.4, 4, 0), (4.6, -4, 0), (4.6, 4, 0), (4.6, 4, 0.003), (4.6, -4, 0.003), (-3.4, -4, 0), (4.6, -4, 0), (4.6, -4, 0.003), (-3.4, -4, 0.003), (-3.4, 4, 0), (-3.4, 4, 0.003), (4.6, 4, 0.003), (4.6, 4, 0), (-3.4, -4, 0), (-3.4, 4, 0), (4.6, 4, 0), (4.6, -4, 0), (-3.4, -4, 0.003), (4.6, -4, 0.003), (4.6, 4, 0.003), (-3.4, 4, 0.003)]
+            texCoord2f[] primvars:st = [(-4, 0), (-4, 0.003), (4, 0.003), (4, 0), (-4, 0), (4, 0), (4, 0.003), (-4, 0.003), (-3.4, 0), (4.6, 0), (4.6, 0.003), (-3.4, 0.003), (-3.4, 0), (-3.4, 0.003), (4.6, 0.003), (4.6, 0), (-3.4, -4), (-3.4, 4), (4.6, 4), (4.6, -4), (-3.4, -4), (4.6, -4), (4.6, 4), (-3.4, 4)] (
+                interpolation = "vertex"
+            )
+        }
+
+        def Mesh "room_wall_xn" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_2>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(-1.62, -2.7, 0), (-1.62, -2.7, 2.6), (-1.62, 2.7, 2.6), (-1.62, 2.7, 0), (-1.58, -2.7, 0), (-1.58, 2.7, 0), (-1.58, 2.7, 2.6), (-1.58, -2.7, 2.6), (-1.62, -2.7, 0), (-1.58, -2.7, 0), (-1.58, -2.7, 2.6), (-1.62, -2.7, 2.6), (-1.62, 2.7, 0), (-1.62, 2.7, 2.6), (-1.58, 2.7, 2.6), (-1.58, 2.7, 0), (-1.62, -2.7, 0), (-1.62, 2.7, 0), (-1.58, 2.7, 0), (-1.58, -2.7, 0), (-1.62, -2.7, 2.6), (-1.58, -2.7, 2.6), (-1.58, 2.7, 2.6), (-1.62, 2.7, 2.6)]
+            texCoord2f[] primvars:st = [(-2.7, 0), (-2.7, 2.6), (2.7, 2.6), (2.7, 0), (-2.7, 0), (2.7, 0), (2.7, 2.6), (-2.7, 2.6), (-1.62, 0), (-1.58, 0), (-1.58, 2.6), (-1.62, 2.6), (-1.62, 0), (-1.62, 2.6), (-1.58, 2.6), (-1.58, 0), (-1.62, -2.7), (-1.62, 2.7), (-1.58, 2.7), (-1.58, -2.7), (-1.62, -2.7), (-1.58, -2.7), (-1.58, 2.7), (-1.62, 2.7)] (
+                interpolation = "vertex"
+            )
+        }
+
+        def Mesh "room_wall_xp" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_2>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(2.78, -2.7, 0), (2.78, -2.7, 2.6), (2.78, 2.7, 2.6), (2.78, 2.7, 0), (2.82, -2.7, 0), (2.82, 2.7, 0), (2.82, 2.7, 2.6), (2.82, -2.7, 2.6), (2.78, -2.7, 0), (2.82, -2.7, 0), (2.82, -2.7, 2.6), (2.78, -2.7, 2.6), (2.78, 2.7, 0), (2.78, 2.7, 2.6), (2.82, 2.7, 2.6), (2.82, 2.7, 0), (2.78, -2.7, 0), (2.78, 2.7, 0), (2.82, 2.7, 0), (2.82, -2.7, 0), (2.78, -2.7, 2.6), (2.82, -2.7, 2.6), (2.82, 2.7, 2.6), (2.78, 2.7, 2.6)]
+            texCoord2f[] primvars:st = [(-2.7, 0), (-2.7, 2.6), (2.7, 2.6), (2.7, 0), (-2.7, 0), (2.7, 0), (2.7, 2.6), (-2.7, 2.6), (2.78, 0), (2.82, 0), (2.82, 2.6), (2.78, 2.6), (2.78, 0), (2.78, 2.6), (2.82, 2.6), (2.82, 0), (2.78, -2.7), (2.78, 2.7), (2.82, 2.7), (2.82, -2.7), (2.78, -2.7), (2.82, -2.7), (2.82, 2.7), (2.78, 2.7)] (
+                interpolation = "vertex"
+            )
+        }
+
+        def Mesh "room_wall_yp" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_2>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(-2.1, 2.18, 0), (-2.1, 2.18, 2.6), (-2.1, 2.22, 2.6), (-2.1, 2.22, 0), (3.3, 2.18, 0), (3.3, 2.22, 0), (3.3, 2.22, 2.6), (3.3, 2.18, 2.6), (-2.1, 2.18, 0), (3.3, 2.18, 0), (3.3, 2.18, 2.6), (-2.1, 2.18, 2.6), (-2.1, 2.22, 0), (-2.1, 2.22, 2.6), (3.3, 2.22, 2.6), (3.3, 2.22, 0), (-2.1, 2.18, 0), (-2.1, 2.22, 0), (3.3, 2.22, 0), (3.3, 2.18, 0), (-2.1, 2.18, 2.6), (3.3, 2.18, 2.6), (3.3, 2.22, 2.6), (-2.1, 2.22, 2.6)]
+            texCoord2f[] primvars:st = [(2.18, 0), (2.18, 2.6), (2.22, 2.6), (2.22, 0), (2.18, 0), (2.22, 0), (2.22, 2.6), (2.18, 2.6), (-2.1, 0), (3.3, 0), (3.3, 2.6), (-2.1, 2.6), (-2.1, 0), (-2.1, 2.6), (3.3, 2.6), (3.3, 0), (-2.1, 2.18), (-2.1, 2.22), (3.3, 2.22), (3.3, 2.18), (-2.1, 2.18), (3.3, 2.18), (3.3, 2.22), (-2.1, 2.22)] (
+                interpolation = "vertex"
+            )
+        }
+
+        def Mesh "room_wall_yn" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_2>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(-2.1, -2.22, 0), (-2.1, -2.22, 2.6), (-2.1, -2.18, 2.6), (-2.1, -2.18, 0), (3.3, -2.22, 0), (3.3, -2.18, 0), (3.3, -2.18, 2.6), (3.3, -2.22, 2.6), (-2.1, -2.22, 0), (3.3, -2.22, 0), (3.3, -2.22, 2.6), (-2.1, -2.22, 2.6), (-2.1, -2.18, 0), (-2.1, -2.18, 2.6), (3.3, -2.18, 2.6), (3.3, -2.18, 0), (-2.1, -2.22, 0), (-2.1, -2.18, 0), (3.3, -2.18, 0), (3.3, -2.22, 0), (-2.1, -2.22, 2.6), (3.3, -2.22, 2.6), (3.3, -2.18, 2.6), (-2.1, -2.18, 2.6)]
+            texCoord2f[] primvars:st = [(-2.22, 0), (-2.22, 2.6), (-2.18, 2.6), (-2.18, 0), (-2.22, 0), (-2.18, 0), (-2.18, 2.6), (-2.22, 2.6), (-2.1, 0), (3.3, 0), (3.3, 2.6), (-2.1, 2.6), (-2.1, 0), (-2.1, 2.6), (3.3, 2.6), (3.3, 0), (-2.1, -2.22), (-2.1, -2.18), (3.3, -2.18), (3.3, -2.22), (-2.1, -2.22), (3.3, -2.22), (3.3, -2.18), (-2.1, -2.18)] (
+                interpolation = "vertex"
+            )
+        }
+
+        def Mesh "table" (
+            prepend apiSchemas = ["MaterialBindingAPI"]
+        )
+        {
+            uniform bool doubleSided = 1
+            int[] faceVertexCounts = [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+            int[] faceVertexIndices = [0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23]
+            rel material:binding = </root/Materials/finish_3>
+            normal3f[] normals = [(-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (-1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (1, 0, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, -1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 1, 0), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, -1), (0, 0, 1), (0, 0, 1), (0, 0, 1), (0, 0, 1)] (
+                interpolation = "vertex"
+            )
+            point3f[] points = [(0.3025, -0.65, 0), (0.3025, -0.65, 0.75), (0.3025, 0.65, 0.75), (0.3025, 0.65, 0), (0.8975, -0.65, 0), (0.8975, 0.65, 0), (0.8975, 0.65, 0.75), (0.8975, -0.65, 0.75), (0.3025, -0.65, 0), (0.8975, -0.65, 0), (0.8975, -0.65, 0.75), (0.3025, -0.65, 0.75), (0.3025, 0.65, 0), (0.3025, 0.65, 0.75), (0.8975, 0.65, 0.75), (0.8975, 0.65, 0), (0.3025, -0.65, 0), (0.3025, 0.65, 0), (0.8975, 0.65, 0), (0.8975, -0.65, 0), (0.3025, -0.65, 0.75), (0.8975, -0.65, 0.75), (0.8975, 0.65, 0.75), (0.3025, 0.65, 0.75)]
+            texCoord2f[] primvars:st = [(-0.65, 0), (-0.65, 0.75), (0.65, 0.75), (0.65, 0), (-0.65, 0), (0.65, 0), (0.65, 0.75), (-0.65, 0.75), (0.3025, 0), (0.8975, 0), (0.8975, 0.75), (0.3025, 0.75), (0.3025, 0), (0.3025, 0.75), (0.8975, 0.75), (0.8975, 0), (0.3025, -0.65), (0.3025, 0.65), (0.8975, 0.65), (0.8975, -0.65), (0.3025, -0.65), (0.8975, -0.65), (0.8975, 0.65), (0.3025, 0.65)] (
+                interpolation = "vertex"
+            )
+        }
+    }
+
+    def Scope "Materials"
+    {
+        def Material "finish_1"
+        {
+            token outputs:surface.connect = </root/Materials/finish_1/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor.connect = </root/Materials/finish_1/DiffuseTexture.outputs:rgb>
+                float inputs:metallic = 0
+                float inputs:roughness = 0.88
+                int inputs:useSpecularWorkflow = 0
+                token outputs:surface
+            }
+
+            def Shader "PrimvarSt"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                token inputs:varname = "st"
+                float2 outputs:result
+            }
+
+            def Shader "UvTransform"
+            {
+                uniform token info:id = "UsdTransform2d"
+                float2 inputs:in.connect = </root/Materials/finish_1/PrimvarSt.outputs:result>
+                float2 inputs:scale = (0.8333333, 0.8333333)
+                float2 inputs:translation = (0, 0)
+                float2 outputs:result
+            }
+
+            def Shader "DiffuseTexture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @./room_concrete_v2.png@
+                token inputs:sourceColorSpace = "auto"
+                float2 inputs:st.connect = </root/Materials/finish_1/UvTransform.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float outputs:r
+                float3 outputs:rgb
+            }
+        }
+
+        def Material "finish_2"
+        {
+            token outputs:surface.connect = </root/Materials/finish_2/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor.connect = </root/Materials/finish_2/DiffuseTexture.outputs:rgb>
+                float inputs:metallic = 0
+                float inputs:roughness = 0.94
+                int inputs:useSpecularWorkflow = 0
+                token outputs:surface
+            }
+
+            def Shader "PrimvarSt"
+            {
+                uniform token info:id = "UsdPrimvarReader_float2"
+                token inputs:varname = "st"
+                float2 outputs:result
+            }
+
+            def Shader "UvTransform"
+            {
+                uniform token info:id = "UsdTransform2d"
+                float2 inputs:in.connect = </root/Materials/finish_2/PrimvarSt.outputs:result>
+                float2 inputs:scale = (0.8, 0.8)
+                float2 inputs:translation = (0, 0)
+                float2 outputs:result
+            }
+
+            def Shader "DiffuseTexture"
+            {
+                uniform token info:id = "UsdUVTexture"
+                asset inputs:file = @./room_plaster_v2.png@
+                token inputs:sourceColorSpace = "auto"
+                float2 inputs:st.connect = </root/Materials/finish_2/UvTransform.outputs:result>
+                token inputs:wrapS = "repeat"
+                token inputs:wrapT = "repeat"
+                float outputs:r
+                float3 outputs:rgb
+            }
+        }
+
+        def Material "finish_3"
+        {
+            token outputs:surface.connect = </root/Materials/finish_3/PreviewSurface.outputs:surface>
+
+            def Shader "PreviewSurface"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.28, 0.28, 0.29)
+                float inputs:metallic = 0
+                float inputs:roughness = 0.9
+                int inputs:useSpecularWorkflow = 0
+                token outputs:surface
+            }
+        }
+    }
+
+    def Xform "_LabDome"
+    {
+        uniform token[] xformOpOrder = []
+
+        def DomeLight "light"
+        {
+            color3f inputs:color = (0.94, 0.95, 0.97)
+            float inputs:intensity = 1350
+        }
+    }
+
+    def Xform "_LabPanel"
+    {
+        double3 xformOp:translate = (0.6, 0, 2.45)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def RectLight "light"
+        {
+            color3f inputs:color = (1, 0.97, 0.92)
+            float inputs:height = 0.9
+            float inputs:intensity = 5000
+            float inputs:width = 1.4
+        }
+    }
+}

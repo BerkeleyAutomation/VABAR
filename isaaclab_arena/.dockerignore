@@ -1,0 +1,27 @@
+.git
+**/.git
+**/.venv
+.venv-autolab
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/*.pyc
+**/*.egg-info
+.llm_cache
+artifacts
+outputs
+
+# Contributor notes and local tool state are not part of the tracked runtime.
+/AGENTS.md
+/.claude
+/uv.lock
+
+# AUTOLab's sources reach the image only through docker/build.sh's `autolab` build
+# context, exported from their committed revision in either layout.
+external/gap/autolab-vabar
+
+# These source trees are not used by the evaluator's native-wheel runtime.
+external/IsaacLab-Arena/submodules/Isaac-GR00T
+external/gap/graph-as-policy/third_party/LIBERO-PRO
+external/gap/graph-as-policy/third_party/robots_realtime

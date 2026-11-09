@@ -1,0 +1,49 @@
+default_physics_backend: newton
+benchmark_physics:
+  solver_cfg:
+    enable_multiccd: true
+  collision_cfg:
+    reduce_contacts: false
+    rigid_contact_max: 32768
+    max_triangle_pairs: 1000000
+    contact_matching: latest
+env_cfg_override:
+  decimation: 1
+  num_rerenders_on_reset: 5
+  sim:
+    dt: 0.016666666666666666
+    render_interval: 1
+    gravity: [0.0, 0.0, -9.81]
+    use_newton_actuators: true
+    physics:
+      num_substeps: 16
+      # Resolve moving tooth/peg contacts at every solver step.
+      collision_decimation: 1
+      use_cuda_graph: false
+      debug_mode: false
+      default_shape_cfg:
+        ke: 60000.0
+        kd: 500.0
+        gap: 0.00005
+      collision_cfg:
+        _target_: isaaclab_newton.physics.newton_collision_cfg.NewtonCollisionPipelineCfg
+        reduce_contacts: false
+        rigid_contact_max: 32768
+        max_triangle_pairs: 1000000
+      solver_cfg:
+        solver: newton
+        disable_sensors: true
+        integrator: implicitfast
+        njmax: 32768
+        nconmax: 16384
+        impratio: 10.0
+        cone: elliptic
+        update_data_interval: 1
+        iterations: 100
+        ls_iterations: 50
+        ls_parallel: false
+        use_mujoco_contacts: false
+        # MuJoCo's default, as AUTOLab runs it. Arena's Newton preset sets 15000 for
+        # dexterous hands; a resting convex pair whose GJK never converges then costs
+        # ~50 ms per call, every substep.
+        ccd_iterations: 35

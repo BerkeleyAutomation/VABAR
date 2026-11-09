@@ -66,6 +66,17 @@ Hugging Face, so set `HF_TOKEN` first; the VLM is configured with `GAP_VLM_*`. S
 
 `python -m vabar run --help` lists everything.
 
+### Running in Isaac Lab Arena
+
+The same tasks and graphs also run in [Isaac Lab Arena](https://github.com/isaac-sim/IsaacLab-Arena) on
+Isaac Sim, from [`isaaclab_arena/`](isaaclab_arena/README.md), which has its own setup:
+
+```bash
+git lfs pull --include="isaaclab_arena/**" --exclude=""   # its scene assets, ~2.3 GB; a plain clone skips them
+cd isaaclab_arena && ./setup.sh
+uv run vabar-arena run isaaclab_arena_gap/experiment_configs/gear_insertion/vabar_gear_insertion_easy_gap_baseline.yaml
+```
+
 ## The six task classes
 
 | | Task class | Setting | Robot | Level 1 | Level 2 |
@@ -135,6 +146,7 @@ benchmark/              frozen instance documents and manifests; vabar_v1.json, 
 robot_skills/           the cable-task GaP skill bundles
 vabar/                  what RoboSimStudio does not ship: the routine hook, the CLI, the benchmark runner
 docs/                   the benchmark in detail, running graphs, validation records
+isaaclab_arena/         the same benchmark in Isaac Lab Arena (own setup; see its README)
 ```
 
 ## Citation

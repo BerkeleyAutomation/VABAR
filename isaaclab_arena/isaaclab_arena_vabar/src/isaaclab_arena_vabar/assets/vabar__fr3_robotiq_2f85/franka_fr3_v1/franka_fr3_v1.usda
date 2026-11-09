@@ -1,0 +1,167 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1" (
+    prepend apiSchemas = ["GeomModelAPI"]
+    assetInfo = {
+        string name = "franka_fr3_v1"
+    }
+    kind = "component"
+    prepend payload = @./Payload/Contents.usda@
+)
+{
+    float3[] extentsHint = [(-0.154073, -0.1294, 0), (0.169281, 0.129921, 1.114922), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.15407869, -0.12937313, -0.000032492775), (0.16930613, 0.12990427, 1.1146809)]
+
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                over "fr3_link1"
+                {
+                    over "fr3_joint1"
+                    {
+                        custom double newton:angular:limitDamping = 1.7453292519943295
+                        custom double newton:angular:limitStiffness = 43.63323129985824
+                    }
+
+                    over "fr3_link2"
+                    {
+                        over "fr3_joint2"
+                        {
+                            custom double newton:angular:limitDamping = 1.7453292519943295
+                            custom double newton:angular:limitStiffness = 43.63323129985824
+                        }
+
+                        over "fr3_link3"
+                        {
+                            over "fr3_joint3"
+                            {
+                                custom double newton:angular:limitDamping = 1.7453292519943295
+                                custom double newton:angular:limitStiffness = 43.63323129985824
+                            }
+
+                            over "fr3_link4"
+                            {
+                                over "fr3_joint4"
+                                {
+                                    custom double newton:angular:limitDamping = 1.7453292519943295
+                                    custom double newton:angular:limitStiffness = 43.63323129985824
+                                }
+
+                                over "fr3_link5"
+                                {
+                                    over "fr3_joint5"
+                                    {
+                                        custom double newton:angular:limitDamping = 1.7453292519943295
+                                        custom double newton:angular:limitStiffness = 43.63323129985824
+                                    }
+
+                                    over "fr3_link6"
+                                    {
+                                        over "fr3_joint6"
+                                        {
+                                            custom double newton:angular:limitDamping = 1.7453292519943295
+                                            custom double newton:angular:limitStiffness = 43.63323129985824
+                                        }
+
+                                        over "fr3_link7"
+                                        {
+                                            over "fr3_joint7"
+                                            {
+                                                custom double newton:angular:limitDamping = 1.7453292519943295
+                                                custom double newton:angular:limitStiffness = 43.63323129985824
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "fr3_joint1"
+        {
+            uniform double[] mjc:biasPrm = [0, -4500, -450, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.7437
+            uniform double mjc:ctrlRange:min = -2.7437
+            uniform double[] mjc:gainPrm = [4500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint2"
+        {
+            uniform double[] mjc:biasPrm = [0, -4500, -450, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 1.7837
+            uniform double mjc:ctrlRange:min = -1.7837
+            uniform double[] mjc:gainPrm = [4500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint3"
+        {
+            uniform double[] mjc:biasPrm = [0, -3500, -350, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.9007
+            uniform double mjc:ctrlRange:min = -2.9007
+            uniform double[] mjc:gainPrm = [3500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint4"
+        {
+            uniform double[] mjc:biasPrm = [0, -3500, -350, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = -0.15180000000000016
+            uniform double mjc:ctrlRange:min = -3.0421
+            uniform double[] mjc:gainPrm = [3500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint5"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.8065
+            uniform double mjc:ctrlRange:min = -2.8065
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint6"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 4.5169
+            uniform double mjc:ctrlRange:min = 0.5445000000000002
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint7"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 3.0159
+            uniform double mjc:ctrlRange:min = -3.0159
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+    }
+}

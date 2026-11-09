@@ -1,0 +1,486 @@
+{
+ "source": "AUTOLab tasks/syringe_packing/start_poses/tray_pair_both_tNN.json (make_tray_pair_trials.py, seed 0), all 30 trials",
+ "frame": "instrument tray: x across (0.2 m), y along (0.4 m); each syringe is [x_m, y_m, yaw_rad] of its origin, long axis = local +y; tray_yaw_rad is the trial's world tray heading",
+ "layouts": [
+  {
+   "autolab_trial": 0,
+   "tray_yaw_rad": 2.6747,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 1,
+   "tray_yaw_rad": 2.4476,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 2,
+   "tray_yaw_rad": 2.4754,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 3,
+   "tray_yaw_rad": 2.6992,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 4,
+   "tray_yaw_rad": 2.3753,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 5,
+   "tray_yaw_rad": 2.6544,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 6,
+   "tray_yaw_rad": 2.6341,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 7,
+   "tray_yaw_rad": 2.8269,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 8,
+   "tray_yaw_rad": 2.1138,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 9,
+   "tray_yaw_rad": 2.6497,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 10,
+   "tray_yaw_rad": 2.8228,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 11,
+   "tray_yaw_rad": 2.8582,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 12,
+   "tray_yaw_rad": 2.0263,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 13,
+   "tray_yaw_rad": 2.7672,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 14,
+   "tray_yaw_rad": 2.8697,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 15,
+   "tray_yaw_rad": 2.8488,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 16,
+   "tray_yaw_rad": 2.1433,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 17,
+   "tray_yaw_rad": 2.8623,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 18,
+   "tray_yaw_rad": 2.7901,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 19,
+   "tray_yaw_rad": 2.7311,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 20,
+   "tray_yaw_rad": 2.4324,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 21,
+   "tray_yaw_rad": 2.2163,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 22,
+   "tray_yaw_rad": 2.7133,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 23,
+   "tray_yaw_rad": 2.8194,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 24,
+   "tray_yaw_rad": 2.2457,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 25,
+   "tray_yaw_rad": 2.4838,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 26,
+   "tray_yaw_rad": 2.3999,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 27,
+   "tray_yaw_rad": 2.826,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 28,
+   "tray_yaw_rad": 2.0488,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  },
+  {
+   "autolab_trial": 29,
+   "tray_yaw_rad": 2.6523,
+   "syringes": [
+    [
+     0.0,
+     0.045,
+     1.5708
+    ],
+    [
+     0.0,
+     -0.045,
+     1.5708
+    ]
+   ]
+  }
+ ]
+}

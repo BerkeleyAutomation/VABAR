@@ -1,0 +1,32 @@
+# AUTOLab's tool_sort/gap_perception_loop run unmodified
+# through RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+# No AUTOLab document holds this item set and ships the loop graph; its instruction is a
+# literal in the workflow, so the binding's tool_sort/level1_1 serves as identity.
+runs:
+  vabar_tool_sorting_easy_2_gap:
+    environment:
+      type: vabar_tool_sorting__easy_2
+      enable_cameras: true
+    environment_builder:
+      placement_seed: 42
+    policy:
+      type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+      robot_profile: fr3
+      gap_graph: tool_sort/gap_perception_loop
+      gap_workspace:
+        # Arena world frame: the FR3 workcell table top, 0.132 m below the arm base.
+        surface_z: 0.78
+      auto_spawn: true
+      gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+      gap_host: 127.0.0.1
+      gap_io_timeout_s: 180
+      policy_device: cuda
+      gap_camera: top_camera
+      gap_bridge_camera: overhead
+      gap_wrist_camera: wrist_camera
+      gap_wrist_bridge_camera: eye_in_hand
+      gap_aux_camera: oblique_camera
+      gap_aux_bridge_camera: agentview
+    rollout_limit:
+      num_episodes: 1
+    num_rebuilds: 1

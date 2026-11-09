@@ -1,0 +1,210 @@
+external_yaml: tool_sorting_env_config.yaml
+env_name: easy_2
+embodiment:
+  id: fr3
+  registry_name: vabar__fr3_robotiq_2f85
+  params:
+    camera_rig: tool_sorting
+    initial_pose:
+      position_xyz:
+      - -0.5
+      - -0.1
+      - 0.912
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - -1.0
+    initial_joint_pose:
+    - 0
+    - 0.19634954084936207
+    - 0
+    - -2.617993877991494
+    - 0
+    - 2.941592653589793
+    - 0.7853981633974483
+background:
+  id: background
+  registry_name: vabar__fr3_workcell_table
+  params:
+    initial_pose:
+      position_xyz:
+      - -0.5
+      - -0.1
+      - 0.912
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+objects:
+- id: hdr_shadow_receiver
+  registry_name: vabar__hdr_shadow_receiver
+  params: {}
+- id: bin1
+  registry_name: vabar__tool_sort_bin
+  params:
+    instance_name: bin1
+    side: source
+    appearance: default
+    initial_pose:
+      position_xyz:
+      - 0.1
+      - -0.25
+      - 0.8
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+- id: bin2
+  registry_name: vabar__tool_sort_bin
+  params:
+    instance_name: bin2
+    side: destination
+    appearance: bench
+    initial_pose:
+      position_xyz:
+      - 0.0
+      - 0.28
+      - 0.8
+      rotation_xyzw:
+      - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+- id: benchmark_light
+  registry_name: vabar__empty_warehouse_dome_light
+  params: {}
+# Stands in for sort_bench's adjustable wrench: AUTOLab v1.0 stages this item, never
+# the adjustable wrench, with the 2F-85 and the level-1 graph this task runs.
+- id: combination_pliers_0
+  registry_name: vabar__combination_pliers
+  params:
+    instance_name: combination_pliers_0
+- id: slotted_screwdriver_0
+  registry_name: vabar__slotted_screwdriver
+  params:
+    instance_name: slotted_screwdriver_0
+- id: tape_measure_0
+  registry_name: vabar__tape_measure
+  params:
+    instance_name: tape_measure_0
+- id: insulating_tape_0
+  registry_name: vabar__insulating_tape
+  params:
+    instance_name: insulating_tape_0
+object_references:
+- id: table
+  parent_id: background
+  prim_path: placement_surface
+  object_type: base
+  params: {}
+relations:
+- kind: is_anchor
+  subject: table
+  params: {}
+- kind: 'on'
+  subject: bin1
+  reference: table
+  params:
+    clearance_m: 0.0
+- kind: at_position
+  subject: bin1
+  params:
+    x: 0.1
+    y: -0.25
+- kind: is_anchor
+  subject: bin1
+  params: {}
+- kind: 'on'
+  subject: bin2
+  reference: table
+  params:
+    clearance_m: 0.0
+    # Moved toward the robot, bin2 sits inside the default 50 mm table-edge margin.
+    edge_margin_m: 0.0
+- kind: at_position
+  subject: bin2
+  params:
+    # 10 cm closer than AUTOLab's export: its far compartment is out of FR3 reach.
+    x: 0.0
+    y: 0.28
+- kind: is_anchor
+  subject: bin2
+  params: {}
+- kind: rotate_around_solution
+  subject: bin1
+  params:
+    yaw_rad: 0.0
+- kind: rotate_around_solution
+  subject: bin2
+  params:
+    yaw_rad: 0.0
+- kind: 'on'
+  subject: combination_pliers_0
+  reference: bin1
+  params:
+    clearance_m: 0.0
+    edge_margin_m: 0.03
+- kind: 'on'
+  subject: slotted_screwdriver_0
+  reference: bin1
+  params:
+    clearance_m: 0.0
+    edge_margin_m: 0.03
+- kind: 'on'
+  subject: tape_measure_0
+  reference: bin1
+  params:
+    clearance_m: 0.0
+    edge_margin_m: 0.03
+- kind: 'on'
+  subject: insulating_tape_0
+  reference: bin1
+  params:
+    clearance_m: 0.0
+    edge_margin_m: 0.03
+task:
+  composition: atomic
+  description: Sort the four items from bin1 into the compartment of bin2 whose label
+    names each one.
+  subtasks:
+  - kind: ObjectsInRegionsTask
+    params:
+      object_list:
+      - combination_pliers_0
+      - slotted_screwdriver_0
+      - tape_measure_0
+      - insulating_tape_0
+      region_list:
+      - bin2
+      - bin2
+      - bin2
+      - bin2
+      bounds_xyzxyz:
+      - - -0.195
+        - -0.245
+        - 0
+        - 0
+        - 0
+        - 0.15
+      - - 0
+        - -0.245
+        - 0
+        - 0.195
+        - 0
+        - 0.15
+      - - -0.195
+        - 0
+        - 0
+        - 0
+        - 0.245
+        - 0.15
+      - - 0
+        - 0
+        - 0
+        - 0.195
+        - 0.245
+        - 0.15
+      episode_length_s: 400.0

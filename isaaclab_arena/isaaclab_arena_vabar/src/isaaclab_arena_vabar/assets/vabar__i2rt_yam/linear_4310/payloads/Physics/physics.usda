@@ -1,0 +1,132 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.5.0"
+    }
+    defaultPrim = "linear_4310"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+over "linear_4310"
+{
+    over "Geometry"
+    {
+        over "gripper" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI", "PhysicsFilteredPairsAPI"]
+        )
+        {
+            uniform bool newton:jointsAddMobility = 1
+            bool newton:selfCollisionEnabled = 0
+            point3f physics:centerOfMass = (-0.0000357066, 0.000249371, -0.0293133)
+            float3 physics:diagonalInertia = (0.000409686, 0.000369758, 0.000324415)
+            rel physics:filteredPairs = [
+                </linear_4310/Geometry/gripper/tip_left>,
+                </linear_4310/Geometry/gripper/tip_right>,
+            ]
+            float physics:mass = 0.553219
+            quatf physics:principalAxes = (0.6679812, 0.7441132, -0.004330921, 0.008828012)
+
+            over "tcp_site" (
+                prepend apiSchemas = ["NewtonSiteAPI"]
+            )
+            {
+            }
+
+            over "grasp_site" (
+                prepend apiSchemas = ["NewtonSiteAPI"]
+            )
+            {
+            }
+
+            over "tip_left" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "PhysicsFilteredPairsAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (-0.0224716, 0.0143408, -0.0426253)
+                float3 physics:diagonalInertia = (0.0000624193, 0.0000601079, 0.0000283591)
+                rel physics:filteredPairs = </linear_4310/Geometry/gripper/tip_right>
+                float physics:mass = 0.0710042
+                quatf physics:principalAxes = (0.49889907, 0.45534807, -0.05764061, 0.73514307)
+
+                def PhysicsPrismaticJoint "joint7" (
+                    prepend apiSchemas = ["NewtonJointAPI", "NewtonMimicAPI", "PhysicsDriveAPI:linear", "PhysicsJointStateAPI:linear"]
+                )
+                {
+                    custom double newton:linear:limitDamping = 100
+                    custom double newton:linear:limitStiffness = 2500
+                    uniform token physics:axis = "Z"
+                    custom rel physics:body0
+                    append rel physics:body0 = </linear_4310/Geometry/gripper>
+                    custom rel physics:body1
+                    append rel physics:body1 = </linear_4310/Geometry/gripper/tip_left>
+                    point3f physics:localPos0 = (-0.0238981, 0.0450619, -0.0545599)
+                    point3f physics:localPos1 = (0, 0, 0)
+                    quatf physics:localRot0 = (-0.5, -0.499998, 0.500002, -0.5)
+                    quatf physics:localRot1 = (0, -1, 0, 0)
+                    float physics:lowerLimit = 0
+                    float physics:upperLimit = 0.0475
+                    custom float urdf:limit:effort = 1000000
+                }
+            }
+
+            over "tip_right" (
+                prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (-0.0143408, -0.0224716, -0.0426253)
+                float3 physics:diagonalInertia = (0.0000624193, 0.0000601079, 0.0000283591)
+                float physics:mass = 0.0710042
+                quatf physics:principalAxes = (0.2812218, 0.8725995, 0.1670499, -0.3627378)
+
+                def PhysicsPrismaticJoint "joint8" (
+                    prepend apiSchemas = ["NewtonJointAPI", "PhysicsDriveAPI:linear", "PhysicsJointStateAPI:linear"]
+                )
+                {
+                    custom double newton:linear:limitDamping = 100
+                    custom double newton:linear:limitStiffness = 2500
+                    uniform token physics:axis = "Z"
+                    custom rel physics:body0
+                    append rel physics:body0 = </linear_4310/Geometry/gripper>
+                    custom rel physics:body1
+                    append rel physics:body1 = </linear_4310/Geometry/gripper/tip_right>
+                    point3f physics:localPos0 = (0.0238981, -0.0450619, -0.0545599)
+                    point3f physics:localPos1 = (0, 0, 0)
+                    quatf physics:localRot0 = (-0.70710826, 0.7071053, 0, -6.313383e-17)
+                    quatf physics:localRot1 = (0, -1, 0, 0)
+                    float physics:lowerLimit = 0
+                    float physics:upperLimit = 0.0475
+                    custom float urdf:limit:effort = 1000000
+                }
+            }
+
+            def PhysicsFixedJoint "PhysicsFixedJoint"
+            {
+                custom rel physics:body0
+                append rel physics:body0 = </linear_4310>
+                custom rel physics:body1
+                append rel physics:body1 = </linear_4310/Geometry/gripper>
+                point3f physics:localPos0 = (0, 0, 0)
+                point3f physics:localPos1 = (0, 0, 0)
+                quatf physics:localRot0 = (6.123234e-17, 0.70710677, 0.70710677, 4.5986944e-17)
+                quatf physics:localRot1 = (1, 0, 0, 0)
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "PhysicsMaterial" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI"]
+        )
+        {
+            float newton:contactDamping = 100
+            float newton:contactStiffness = 2500
+            float newton:rollingFriction = 0.0001
+            float newton:torsionalFriction = 0.005
+            float physics:dynamicFriction = 1
+            float physics:staticFriction = 1
+        }
+    }
+}

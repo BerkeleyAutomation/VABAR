@@ -1,0 +1,34 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__insulating_tape_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "insulating_tape_0_g0_visual_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            point3f physics:centerOfMass = (-0.0000026666437, 6.6854085e-7, 0.0000130826365)
+            float3 physics:diagonalInertia = (1.64928209386e-05, 1.64794320134e-05, 3.09830890016e-05)
+            float physics:mass = 0.05000001
+            quatf physics:principalAxes = (1, 0, 0, 0)
+
+            over "insulating_tape_0_g0_visual_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__black_c01" {
+            float physics:dynamicFriction = 0.4
+            float physics:restitution = 0
+            float physics:staticFriction = 0.4
+        }
+    }
+}

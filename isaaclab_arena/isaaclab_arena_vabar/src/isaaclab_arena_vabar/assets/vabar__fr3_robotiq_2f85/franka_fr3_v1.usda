@@ -1,0 +1,763 @@
+#usda 1.0
+(
+    """One hand-authored correction to the converted franka_fr3 base: the base
+    link's inertial.
+
+    MuJoCo Menagerie's `fr3.xml` authors NO `<inertial>` on `fr3_link0` --
+    unlike every other body in the model, and unlike the sibling `franka_fr3_v2`,
+    which gives its base 3.85 kg. MuJoCo therefore derives link0's mass from its
+    geoms, and Menagerie's `collision` default class
+    (`<geom type=\"mesh\" group=\"3\" mass=\"0\" density=\"0\"/>`) keeps the
+    convex collision hull out of the sum, leaving the seven visual pieces to
+    produce 2.820672 kg.
+
+    That `mass=\"0\"` reaches USD intact -- `Payload/Physics.usda` authors
+    `float physics:mass = 0` on `fr3_link0_collision` -- but the USD->MJCF
+    round trip used to build this asset counts the hull at MuJoCo's default
+    density, which adds 2.9965 kg (the volume of `link0.stl` at 1000 kg/m^3),
+    and the mass normalization pass bakes that into an authored inertial of
+    5.817 kg. No other body in either FR3 is affected: every other body carries
+    its own Menagerie `<inertial>`, which wins over any geom-derived value.
+
+    The values below are MuJoCo's own derivation from Menagerie's model, read
+    off `fr3.xml` directly. They are not a Franka measurement -- Menagerie does
+    not author one -- but they are exactly what a consumer of Menagerie's model
+    gets, which is the property this package is meant to preserve.
+
+    The `over` hierarchy is rooted at `franka_fr3_v1`, not Menagerie's model
+    name `fr3`, because the conversion renames the root; body prim names are
+    untouched, which is why they are still `fr3_link0`.
+    """
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1" (
+    prepend apiSchemas = ["GeomModelAPI", "MjcSceneAPI"]
+    assetInfo = {
+        string name = "franka_fr3_v1"
+    }
+    kind = "component"
+    prepend payload = @franka_fr3_v1/Payload/Contents.usda@
+    variants = {
+        string gripper = "franka_hand"
+    }
+    prepend variantSets = "gripper"
+)
+{
+    float3[] extentsHint = [(-0.154073, -0.1294, 0), (0.169281, 0.129921, 1.114922), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.15407869, -0.12937313, -0.000032492775), (0.16930613, 0.12990427, 1.1146809)]
+    uniform token mjc:option:integrator = "implicitfast"
+
+    over "Geometry"
+    {
+        over "base" (
+            prepend apiSchemas = ["PhysxArticulationAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            point3f physics:centerOfMass = (0, 0, 0)
+            float3 physics:diagonalInertia = (1e-7, 1e-7, 1e-7)
+            float physics:mass = 0.0001
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            custom bool physxArticulation:enabledSelfCollisions = 0
+            custom int physxArticulation:solverPositionIterationCount = 32
+            custom int physxArticulation:solverVelocityIterationCount = 1
+            custom float physxRigidBody:angularDamping = 0.05
+            custom float physxRigidBody:linearDamping = 0
+            custom int physxRigidBody:solverPositionIterationCount = 16
+            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+            over "fr3_link0" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (-0.02985482, -0.000248355, 0.057579286)
+                float3 physics:diagonalInertia = (0.011467894, 0.011257366, 0.007685107)
+                float physics:mass = 2.820672
+                quatf physics:principalAxes = (0.6214536, 0.34504125, 0.36086848, 0.60375154)
+                custom float physxRigidBody:angularDamping = 0.05
+                custom float physxRigidBody:linearDamping = 0
+                custom int physxRigidBody:solverPositionIterationCount = 16
+                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                over "fr3_link1" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                )
+                {
+                    point3f physics:centerOfMass = (4.128e-7, -0.0181251, -0.0386036)
+                    float3 physics:diagonalInertia = (0.0239286, 0.0227246, 0.00610634)
+                    float physics:mass = 2.92747
+                    quatf physics:principalAxes = (0.998098, -0.0605364, 0.00380499, 0.0110109)
+                    custom float physxRigidBody:angularDamping = 0.05
+                    custom float physxRigidBody:linearDamping = 0
+                    custom int physxRigidBody:solverPositionIterationCount = 16
+                    custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                    over "fr3_joint1" (
+                        prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                    )
+                    {
+                        float drive:angular:physics:damping = 0.21
+                        float drive:angular:physics:stiffness = 0
+                        uniform token drive:angular:physics:type = "force"
+                        custom double newton:angular:limitDamping = 1.7453292519943295
+                        custom double newton:angular:limitStiffness = 43.63323129985824
+                        custom float physxJoint:armature = 0.195
+                    }
+
+                    over "fr3_link2" (
+                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                    )
+                    {
+                        point3f physics:centerOfMass = (0.00318289, -0.0743222, 0.00881461)
+                        float3 physics:diagonalInertia = (0.0629567, 0.0411924, 0.0246371)
+                        float physics:mass = 2.93554
+                        quatf physics:principalAxes = (0.50259894, 0.58443695, -0.4659979, 0.4343659)
+                        custom float physxRigidBody:angularDamping = 0.05
+                        custom float physxRigidBody:linearDamping = 0
+                        custom int physxRigidBody:solverPositionIterationCount = 16
+                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                        over "fr3_joint2" (
+                            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                        )
+                        {
+                            float drive:angular:physics:damping = 0.21
+                            float drive:angular:physics:stiffness = 0
+                            uniform token drive:angular:physics:type = "force"
+                            custom double newton:angular:limitDamping = 1.7453292519943295
+                            custom double newton:angular:limitStiffness = 43.63323129985824
+                            custom float physxJoint:armature = 0.195
+                        }
+
+                        over "fr3_link3" (
+                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                        )
+                        {
+                            point3f physics:centerOfMass = (0.0407016, -0.00482006, -0.0289731)
+                            float3 physics:diagonalInertia = (0.0267409, 0.0189869, 0.0171587)
+                            float physics:mass = 2.2449
+                            quatf physics:principalAxes = (0.92102545, -0.24416113, 0.1552721, 0.26074514)
+                            custom float physxRigidBody:angularDamping = 0.05
+                            custom float physxRigidBody:linearDamping = 0
+                            custom int physxRigidBody:solverPositionIterationCount = 16
+                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                            over "fr3_joint3" (
+                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                            )
+                            {
+                                float drive:angular:physics:damping = 0.21
+                                float drive:angular:physics:stiffness = 0
+                                uniform token drive:angular:physics:type = "force"
+                                custom double newton:angular:limitDamping = 1.7453292519943295
+                                custom double newton:angular:limitStiffness = 43.63323129985824
+                                custom float physxJoint:armature = 0.195
+                            }
+
+                            over "fr3_link4" (
+                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                            )
+                            {
+                                point3f physics:centerOfMass = (-0.0459101, 0.0630493, -0.00851879)
+                                float3 physics:diagonalInertia = (0.05139, 0.0372717, 0.0160047)
+                                float physics:mass = 2.6156
+                                quatf physics:principalAxes = (0.43801817, 0.80331135, 0.009378124, 0.4034142)
+                                custom float physxRigidBody:angularDamping = 0.05
+                                custom float physxRigidBody:linearDamping = 0
+                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                over "fr3_joint4" (
+                                    prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                )
+                                {
+                                    float drive:angular:physics:damping = 0.21
+                                    float drive:angular:physics:stiffness = 0
+                                    uniform token drive:angular:physics:type = "force"
+                                    custom double newton:angular:limitDamping = 1.7453292519943295
+                                    custom double newton:angular:limitStiffness = 43.63323129985824
+                                    custom float physxJoint:armature = 0.195
+                                }
+
+                                over "fr3_link5" (
+                                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                )
+                                {
+                                    point3f physics:centerOfMass = (-0.00160396, 0.0292536, -0.0972966)
+                                    float3 physics:diagonalInertia = (0.0579335, 0.0449144, 0.0130634)
+                                    float physics:mass = 2.32712
+                                    quatf physics:principalAxes = (0.9190308, 0.12560397, 0.07515308, -0.36600292)
+                                    custom float physxRigidBody:angularDamping = 0.05
+                                    custom float physxRigidBody:linearDamping = 0
+                                    custom int physxRigidBody:solverPositionIterationCount = 16
+                                    custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                    over "fr3_joint5" (
+                                        prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                    )
+                                    {
+                                        float drive:angular:physics:damping = 0.21
+                                        float drive:angular:physics:stiffness = 0
+                                        uniform token drive:angular:physics:type = "force"
+                                        custom double newton:angular:limitDamping = 1.7453292519943295
+                                        custom double newton:angular:limitStiffness = 43.63323129985824
+                                        custom float physxJoint:armature = 0.074
+                                    }
+
+                                    over "fr3_link6" (
+                                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                    )
+                                    {
+                                        point3f physics:centerOfMass = (0.0597131, -0.0410295, -0.0101693)
+                                        float3 physics:diagonalInertia = (0.0175039, 0.0161123, 0.00193529)
+                                        float physics:mass = 1.81704
+                                        quatf physics:principalAxes = (0.6213009, 0.5526649, 0.5100109, 0.22008094)
+                                        custom float physxRigidBody:angularDamping = 0.05
+                                        custom float physxRigidBody:linearDamping = 0
+                                        custom int physxRigidBody:solverPositionIterationCount = 16
+                                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                        over "fr3_joint6" (
+                                            prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                        )
+                                        {
+                                            float drive:angular:physics:damping = 0.21
+                                            float drive:angular:physics:stiffness = 0
+                                            uniform token drive:angular:physics:type = "force"
+                                            custom double newton:angular:limitDamping = 1.7453292519943295
+                                            custom double newton:angular:limitStiffness = 43.63323129985824
+                                            custom float physxJoint:armature = 0.074
+                                        }
+
+                                        over "fr3_link7" (
+                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                        )
+                                        {
+                                            point3f physics:centerOfMass = (0.00452258, 0.00862619, -0.0161633)
+                                            float3 physics:diagonalInertia = (0.000223836, 0.000223642, 5.64132e-7)
+                                            float physics:mass = 0.627143
+                                            quatf physics:principalAxes = (0.727579, 0.0978688, -0.24906, 0.63168)
+                                            custom float physxRigidBody:angularDamping = 0.05
+                                            custom float physxRigidBody:linearDamping = 0
+                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                            over "fr3_joint7" (
+                                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                            )
+                                            {
+                                                float drive:angular:physics:damping = 0.21
+                                                float drive:angular:physics:stiffness = 0
+                                                uniform token drive:angular:physics:type = "force"
+                                                custom double newton:angular:limitDamping = 1.7453292519943295
+                                                custom double newton:angular:limitStiffness = 43.63323129985824
+                                                custom float physxJoint:armature = 0.074
+                                            }
+
+                                            over "franka_hand_attach"
+                                            {
+                                                over "Geometry"
+                                                {
+                                                    over "hand" (
+                                                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                    )
+                                                    {
+                                                        point3f physics:centerOfMass = (-0.01, 0, 0.03)
+                                                        float3 physics:diagonalInertia = (0.001, 0.0025, 0.0017)
+                                                        float physics:mass = 0.73
+                                                        quatf physics:principalAxes = (1, 0, 0, 0)
+                                                        custom float physxRigidBody:angularDamping = 0.05
+                                                        custom float physxRigidBody:linearDamping = 0
+                                                        custom int physxRigidBody:solverPositionIterationCount = 16
+                                                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                        over "left_finger" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (0, 0, 0)
+                                                            float3 physics:diagonalInertia = (0.000002375, 0.000002375, 7.5e-7)
+                                                            float physics:mass = 0.015
+                                                            quatf physics:principalAxes = (1, 0, 0, 0)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "finger_joint1" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:linear", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:linear:physics:damping = 1
+                                                                float drive:linear:physics:stiffness = 0
+                                                                uniform token drive:linear:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.1
+                                                            }
+                                                        }
+
+                                                        over "right_finger" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (0, 0, 0)
+                                                            float3 physics:diagonalInertia = (0.000002375, 0.000002375, 7.5e-7)
+                                                            float physics:mass = 0.015
+                                                            quatf physics:principalAxes = (1, 0, 0, 0)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "finger_joint2" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:linear", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:linear:physics:damping = 1
+                                                                float drive:linear:physics:stiffness = 0
+                                                                uniform token drive:linear:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.1
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            over "robotiq_attach"
+                                            {
+                                                over "Geometry"
+                                                {
+                                                    over "robotiq_base" (
+                                                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                    )
+                                                    {
+                                                        point3f physics:centerOfMass = (0.0000777116, 0.0000842713, 0.0311656)
+                                                        float3 physics:diagonalInertia = (0.000260285, 0.000225381, 0.000152708)
+                                                        float physics:mass = 0.777441
+                                                        quatf physics:principalAxes = (0.704758, -0.00373684, -0.00570287, 0.709415)
+                                                        custom float physxRigidBody:angularDamping = 0.05
+                                                        custom float physxRigidBody:linearDamping = 0
+                                                        custom int physxRigidBody:solverPositionIterationCount = 16
+                                                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                        over "robotiq_left_driver" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (-0.0175297, 0.00165308, -0.00469625)
+                                                            float3 physics:diagonalInertia = (0.00000172352, 0.00000160906, 3.22006e-7)
+                                                            float physics:mass = 0.00899563
+                                                            quatf physics:principalAxes = (-0.46964222, 0.46964222, -0.52861726, 0.52861726)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "robotiq_left_coupler" (
+                                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                            )
+                                                            {
+                                                                point3f physics:centerOfMass = (0.00367747, 0.01986, 0.0055)
+                                                                float3 physics:diagonalInertia = (0.00000416206, 0.00000352216, 8.88131e-7)
+                                                                float physics:mass = 0.0140974
+                                                                quatf physics:principalAxes = (0.7014468, -0.7014468, 0.08928837, -0.08928837)
+                                                                custom float physxRigidBody:angularDamping = 0.05
+                                                                custom float physxRigidBody:linearDamping = 0
+                                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+                                                            }
+
+                                                            over "left_driver_joint" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:angular:physics:damping = 0.1
+                                                                float drive:angular:physics:stiffness = 0
+                                                                uniform token drive:angular:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.005
+                                                            }
+                                                        }
+
+                                                        over "robotiq_left_spring_link" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (-0.0183, -0.0205732, 0.01205)
+                                                            float3 physics:diagonalInertia = (0.00000896853, 0.00000671733, 0.00000263931)
+                                                            float physics:mass = 0.0221642
+                                                            quatf physics:principalAxes = (0.66094154, 0.66094154, -0.25130922, -0.25130922)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "robotiq_left_follower" (
+                                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                            )
+                                                            {
+                                                                point3f physics:centerOfMass = (-0.00852976, -0.0014822, -0.00910001)
+                                                                float3 physics:diagonalInertia = (0.00000267415, 0.0000024559, 6.02031e-7)
+                                                                float physics:mass = 0.0125222
+                                                                quatf physics:principalAxes = (0.35943872, 0.35943872, 0.6089366, 0.6089366)
+                                                                custom float physxRigidBody:angularDamping = 0.05
+                                                                custom float physxRigidBody:linearDamping = 0
+                                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                                over "robotiq_left_pad" (
+                                                                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                                )
+                                                                {
+                                                                    point3f physics:centerOfMass = (0.043258, 0, 0.129375)
+                                                                    float3 physics:diagonalInertia = (5.198188e-7, 3.911188e-7, 1.3750001e-7)
+                                                                    float physics:mass = 0.0033000002
+                                                                    quatf physics:principalAxes = (1, 0, 0, 0)
+                                                                    custom float physxRigidBody:angularDamping = 0.05
+                                                                    custom float physxRigidBody:linearDamping = 0
+                                                                    custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                    custom int physxRigidBody:solverVelocityIterationCount = 1
+                                                                }
+
+                                                                over "left_follower" (
+                                                                    prepend apiSchemas = ["PhysxJointAPI"]
+                                                                )
+                                                                {
+                                                                    custom float physxJoint:armature = 0.001
+                                                                }
+                                                            }
+
+                                                            over "left_spring_link_joint" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:angular:physics:damping = 0.00125
+                                                                float drive:angular:physics:stiffness = 0
+                                                                uniform token drive:angular:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.001
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_driver" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (-0.0175297, 0.00165308, -0.00469625)
+                                                            float3 physics:diagonalInertia = (0.00000172352, 0.00000160906, 3.22006e-7)
+                                                            float physics:mass = 0.00899563
+                                                            quatf physics:principalAxes = (-0.46964222, 0.46964222, -0.52861726, 0.52861726)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "robotiq_right_coupler" (
+                                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                            )
+                                                            {
+                                                                point3f physics:centerOfMass = (0.00367747, 0.01986, 0.0055)
+                                                                float3 physics:diagonalInertia = (0.00000416206, 0.00000352216, 8.88131e-7)
+                                                                float physics:mass = 0.0140974
+                                                                quatf physics:principalAxes = (0.7014468, -0.7014468, 0.08928837, -0.08928837)
+                                                                custom float physxRigidBody:angularDamping = 0.05
+                                                                custom float physxRigidBody:linearDamping = 0
+                                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+                                                            }
+
+                                                            over "right_driver_joint" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:angular:physics:damping = 0.1
+                                                                float drive:angular:physics:stiffness = 0
+                                                                uniform token drive:angular:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.005
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_spring_link" (
+                                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                        )
+                                                        {
+                                                            point3f physics:centerOfMass = (-0.0183, -0.0205732, 0.01205)
+                                                            float3 physics:diagonalInertia = (0.00000896853, 0.00000671733, 0.00000263931)
+                                                            float physics:mass = 0.0221642
+                                                            quatf physics:principalAxes = (0.66094154, 0.66094154, -0.25130922, -0.25130922)
+                                                            custom float physxRigidBody:angularDamping = 0.05
+                                                            custom float physxRigidBody:linearDamping = 0
+                                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                            over "robotiq_right_follower" (
+                                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                            )
+                                                            {
+                                                                point3f physics:centerOfMass = (-0.00852976, -0.0014822, -0.00910001)
+                                                                float3 physics:diagonalInertia = (0.00000267415, 0.0000024559, 6.02031e-7)
+                                                                float physics:mass = 0.0125222
+                                                                quatf physics:principalAxes = (0.35943872, 0.35943872, 0.6089366, 0.6089366)
+                                                                custom float physxRigidBody:angularDamping = 0.05
+                                                                custom float physxRigidBody:linearDamping = 0
+                                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                                over "robotiq_right_pad" (
+                                                                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                                                )
+                                                                {
+                                                                    point3f physics:centerOfMass = (0.043258, 0, 0.129375)
+                                                                    float3 physics:diagonalInertia = (5.198188e-7, 3.911188e-7, 1.3750001e-7)
+                                                                    float physics:mass = 0.0033000002
+                                                                    quatf physics:principalAxes = (1, 0, 0, 0)
+                                                                    custom float physxRigidBody:angularDamping = 0.05
+                                                                    custom float physxRigidBody:linearDamping = 0
+                                                                    custom int physxRigidBody:solverPositionIterationCount = 16
+                                                                    custom int physxRigidBody:solverVelocityIterationCount = 1
+                                                                }
+
+                                                                over "right_follower_joint" (
+                                                                    prepend apiSchemas = ["PhysxJointAPI"]
+                                                                )
+                                                                {
+                                                                    custom float physxJoint:armature = 0.001
+                                                                }
+                                                            }
+
+                                                            over "right_spring_link_joint" (
+                                                                prepend apiSchemas = ["PhysicsDriveAPI:angular", "PhysxJointAPI"]
+                                                            )
+                                                            {
+                                                                float drive:angular:physics:damping = 0.00125
+                                                                float drive:angular:physics:stiffness = 0
+                                                                uniform token drive:angular:physics:type = "force"
+                                                                custom float physxJoint:armature = 0.001
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "fr3_joint1"
+        {
+            uniform double[] mjc:biasPrm = [0, -4500, -450, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.7437
+            uniform double mjc:ctrlRange:min = -2.7437
+            uniform double[] mjc:gainPrm = [4500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint2"
+        {
+            uniform double[] mjc:biasPrm = [0, -4500, -450, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 1.7837
+            uniform double mjc:ctrlRange:min = -1.7837
+            uniform double[] mjc:gainPrm = [4500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint3"
+        {
+            uniform double[] mjc:biasPrm = [0, -3500, -350, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.9007
+            uniform double mjc:ctrlRange:min = -2.9007
+            uniform double[] mjc:gainPrm = [3500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint4"
+        {
+            uniform double[] mjc:biasPrm = [0, -3500, -350, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = -0.15180000000000016
+            uniform double mjc:ctrlRange:min = -3.0421
+            uniform double[] mjc:gainPrm = [3500, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint5"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 2.8065
+            uniform double mjc:ctrlRange:min = -2.8065
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint6"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 4.5169
+            uniform double mjc:ctrlRange:min = 0.5445000000000002
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+
+        over "fr3_joint7"
+        {
+            uniform double[] mjc:biasPrm = [0, -2000, -200, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 3.0159
+            uniform double mjc:ctrlRange:min = -3.0159
+            uniform double[] mjc:gainPrm = [2000, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+    }
+    variantSet "gripper" = {
+        "franka_hand" {
+            reorder nameChildren = ["Materials", "Physics", "Geometry"]
+            over "Geometry"
+            {
+                over "base"
+                {
+                    over "fr3_link0"
+                    {
+                        over "fr3_link1"
+                        {
+                            over "fr3_link2"
+                            {
+                                over "fr3_link3"
+                                {
+                                    over "fr3_link4"
+                                    {
+                                        over "fr3_link5"
+                                        {
+                                            over "fr3_link6"
+                                            {
+                                                over "fr3_link7"
+                                                {
+                                                    def Xform "franka_hand_attach" (
+                                                        prepend references = @panda_hand/panda_hand.usda@</tn__pandahand_k9>
+                                                    )
+                                                    {
+                                                        quatf xformOp:orient = (0.3826834, 0, 0, 0.9238795)
+                                                        double3 xformOp:translate = (0, 0, 0.107)
+                                                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+                                                        over "Geometry"
+                                                        {
+                                                            over "hand" (
+                                                                delete apiSchemas = ["PhysicsArticulationRootAPI", "NewtonArticulationRootAPI"]
+                                                            )
+                                                            {
+                                                                over "PhysicsFixedJoint" (
+                                                                    active = false
+                                                                )
+                                                                {
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    def PhysicsFixedJoint "franka_hand_hand_attach_joint"
+                                                    {
+                                                        rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7>
+                                                        rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/franka_hand_attach/Geometry/hand>
+                                                        point3f physics:localPos0 = (0, 0, 0.107)
+                                                        point3f physics:localPos1 = (0, 0, -0)
+                                                        quatf physics:localRot0 = (0.3826834, 0, 0, 0.9238795)
+                                                        quatf physics:localRot1 = (-6.123234e-17, 0, 0, 1)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        "none" {
+
+        }
+        "robotiq_2f85" {
+            reorder nameChildren = ["Materials", "Physics", "Geometry"]
+            over "Geometry"
+            {
+                over "base"
+                {
+                    over "fr3_link0"
+                    {
+                        over "fr3_link1"
+                        {
+                            over "fr3_link2"
+                            {
+                                over "fr3_link3"
+                                {
+                                    over "fr3_link4"
+                                    {
+                                        over "fr3_link5"
+                                        {
+                                            over "fr3_link6"
+                                            {
+                                                over "fr3_link7"
+                                                {
+                                                    def Xform "robotiq_attach" (
+                                                        prepend references = @robotiq_2f85/robotiq_2f85.usda@</robotiq_2f85>
+                                                    )
+                                                    {
+                                                        quatf xformOp:orient = (1, 0, 0, 0)
+                                                        double3 xformOp:translate = (0, 0, 0.107)
+                                                        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+                                                        over "Geometry"
+                                                        {
+                                                            over "robotiq_base" (
+                                                                delete apiSchemas = ["PhysicsArticulationRootAPI", "NewtonArticulationRootAPI"]
+                                                            )
+                                                            {
+                                                                over "PhysicsFixedJoint" (
+                                                                    active = false
+                                                                )
+                                                                {
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+                                                    def PhysicsFixedJoint "robotiq_base_attach_joint"
+                                                    {
+                                                        rel physics:body0 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7>
+                                                        rel physics:body1 = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Geometry/robotiq_base>
+                                                        point3f physics:localPos0 = (0, 0, 0.107)
+                                                        point3f physics:localPos1 = (0, 0, 0)
+                                                        quatf physics:localRot0 = (1, 0, 0, 0)
+                                                        quatf physics:localRot1 = (1, 0, 0, 0)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}

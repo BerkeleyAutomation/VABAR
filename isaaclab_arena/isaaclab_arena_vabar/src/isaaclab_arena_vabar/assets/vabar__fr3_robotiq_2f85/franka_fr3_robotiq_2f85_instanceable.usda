@@ -1,0 +1,1055 @@
+#usda 1.0
+(
+    defaultPrim = "franka_fr3_v1"
+)
+
+def Xform "franka_fr3_v1" (
+    prepend payload = @franka_fr3_robotiq_2f85.usda@</franka_fr3_v1>
+)
+{
+    def Scope "__RenderPrototypes"
+    {
+        class "p_174a31b55baddb6f"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_0>
+            )
+            {
+            }
+        }
+
+        class "p_460ccff7869a35e3"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_1>
+            )
+            {
+            }
+        }
+
+        class "p_6fb6693b3e6f8d32"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_2>
+            )
+            {
+            }
+        }
+
+        class "p_bb57373874959dce"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_3>
+            )
+            {
+            }
+        }
+
+        class "p_7bc74935b6c99799"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_4>
+            )
+            {
+            }
+        }
+
+        class "p_3a8c4c7dc11a8d10"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_5>
+            )
+            {
+            }
+        }
+
+        class "p_84a02885c5ed6e49"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link0_6>
+            )
+            {
+            }
+        }
+
+        class "p_4c6cf37958f08b53"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link1>
+            )
+            {
+            }
+        }
+
+        class "p_47ab98487ae4154a"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link2>
+            )
+            {
+            }
+        }
+
+        class "p_40cf3b5a28172b37"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link3_0>
+            )
+            {
+            }
+        }
+
+        class "p_819119d1e2d17eb1"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link3_1>
+            )
+            {
+            }
+        }
+
+        class "p_d1a5a8a11dd1ac80"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link4_0>
+            )
+            {
+            }
+        }
+
+        class "p_96db1b2322c0b113"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link4_1>
+            )
+            {
+            }
+        }
+
+        class "p_d875baf9ed10a61a"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link5_0>
+            )
+            {
+            }
+        }
+
+        class "p_f094bc8edadb59ee"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link5_1>
+            )
+            {
+            }
+        }
+
+        class "p_fb50d4ddf4072211"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link5_2>
+            )
+            {
+            }
+        }
+
+        class "p_c1d574c51d2dce22"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_0>
+            )
+            {
+            }
+        }
+
+        class "p_a931455c5358c8f6"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_1>
+            )
+            {
+            }
+        }
+
+        class "p_a65f7f113a44f1dd"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_2>
+            )
+            {
+            }
+        }
+
+        class "p_55a4adad6c1767a0"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_3>
+            )
+            {
+            }
+        }
+
+        class "p_3902d2813a01b709"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_4>
+            )
+            {
+            }
+        }
+
+        class "p_79e2793e5f72cd3e"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_5>
+            )
+            {
+            }
+        }
+
+        class "p_bf3a5e2af999be04"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_6>
+            )
+            {
+            }
+        }
+
+        class "p_223a67d9c4f3768a"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link6_7>
+            )
+            {
+            }
+        }
+
+        class "p_c8d001d8265db0dd"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link7_0>
+            )
+            {
+            }
+        }
+
+        class "p_bd1291ca03bb927a"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link7_1>
+            )
+            {
+            }
+        }
+
+        class "p_39e3da112ae47858"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link7_2>
+            )
+            {
+            }
+        }
+
+        class "p_227959f6444eba79"
+        {
+            def Mesh "mesh" (
+                prepend references = @franka_fr3_v1/Payload/GeometryLibrary.usdc@</Geometry/link7_3>
+            )
+            {
+            }
+        }
+
+        class "p_72ebf98ce978d829"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/base>
+            )
+            {
+            }
+        }
+
+        class "p_d53089f3174c6a16"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/base_coupling>
+            )
+            {
+            }
+        }
+
+        class "p_f7bc6a4add04708f"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/tn__ca0185open_VF58>
+            )
+            {
+            }
+        }
+
+        class "p_c0c030b6f018040c"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/driver>
+            )
+            {
+            }
+        }
+
+        class "p_4c47f01323b946c9"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/coupler>
+            )
+            {
+            }
+        }
+
+        class "p_de08372e5a877f9d"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/spring_link>
+            )
+            {
+            }
+        }
+
+        class "p_19df1638de501af2"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/follower>
+            )
+            {
+            }
+        }
+
+        class "p_c1ad7a8eab8de958"
+        {
+            def Mesh "mesh" (
+                prepend references = @robotiq_2f85/Payload/GeometryLibrary.usdc@</Geometry/tongue>
+            )
+            {
+            }
+        }
+    }
+
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                def Xform "link0_0__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_174a31b55baddb6f>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/black>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_0"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_1__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_460ccff7869a35e3>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_1"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_2__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_6fb6693b3e6f8d32>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_2"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_3__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_bb57373874959dce>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_3"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_4__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_7bc74935b6c99799>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_4"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_5__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_3a8c4c7dc11a8d10>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/red>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_5"
+                {
+                    token visibility = "invisible"
+                }
+
+                def Xform "link0_6__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_84a02885c5ed6e49>
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/black>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "link0_6"
+                {
+                    token visibility = "invisible"
+                }
+
+                over "fr3_link1"
+                {
+                    def Xform "link1__render_instance" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                        instanceable = true
+                        prepend references = </franka_fr3_v1/__RenderPrototypes/p_4c6cf37958f08b53>
+                    )
+                    {
+                        rel material:binding = </franka_fr3_v1/Materials/white>
+                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                    }
+
+                    over "link1"
+                    {
+                        token visibility = "invisible"
+                    }
+
+                    over "fr3_link2"
+                    {
+                        def Xform "link2__render_instance" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            instanceable = true
+                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_47ab98487ae4154a>
+                        )
+                        {
+                            rel material:binding = </franka_fr3_v1/Materials/white>
+                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                        }
+
+                        over "link2"
+                        {
+                            token visibility = "invisible"
+                        }
+
+                        over "fr3_link3"
+                        {
+                            def Xform "link3_0__render_instance" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                instanceable = true
+                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_40cf3b5a28172b37>
+                            )
+                            {
+                                rel material:binding = </franka_fr3_v1/Materials/white>
+                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                            }
+
+                            over "link3_0"
+                            {
+                                token visibility = "invisible"
+                            }
+
+                            def Xform "link3_1__render_instance" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                instanceable = true
+                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_819119d1e2d17eb1>
+                            )
+                            {
+                                rel material:binding = </franka_fr3_v1/Materials/black>
+                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                            }
+
+                            over "link3_1"
+                            {
+                                token visibility = "invisible"
+                            }
+
+                            over "fr3_link4"
+                            {
+                                def Xform "link4_0__render_instance" (
+                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                    instanceable = true
+                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_d1a5a8a11dd1ac80>
+                                )
+                                {
+                                    rel material:binding = </franka_fr3_v1/Materials/white>
+                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                }
+
+                                over "link4_0"
+                                {
+                                    token visibility = "invisible"
+                                }
+
+                                def Xform "link4_1__render_instance" (
+                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                    instanceable = true
+                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_96db1b2322c0b113>
+                                )
+                                {
+                                    rel material:binding = </franka_fr3_v1/Materials/black>
+                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                }
+
+                                over "link4_1"
+                                {
+                                    token visibility = "invisible"
+                                }
+
+                                over "fr3_link5"
+                                {
+                                    def Xform "link5_0__render_instance" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                        instanceable = true
+                                        prepend references = </franka_fr3_v1/__RenderPrototypes/p_d875baf9ed10a61a>
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/white>
+                                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                                    }
+
+                                    over "link5_0"
+                                    {
+                                        token visibility = "invisible"
+                                    }
+
+                                    def Xform "link5_1__render_instance" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                        instanceable = true
+                                        prepend references = </franka_fr3_v1/__RenderPrototypes/p_f094bc8edadb59ee>
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/white>
+                                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                                    }
+
+                                    over "link5_1"
+                                    {
+                                        token visibility = "invisible"
+                                    }
+
+                                    def Xform "link5_2__render_instance" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                        instanceable = true
+                                        prepend references = </franka_fr3_v1/__RenderPrototypes/p_fb50d4ddf4072211>
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/black>
+                                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                                    }
+
+                                    over "link5_2"
+                                    {
+                                        token visibility = "invisible"
+                                    }
+
+                                    over "fr3_link6"
+                                    {
+                                        def Xform "link6_0__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_c1d574c51d2dce22>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_green>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_0"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_1__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_a931455c5358c8f6>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_1"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_2__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_a65f7f113a44f1dd>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_2"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_3__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_55a4adad6c1767a0>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/gray>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_3"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_4__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_3902d2813a01b709>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_red>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_4"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_5__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_79e2793e5f72cd3e>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_5"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_6__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_bf3a5e2af999be04>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/black>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_6"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "link6_7__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_223a67d9c4f3768a>
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_blue>
+                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "link6_7"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        over "fr3_link7"
+                                        {
+                                            def Xform "link7_0__render_instance" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                instanceable = true
+                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_c8d001d8265db0dd>
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/black>
+                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                            }
+
+                                            over "link7_0"
+                                            {
+                                                token visibility = "invisible"
+                                            }
+
+                                            def Xform "link7_1__render_instance" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                instanceable = true
+                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_bd1291ca03bb927a>
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/white>
+                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                            }
+
+                                            over "link7_1"
+                                            {
+                                                token visibility = "invisible"
+                                            }
+
+                                            def Xform "link7_2__render_instance" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                instanceable = true
+                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_39e3da112ae47858>
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/white>
+                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                            }
+
+                                            over "link7_2"
+                                            {
+                                                token visibility = "invisible"
+                                            }
+
+                                            def Xform "link7_3__render_instance" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                instanceable = true
+                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_227959f6444eba79>
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/black>
+                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1) )
+                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                            }
+
+                                            over "link7_3"
+                                            {
+                                                token visibility = "invisible"
+                                            }
+
+                                            over "robotiq_attach"
+                                            {
+                                                over "Geometry"
+                                                {
+                                                    over "robotiq_base"
+                                                    {
+                                                        def Xform "base__render_instance" (
+                                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                                            instanceable = true
+                                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_72ebf98ce978d829>
+                                                        )
+                                                        {
+                                                            rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                            matrix4d xformOp:transform = ( (-1, 1.2246467991473532e-16, 0, 0), (-1.2246467991473532e-16, -1, 0, 0), (0, 0, 1, 0), (0, 0, 0.0108, 1) )
+                                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                        }
+
+                                                        over "base"
+                                                        {
+                                                            token visibility = "invisible"
+                                                        }
+
+                                                        def Xform "base_coupling__render_instance" (
+                                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                                            instanceable = true
+                                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_d53089f3174c6a16>
+                                                        )
+                                                        {
+                                                            rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0, 0, 0.004, 1) )
+                                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                        }
+
+                                                        over "base_coupling"
+                                                        {
+                                                            token visibility = "invisible"
+                                                        }
+
+                                                        def Xform "tn__ca0185open_VF58__render_instance" (
+                                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                                            instanceable = true
+                                                            prepend references = </franka_fr3_v1/__RenderPrototypes/p_f7bc6a4add04708f>
+                                                        )
+                                                        {
+                                                            rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/metal>
+                                                            matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (0, 0, 0.0108, 1) )
+                                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                        }
+
+                                                        over "tn__ca0185open_VF58"
+                                                        {
+                                                            token visibility = "invisible"
+                                                        }
+
+                                                        over "robotiq_left_driver"
+                                                        {
+                                                            def Xform "driver__render_instance" (
+                                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                instanceable = true
+                                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_c0c030b6f018040c>
+                                                            )
+                                                            {
+                                                                rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/metal>
+                                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.422854177870249e-8, 0.9999999999999993, 0), (0, -0.9999999999999993, -3.422854177870249e-8, 0), (0.0306011, 0.0549045, -0.0047, 1) )
+                                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                            }
+
+                                                            over "driver"
+                                                            {
+                                                                token visibility = "invisible"
+                                                            }
+
+                                                            over "robotiq_left_coupler"
+                                                            {
+                                                                def Xform "coupler__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_4c47f01323b946c9>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (-0.062026, -0.0503723, 0.0055, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "coupler"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "robotiq_left_spring_link"
+                                                        {
+                                                            def Xform "spring_link__render_instance" (
+                                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                instanceable = true
+                                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_de08372e5a877f9d>
+                                                            )
+                                                            {
+                                                                rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.422854177870249e-8, 0.9999999999999993, 0), (0, -0.9999999999999993, -3.422854177870249e-8, 0), (0.0127, 0.06142, 0.01205, 1) )
+                                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                            }
+
+                                                            over "spring_link"
+                                                            {
+                                                                token visibility = "invisible"
+                                                            }
+
+                                                            over "robotiq_left_follower"
+                                                            {
+                                                                def Xform "follower__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_19df1638de501af2>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0.0509079, -0.10392, -0.0091, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "follower"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+
+                                                                def Xform "tongue__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_c1ad7a8eab8de958>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/metal>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0.0509079, -0.10392, -0.0091, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "tongue"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_driver"
+                                                        {
+                                                            def Xform "driver__render_instance" (
+                                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                instanceable = true
+                                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_c0c030b6f018040c>
+                                                            )
+                                                            {
+                                                                rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/metal>
+                                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.422854177870249e-8, 0.9999999999999993, 0), (0, -0.9999999999999993, -3.422854177870249e-8, 0), (0.0306011, 0.0549045, -0.0047, 1) )
+                                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                            }
+
+                                                            over "driver"
+                                                            {
+                                                                token visibility = "invisible"
+                                                            }
+
+                                                            over "robotiq_right_coupler"
+                                                            {
+                                                                def Xform "coupler__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_4c47f01323b946c9>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (-0.062026, -0.0503723, 0.0055, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "coupler"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_spring_link"
+                                                        {
+                                                            def Xform "spring_link__render_instance" (
+                                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                instanceable = true
+                                                                prepend references = </franka_fr3_v1/__RenderPrototypes/p_de08372e5a877f9d>
+                                                            )
+                                                            {
+                                                                rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.422854177870249e-8, 0.9999999999999993, 0), (0, -0.9999999999999993, -3.422854177870249e-8, 0), (0.0127, 0.06142, 0.01205, 1) )
+                                                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                            }
+
+                                                            over "spring_link"
+                                                            {
+                                                                token visibility = "invisible"
+                                                            }
+
+                                                            over "robotiq_right_follower"
+                                                            {
+                                                                def Xform "tongue__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_c1ad7a8eab8de958>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/metal>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0.0509079, -0.10392, -0.0091, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "tongue"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+
+                                                                def Xform "follower__render_instance" (
+                                                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                                                    instanceable = true
+                                                                    prepend references = </franka_fr3_v1/__RenderPrototypes/p_19df1638de501af2>
+                                                                )
+                                                                {
+                                                                    rel material:binding = </franka_fr3_v1/Geometry/base/fr3_link0/fr3_link1/fr3_link2/fr3_link3/fr3_link4/fr3_link5/fr3_link6/fr3_link7/robotiq_attach/Materials/black>
+                                                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0.0509079, -0.10392, -0.0091, 1) )
+                                                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                                                }
+
+                                                                over "follower"
+                                                                {
+                                                                    token visibility = "invisible"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

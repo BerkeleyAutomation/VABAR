@@ -1,0 +1,35 @@
+#usda 1.0
+(
+    defaultPrim = "GearMeshMat"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+def Xform "GearMeshMat" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+)
+{
+    bool physics:kinematicEnabled = 1
+    float physics:mass = 1
+    rel material:binding:physics = </GearMeshMat/PhysicsMaterials/mat>
+    def Scope "PhysicsMaterials"
+    {
+        def Material "mat" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI", "MjcMaterialAPI"]
+        )
+        {
+            float physics:dynamicFriction = 0.9
+            float physics:staticFriction = 0.9
+            float physics:restitution = 0
+        }
+    }
+    def Cube "mat" (
+        prepend apiSchemas = ["PhysicsCollisionAPI"]
+    )
+    {
+        double size = 1
+        double3 xformOp:scale = (0.15, 0.27, 0.004)
+        double3 xformOp:translate = (0, 0, -0.002)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        color3f[] primvars:displayColor = [(0.34239164, 0.318546778, 0.273838416)]
+    }
+}

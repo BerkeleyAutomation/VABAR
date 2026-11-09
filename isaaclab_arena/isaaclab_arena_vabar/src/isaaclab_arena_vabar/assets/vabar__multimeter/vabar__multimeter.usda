@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "base"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "base" (
+    delete apiSchemas = ["PhysicsArticulationRootAPI", "NewtonArticulationRootAPI"]
+    prepend references = @./payloads/base.usda@
+    variants = {
+        string Physics = "physics"
+    }
+    prepend variantSets = "Physics"
+    append variantSets = "Physics"
+)
+{
+    # AUTOLab's level-1 multimeter: this mesh at 0.83, 152 x 73 x 44 mm, so the 2F-85's
+    # 85 mm stroke closes across it.
+    double3 xformOp:scale = (0.83, 0.83, 0.83)
+    uniform token[] xformOpOrder = ["xformOp:scale"]
+
+    over "Geometry" {
+        over "vabar__multimeter" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # AUTOLab's stated 398.371 g. The converter authored it on the MJCF geom's Xform,
+            # which is neither the rigid body nor a collider, so Newton ignored it and gave
+            # the body 288 g from its collider at the default 1000 kg/m^3. On the body,
+            # Newton rescales the collider's uniform-density inertia to this mass and keeps
+            # its centre of mass.
+            float physics:mass = 0.398371
+        }
+    }
+
+    variantSet "Physics" = {
+        "mujoco" (
+            prepend payload = @./payloads/Physics/mujoco.usda@
+        ) {
+
+        }
+        "none" {
+
+        }
+        "physics" (
+            prepend payload = @./payloads/Physics/physics.usda@
+        ) {
+
+        }
+    }
+}

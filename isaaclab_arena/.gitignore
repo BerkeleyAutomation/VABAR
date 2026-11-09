@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+.venv-autolab/
+outputs/
+artifacts/
+*.egg-info/
+.llm_cache/
+.worktrees/

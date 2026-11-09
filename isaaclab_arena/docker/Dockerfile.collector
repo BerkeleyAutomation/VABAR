@@ -1,0 +1,33 @@
+# syntax=docker/dockerfile:1.7
+
+ARG COLLECTOR_BASE_IMAGE
+FROM ${COLLECTOR_BASE_IMAGE}
+
+ARG CAP_SOURCE_REVISION=unknown
+ARG CAP_SOURCE_FINGERPRINT=unknown
+ARG ARENA_SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.revision="${CAP_SOURCE_REVISION}" \
+      vabar.source-fingerprint="${CAP_SOURCE_FINGERPRINT}" \
+      vabar.arena-revision="${ARENA_SOURCE_REVISION}" \
+      vabar.image-role="experiment-output-collector"
+
+ENV PYTHONUNBUFFERED=1
+WORKDIR /opt/cap/collector
+
+# This is the import closure exercised by Arena's report builder. It contains
+# no Isaac Sim, Isaac Lab, Torch, CUDA, or policy packages.
+COPY external/IsaacLab-Arena/isaaclab_arena/__init__.py \
+    /usr/local/lib/python3.12/site-packages/isaaclab_arena/__init__.py
+COPY external/IsaacLab-Arena/isaaclab_arena/evaluation/arena_experiment_result.py \
+    /usr/local/lib/python3.12/site-packages/isaaclab_arena/evaluation/
+COPY external/IsaacLab-Arena/isaaclab_arena/visualization/ \
+    /usr/local/lib/python3.12/site-packages/isaaclab_arena/visualization/
+COPY isaaclab_arena_gap/src/isaaclab_arena_gap/osmo/build_experiment_output.py /opt/cap/collector/build_experiment_output.py
+
+RUN python -c \
+      'from isaaclab_arena.evaluation.arena_experiment_result import ArenaExperimentResult; from isaaclab_arena.visualization.report import build_report' \
+    && useradd --uid 1000 --create-home --shell /bin/bash cap \
+    && chown -R cap:cap /opt/cap/collector
+
+USER cap
+CMD ["python", "/opt/cap/collector/build_experiment_output.py", "--help"]

@@ -1,0 +1,53 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.5.0"
+    }
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Scope "Instances"
+{
+    def Xform "gripper" (
+        prepend references = @./geometries.usd@</Geometries/gripper>
+    )
+    {
+        over "gripper" (
+            apiSchemas = ["MjcImageableAPI"]
+        )
+        {
+        }
+    }
+
+    def Xform "tip_left" (
+        prepend references = @./geometries.usd@</Geometries/tip_left>
+    )
+    {
+        over "tip_left" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+        )
+        {
+            double[] mjc:solref = [0.02, 1]
+            float newton:contactGap = 0
+            token physics:approximation = "convexHull"
+            float physics:density = 1000
+        }
+    }
+
+    def Xform "tip_right" (
+        prepend references = @./geometries.usd@</Geometries/tip_right>
+    )
+    {
+        over "tip_right" (
+            apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMeshCollisionAPI", "NewtonMeshCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+        )
+        {
+            double[] mjc:solref = [0.02, 1]
+            float newton:contactGap = 0
+            token physics:approximation = "convexHull"
+            float physics:density = 1000
+        }
+    }
+}

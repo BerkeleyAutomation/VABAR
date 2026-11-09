@@ -1,0 +1,86 @@
+# Coupled rigid/VBD solver values shared by Cable Easy and Medium.
+physical:
+  reference_radius: 0.011
+  reference_length_m: 0.9144
+  reference_segments: 28
+  density: 350.0
+  stretch_stiffness: 200000.0
+  stretch_damping: 1.0
+  bend_stiffness_at_reference: 0.04
+  bend_damping_at_reference: 0.06
+  cable_friction: 60.0
+  fixture_friction: 2.0
+  table_friction: 0.02
+  contact_stiffness: 10000.0
+  contact_damping: 0.1
+  material_restitution: 0.0
+  contact_gap: 0.01
+  color: [0.88, 0.88, 0.87]
+  body_frame_origin: com
+environment:
+  dt: 0.016666666666666666
+  render_interval: 4
+  use_newton_actuators: true
+  num_rerenders_on_reset: 20
+  decimation: 1
+  replicate_physics: true
+  num_substeps: 16
+  use_cuda_graph: true
+  debug_mode: false
+  deterministic_mode: not_guaranteed
+  shape_margin: 0.0
+  shape_gap: 0.002
+  coupler_iterations: 2
+  rigid_solver:
+    njmax: 1024
+    nconmax: 512
+    cone: elliptic
+    ls_iterations: 20
+    integrator: implicitfast
+    impratio: 10.0
+    tolerance: 1.0e-8
+    use_mujoco_contacts: false
+    disable_sensors: true
+    jacobian: sparse
+  vbd_solver:
+    iterations: 40
+    rigid_avbd_beta: 100.0
+    rigid_contact_k_start: 1000.0
+    rigid_contact_history: true
+    rigid_body_contact_buffer_size: 256
+  collision:
+    contact_matching: latest
+  proxy:
+    mode: staggered
+    mass_scale: 20.0
+    collide_interval: 1
+  rigid_fixture_bodies:
+    - /World/envs/env_.*/(Peg[0-3]|Anchor|Port)
+  cable_bodies:
+    - /World/envs/env_.*/Cable
+robot:
+  # The shared YAM pair (vabar__bimanual_yam). Arm gains follow AUTOLab's cable
+  # workcell; the gripper gains are its finger servo.
+  # AUTOLab's cable graph is written against the linear_4310 hand. On the
+  # crank-shaft hand the cable kinks at the fingertips during a crossing.
+  gripper: linear_4310
+  # AUTOLab's cable-station home; its planner seeds IK from it.
+  home_joints: [0.0, 1.4, 1.2, 0.0, 1.1, 0.0]
+  gains:
+    arm_stiffness: 300.0
+    arm_damping: 30.0
+    gripper_stiffness: 600.0
+    gripper_damping: 20.0
+    gripper_effort_limit_sim: 80.0
+  # The cable fingertip material: friction, stiffness and damping of the cable
+  # contact, with the cable's 2 mm contact gap.
+  fingertip_contact:
+    friction: 60.0
+    stiffness: 10000.0
+    damping: 0.1
+    gap: 0.002
+    margin: 0.0
+  robot_bodies:
+    - /World/envs/env_.*/(LeftRobot|RightRobot)
+  robot_proxies:
+    - /World/envs/env_.*/(LeftRobot|RightRobot)/Geometry/arm/link_1/link_2/link_3/link_4/link_5/link_6

@@ -1,0 +1,26 @@
+[project]
+name = "vabar-arena-workspace"
+version = "0.0.0"
+requires-python = ">=3.12,<3.13"
+dependencies = []
+
+[tool.uv]
+# The pinned Arena project owns resolution for the one Python 3.12
+# simulation environment.  ./setup.sh materializes that project and syncs its
+# frozen lock into this repository's .venv.  Keeping this root unmanaged makes
+# `uv run ...` use that prepared environment without trying to replace it from
+# a second lock.
+managed = false
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["isaaclab_arena_gap/tests", "isaaclab_arena_vabar/tests"]
+pythonpath = [
+  "external/IsaacLab-Arena",
+  "isaaclab_arena_gap/src",
+  "isaaclab_arena_vabar/src",
+  "tools",
+]
+markers = [
+  "live: launches a fresh Isaac Sim process and requires a visible CUDA device",
+]

@@ -1,0 +1,284 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1"
+{
+    def Scope "Materials"
+    {
+        def Material "black" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/black>
+        )
+        {
+        }
+
+        def Material "white" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/white>
+        )
+        {
+        }
+
+        def Material "red" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/red>
+        )
+        {
+        }
+
+        def Material "button_green" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/button_green>
+        )
+        {
+        }
+
+        def Material "gray" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/gray>
+        )
+        {
+        }
+
+        def Material "button_red" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/button_red>
+        )
+        {
+        }
+
+        def Material "button_blue" (
+            prepend references = @./MaterialsLibrary.usdc@</Materials/button_blue>
+        )
+        {
+        }
+    }
+
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                over "link0_0" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/black>
+                }
+
+                over "link0_1" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                }
+
+                over "link0_2" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                }
+
+                over "link0_3" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                }
+
+                over "link0_4" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/white>
+                }
+
+                over "link0_5" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/red>
+                }
+
+                over "link0_6" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                )
+                {
+                    rel material:binding = </franka_fr3_v1/Materials/black>
+                }
+
+                over "fr3_link1"
+                {
+                    over "link1" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                    )
+                    {
+                        rel material:binding = </franka_fr3_v1/Materials/white>
+                    }
+
+                    over "fr3_link2"
+                    {
+                        over "link2" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                        )
+                        {
+                            rel material:binding = </franka_fr3_v1/Materials/white>
+                        }
+
+                        over "fr3_link3"
+                        {
+                            over "link3_0" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = </franka_fr3_v1/Materials/white>
+                            }
+
+                            over "link3_1" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                            )
+                            {
+                                rel material:binding = </franka_fr3_v1/Materials/black>
+                            }
+
+                            over "fr3_link4"
+                            {
+                                over "link4_0" (
+                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                )
+                                {
+                                    rel material:binding = </franka_fr3_v1/Materials/white>
+                                }
+
+                                over "link4_1" (
+                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                )
+                                {
+                                    rel material:binding = </franka_fr3_v1/Materials/black>
+                                }
+
+                                over "fr3_link5"
+                                {
+                                    over "link5_0" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/white>
+                                    }
+
+                                    over "link5_1" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/white>
+                                    }
+
+                                    over "link5_2" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                    )
+                                    {
+                                        rel material:binding = </franka_fr3_v1/Materials/black>
+                                    }
+
+                                    over "fr3_link6"
+                                    {
+                                        over "link6_0" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_green>
+                                        }
+
+                                        over "link6_1" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                        }
+
+                                        over "link6_2" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                        }
+
+                                        over "link6_3" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/gray>
+                                        }
+
+                                        over "link6_4" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_red>
+                                        }
+
+                                        over "link6_5" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/white>
+                                        }
+
+                                        over "link6_6" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/black>
+                                        }
+
+                                        over "link6_7" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                        )
+                                        {
+                                            rel material:binding = </franka_fr3_v1/Materials/button_blue>
+                                        }
+
+                                        over "fr3_link7"
+                                        {
+                                            over "link7_0" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/black>
+                                            }
+
+                                            over "link7_1" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/white>
+                                            }
+
+                                            over "link7_2" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/white>
+                                            }
+
+                                            over "link7_3" (
+                                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                            )
+                                            {
+                                                rel material:binding = </franka_fr3_v1/Materials/black>
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

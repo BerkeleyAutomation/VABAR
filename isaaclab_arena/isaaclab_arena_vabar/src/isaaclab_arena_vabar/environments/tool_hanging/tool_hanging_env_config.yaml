@@ -1,0 +1,39 @@
+default_physics_backend: newton
+benchmark_physics:
+  solver_cfg:
+    jacobian: sparse
+    # MuJoCo-Warp gives a convex pair one contact point unless this is on, and a tool resting
+    # flat on one point walks and rests slightly above the table. AUTOLab's tool hanging
+    # collides through Newton's pipeline, which returns a manifold.
+    enable_multiccd: true
+env_cfg_override:
+  decimation: 1
+  num_rerenders_on_reset: 5
+  sim:
+    dt: 0.016666666666666666
+    render_interval: 1
+    gravity: [0.0, 0.0, -9.81]
+    use_newton_actuators: true
+    physics:
+      num_substeps: 8
+      use_cuda_graph: true
+      debug_mode: false
+      collision_cfg: null
+      default_shape_cfg:
+        gap: 0.0005
+      solver_cfg:
+        _target_: isaaclab_newton.physics.MJWarpSolverCfg
+        solver: newton
+        disable_sensors: true
+        integrator: implicitfast
+        nconmax: 4096
+        njmax: 8192
+        iterations: 20
+        ls_iterations: 20
+        cone: elliptic
+        impratio: 10.0
+        use_mujoco_contacts: true
+        # MuJoCo's default, as AUTOLab runs it. Arena's Newton preset sets 15000 for
+        # dexterous hands; a resting convex pair whose GJK never converges then costs
+        # ~50 ms per call, every substep.
+        ccd_iterations: 35

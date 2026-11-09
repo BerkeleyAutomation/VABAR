@@ -151,4 +151,4 @@ repositories, and installed with a plain `uv sync`. From that clone:
   [`benchmark.md`](benchmark.md), measured 2026-11-05.
 - Cable routing Level 2, the `weave_vision` graph, SAM 3 segmentation for the cable
   graphs, and multi-world Studio fleets.
-- The Isaac Lab Arena implementation, which is not part of this repository.
+- The Isaac Lab Arena implementation in [`isaaclab_arena/`](../isaaclab_arena/README.md), which has its own setup and records.

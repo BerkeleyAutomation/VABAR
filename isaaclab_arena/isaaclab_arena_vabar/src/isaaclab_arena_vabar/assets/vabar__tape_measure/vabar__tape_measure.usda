@@ -1,0 +1,47 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__tape_measure_01.usd@</RootNode>
+) {
+    # AUTOLab's level-1 tape measure is 72 mm wide and 32 mm thick; 0.81 matches both,
+    # so the 2F-85's 85 mm stroke closes across it. Mass stays; inertia scales with s^2.
+    double3 xformOp:scale = (0.81, 0.81, 0.81)
+    uniform token[] xformOpOrder = ["xformOp:scale"]
+
+    over "Geometry" {
+        over "tape_measure_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Inertia of the voxelised visual mesh at uniform density and the delivered mass. The
+            # centre of mass is the model's: the delivered one sat 5 mm from the mesh's
+            # uniform-density centre. The delivered inertia was 3.2/3.3/3.3x this on its principal
+            # axes (86% of the physical limit for this shape). Mass unchanged. Newton scales the
+            # centre of mass by the root scale but not the inertia, so the inertia here is the
+            # runtime value and the centre of mass is divided by 0.81.
+            point3f physics:centerOfMass = (-0.022168901, -0.0058306937, -0.0029289265)
+            float3 physics:diagonalInertia = (9.7412506e-05, 0.00013731643, 0.00020577557)
+            float physics:mass = 0.25
+            quatf physics:principalAxes = (0.97363051, 0.00052170644, 0.011117655, -0.22785906)
+
+            over "tape_measure_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__black_a01" {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+    }
+
+}
