@@ -102,40 +102,11 @@ uv run python -m vabar bench --cell tool_hanging/L1 --print       # the vabar ru
   been let go: no hand within the tool's own radius of it, for a second.
 - In sequential tasks such as gear meshing the whole instance is the unit; subgoals are reported
   as a diagnostic.
-- Cycle time is simulated time from policy start to success, failure or timeout; the tables give
+- Cycle time is simulated time from policy start to success, failure or timeout; results report
   the median over successful trials.
 
-### Results
-
-Success rate (%) and median cycle time (simulated seconds), N = 30 per cell (GaP Human–ILA: N = 40,
-on its own instances); a dash means no successful trial. *This release* re-runs the shipped reference
-graph on this repository (`--config fast --limit 30`, one 96 GB GPU, 5–37 min a cell), as the range
-over repeated runs.
-
-| Task | Level | GaP (Human–Newton) | This release | GaP (Human–ILA) | Claude Code | GaP |
-| --- | :---: | ---: | ---: | ---: | ---: | ---: |
-| Tool Sorting | L1 | 47.1 · 421.6 | 72–81 | 20.0 · 555.0 | 0.0 · — | 26.7 · 134.2 |
-| | L2 | 33.7 · 913.8 | 57–64 | — | 0.0 · — | 13.3 · 232.3 |
-| Tool Hanging | L1 | 86.7 · 86.1 | 98–100 | 67.5 · 98.3 | 16.7 · 96.2 | 33.3 · 81.5 |
-| | L2 | 81.7 · 158.4 | 83–93 | 50.0 · 138.3 | 10.0 · 190.8 | 10.0 · 270.9 |
-| Gear Meshing | L1 | 100.0 · 165.9 | 98–100 | 87.5 · 198.9 | 0.0 · — | 70.0 · 156.6 |
-| | L2 | 90.0 · 235.5 | 89–92 | 80.0 · 381.3 | 0.0 · — | 60.0 · 284.1 |
-| Syringe Packing | L1 | 87.0 · 228.8 | 87–90 | 52.5 · 939.0 | 0.0 · — | 33.3 · 371.1 |
-| | L2 | 63.0 · 472.3 | 47–63 | 40.0 · 1810.0 | 0.0 · — | 12.1 · 652.2 |
-| Cable Insertion | L1 | 86.7 · 78.8 | 100 | 97.5 · 104.9 | 0.0 · — | 36.7 · 79.0 |
-| | L2 | 30.0 · 74.2 | 67–80 | 17.5 · 118.8 | 0.0 · — | 23.3 · 80.5 |
-| Cable Routing | L1 | 46.7 · 116.0 | 50–77 | 50.0 · 145.9 | 3.3 · 120.7 | 36.7 · 50.8 |
-| | L2 | 46.7 · 189.8 | 40–70 | 5.0 · 151.5 | 0.0 · — | 13.3 · 120.3 |
-
-- **GaP (Human):** a graph specified by hand over the skill library; this repository ships it as each
-  task's reference graph.
-- **Claude Code:** a general-purpose coding agent (Claude Opus 5) with no robotics harness or skill library.
-- **GaP:** the graph generated autonomously by the same model, over the same skill library.
-
-The cable cells differ most from the paper: their graphs' perception has since been fixed for the
-camera rig the benchmark stages. Per-cell cost and GPU memory, the full config reference, what changed
-since the paper and how VABAR sits on RoboSimStudio are in [`docs/benchmark.md`](docs/benchmark.md);
-[`docs/VALIDATION.md`](docs/VALIDATION.md) records the port.
+The paper's results next to this release's re-runs, per-cell cost and the full config reference are
+in [`docs/benchmark.md`](docs/benchmark.md).
 
 ## Skill library
 
