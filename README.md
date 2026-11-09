@@ -388,8 +388,11 @@ docs/                   running graphs, cable tasks, validation records
 
 ## How VABAR uses RoboSimStudio
 
-VABAR is a task collection for RoboSimStudio, not a fork of it. The pinned upstream
-release is installed unmodified. VABAR attaches to it in three ways:
+VABAR is a task collection for RoboSimStudio, not a fork of it, and edits nothing in the
+RoboSimStudio it installs. That package is pinned at `KeplerC/robosimstudio@39b7a6e`:
+upstream plus nine runtime commits not yet merged there (fleet waves, worker pools, shader
+and planner caches, the lockstep clock), which the `default` and `fast` configs use. VABAR
+attaches to it in three ways:
 - **The suites are an external task root.** `vabar.install()` calls RoboSimStudio's
   `add_task_root("tasks/")`, and the `assets/` beside that root is searched
   automatically. Any RoboSimStudio entry point therefore sees them:

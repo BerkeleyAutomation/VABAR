@@ -54,6 +54,9 @@ and the graph then gives that tool up).
 
 ## Perception graph (`gap_perception`)
 
+**Since resolved:** on the current pins the graph runs, and is the cells' reference graph (see
+the 2026-11-09 section below for full-cell results). What follows is the 2026-10-28 record.
+
 **Not runnable under the pinned graph-as-policy (`KeplerC@09e45f8`).** The documented Level-1
 command
 
