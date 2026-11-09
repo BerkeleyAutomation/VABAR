@@ -22,13 +22,24 @@
   )
   (:init)
   (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
     (And
-      (And (encloses wrench_1.ring wrench_hook_1.shank)
-           (>= (contact-force wrench_1 wrench_hook_1) 0.2)
-           (<= (speed wrench_1) 0.15))
-      (And (encloses wrench_2.ring wrench_hook_2.shank)
-           (>= (contact-force wrench_2 wrench_hook_2) 0.2)
-           (<= (speed wrench_2) 0.15))
+      (hold-for 1.0
+        (And
+          (encloses wrench_1.ring wrench_hook_1.shank)
+          (>= (contact-force wrench_1 wrench_hook_1) 0.2)
+          (<= (speed wrench_1) 0.15)
+          (> (hands-clear wrench_1) 0.21)
+        )
+      )
+      (hold-for 1.0
+        (And
+          (encloses wrench_2.ring wrench_hook_2.shank)
+          (>= (contact-force wrench_2 wrench_hook_2) 0.2)
+          (<= (speed wrench_2) 0.15)
+          (> (hands-clear wrench_2) 0.21)
+        )
+      )
     )
   )
   (:reward (fraction))

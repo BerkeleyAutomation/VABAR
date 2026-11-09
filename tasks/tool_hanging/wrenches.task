@@ -8,7 +8,7 @@
 ; waiting: `threaded`'s own provenance reads "designed here for the hanging
 ; fixtures".
 ;
-; WHAT "HUNG" MEANS, in three clauses per wrench, all three load-bearing:
+; WHAT "HUNG" MEANS, in four clauses per wrench, all four load-bearing:
 ;
 ;   (encloses ring.ring hook.shank)
 ;       "Hanging on the hook" means the hook arm's centreline crosses the
@@ -20,15 +20,19 @@
 ;       from leaning, which is the reason this atom exists.
 ;
 ;   (>= (contact-force ring hook) 0.2)
-;       The load path: the hook bears the wrench. A ring held around the arm
-;       by the gripper reads ~0 N here, so this clause is what makes "let go"
-;       part of the task rather than a stage direction. 0.2 N against a
-;       ~3 N tool weight: a floor, not a calibration.
+;       The load path: the hook bears the wrench. 0.2 N against a ~3 N tool
+;       weight: a floor, not a calibration. It is NOT a release test: a ring
+;       lowered onto the arm while still in the jaws reads well above 0.2 N,
+;       and the Level-1 routines met this clause with the gripper still shut.
 ;
 ;   (<= (speed ring) 0.05)
 ;       At rest, not mid-swing through the goal geometry.
 ;
-; All six clauses must remain true continuously for two simulated seconds.
+;   (> (hands-clear ring) R)
+;       Let go: no hand within the wrench's own radius of its origin (see
+;       tool_hanging.suite).
+;
+; All eight clauses must remain true continuously for two simulated seconds.
 ; Grouped per wrench under one And each, so (fraction) pays half for one wrench
 ; genuinely hung while the hold timer advances, and the do-nothing floor is zero.
 ; ---------------------------------------------------------------------------
@@ -70,17 +74,20 @@
   (:init)
 
   (:goal
+    ; Both wrenches hung and let go, for two seconds: see tool_hanging.suite for the release clause.
     (hold-for 2.0
       (And
         (And
           (encloses ring_spanner_19.ring wrench_hook_2.shank)
           (>= (contact-force ring_spanner_19 wrench_hook_2) 0.2)
           (<= (speed ring_spanner_19) 0.05)
+          (> (hands-clear ring_spanner_19) 0.14)
         )
         (And
           (encloses ring_spanner_17.ring wrench_hook_1.shank)
           (>= (contact-force ring_spanner_17 wrench_hook_1) 0.2)
           (<= (speed ring_spanner_17) 0.05)
+          (> (hands-clear ring_spanner_17) 0.17)
         )
       )
     )

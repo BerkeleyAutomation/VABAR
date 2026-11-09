@@ -290,6 +290,8 @@ uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --g
 - **Independent attempts:** in tasks built from attempts that are independent by
   construction (sorting or hanging separately sampled objects), each object-level
   attempt is a trial. Success rate is the fraction of objects manipulated successfully.
+  A hung tool counts once it has been let go: no hand within the tool's own radius of it,
+  for a second ([`docs/validation/tool_hanging.md`](docs/validation/tool_hanging.md)).
 - **Sequential, state-dependent tasks:** in tasks like gear meshing, the whole instance
   is the unit, and subgoal success is reported as a diagnostic.
 - **Cycle time:** simulated time from policy start to success, failure or timeout. The

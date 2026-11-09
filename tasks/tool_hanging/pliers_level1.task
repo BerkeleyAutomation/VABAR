@@ -51,10 +51,14 @@
   (:init)
 
   (:goal
-    (And
-      (>= (containment plier_1 hang_left) 1.0)
-      (>= (contact-force plier_1 plier_support_left) 0.2)
-      (<= (speed plier_1) 0.15)
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (hold-for 1.0
+      (And
+        (>= (containment plier_1 hang_left) 1.0)
+        (>= (contact-force plier_1 plier_support_left) 0.2)
+        (<= (speed plier_1) 0.15)
+        (> (hands-clear plier_1) 0.11)
+      )
     )
   )
 

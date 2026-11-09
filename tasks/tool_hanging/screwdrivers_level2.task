@@ -26,13 +26,24 @@
   )
   (:init)
   (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
     (And
-      (And (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
-           (>= (contact-force screwdriver_1 rack) 0.2)
-           (<= (speed screwdriver_1) 0.15))
-      (And (>= (containment screwdriver_2.tip screwdriver_box_interior) 1.0)
-           (>= (contact-force screwdriver_2 rack) 0.2)
-           (<= (speed screwdriver_2) 0.15))
+      (hold-for 1.0
+        (And
+          (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
+          (>= (contact-force screwdriver_1 rack) 0.2)
+          (<= (speed screwdriver_1) 0.15)
+          (> (hands-clear screwdriver_1) 0.20)
+        )
+      )
+      (hold-for 1.0
+        (And
+          (>= (containment screwdriver_2.tip screwdriver_box_interior) 1.0)
+          (>= (contact-force screwdriver_2 rack) 0.2)
+          (<= (speed screwdriver_2) 0.15)
+          (> (hands-clear screwdriver_2) 0.20)
+        )
+      )
     )
   )
   (:reward (fraction))

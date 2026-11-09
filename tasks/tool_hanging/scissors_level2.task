@@ -22,18 +22,29 @@
   )
   (:init)
   (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
     (And
-      (And
-        (Or (encloses scissors_1.bow scissor_hook_1.shank)
-            (encloses scissors_1.bow_other scissor_hook_1.shank))
-        (>= (contact-force scissors_1 scissor_hook_1) 0.2)
-        (<= (speed scissors_1) 0.15)
+      (hold-for 1.0
+        (And
+          (Or
+            (encloses scissors_1.bow scissor_hook_1.shank)
+            (encloses scissors_1.bow_other scissor_hook_1.shank)
+          )
+          (>= (contact-force scissors_1 scissor_hook_1) 0.2)
+          (<= (speed scissors_1) 0.15)
+          (> (hands-clear scissors_1) 0.10)
+        )
       )
-      (And
-        (Or (encloses scissors_2.bow scissor_hook_2.shank)
-            (encloses scissors_2.bow_other scissor_hook_2.shank))
-        (>= (contact-force scissors_2 scissor_hook_2) 0.2)
-        (<= (speed scissors_2) 0.15)
+      (hold-for 1.0
+        (And
+          (Or
+            (encloses scissors_2.bow scissor_hook_2.shank)
+            (encloses scissors_2.bow_other scissor_hook_2.shank)
+          )
+          (>= (contact-force scissors_2 scissor_hook_2) 0.2)
+          (<= (speed scissors_2) 0.15)
+          (> (hands-clear scissors_2) 0.10)
+        )
       )
     )
   )
