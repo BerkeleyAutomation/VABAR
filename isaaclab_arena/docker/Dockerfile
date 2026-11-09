@@ -241,14 +241,12 @@ RUN "${CAP_SYSTEM_PYTHON}" ./docker/source_manifest.py verify \
     && test ! -e "${HF_HOME}/token" \
     && test ! -e "${HF_HOME}/stored_tokens"
 
-# AUTOLab writes each syringe trial's box-shifted workcell (scene_norobot_box*.xml,
-# git-ignored) beside its export the first time a variant is built, and the
-# runtime user cannot write into the source tree. Generate them while it is
-# still writable, so the image does not depend on a checkout that happened to
-# have run the syringe tasks.
+# The syringe documents name box-shifted workcells (scene_norobot_box*.xml). They used to
+# be generated into the source tree the first time a variant was built; the repository now
+# tracks all 58 under assets/vab_tool_sort/syringe/, so nothing is generated at build or
+# run time. Check they arrived with the sources.
 RUN cd "${AUTOLAB_VABAR_ROOT}" \
-    && "${AUTOLAB_VABAR_VENV}/bin/python" -c 'from tasks.syringe_packing import task; task.build_all()' \
-    && ls tasks/syringe_packing/assets/vab_tool_sort/syringe/scene_norobot_box*.xml >/dev/null
+    && ls assets/vab_tool_sort/syringe/scene_norobot_box*.xml >/dev/null
 
 USER cap
 # Cache restoration clears these children as the runtime user, preserving /cache.
