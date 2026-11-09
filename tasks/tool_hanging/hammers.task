@@ -50,22 +50,29 @@
   (:init)
 
   (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
     (And
-      (And
-        (Or
-          (>= (contact-force hammer_1 hammer_holder_1) 0.5)
-          (>= (contact-force hammer_1 hammer_holder_2) 0.5)
+      (hold-for 1.0
+        (And
+          (Or
+            (>= (contact-force hammer_1 hammer_holder_1) 0.5)
+            (>= (contact-force hammer_1 hammer_holder_2) 0.5)
+          )
+          (<= (speed hammer_1) 0.05)
+          (>= (height hammer_1) 1.00)
+          (> (hands-clear hammer_1) 0.35)
         )
-        (<= (speed hammer_1) 0.05)
-        (>= (height hammer_1) 1.00)
       )
-      (And
-        (Or
-          (>= (contact-force hammer_2 hammer_holder_1) 0.5)
-          (>= (contact-force hammer_2 hammer_holder_2) 0.5)
+      (hold-for 1.0
+        (And
+          (Or
+            (>= (contact-force hammer_2 hammer_holder_1) 0.5)
+            (>= (contact-force hammer_2 hammer_holder_2) 0.5)
+          )
+          (<= (speed hammer_2) 0.05)
+          (>= (height hammer_2) 1.00)
+          (> (hands-clear hammer_2) 0.35)
         )
-        (<= (speed hammer_2) 0.05)
-        (>= (height hammer_2) 1.00)
       )
     )
   )

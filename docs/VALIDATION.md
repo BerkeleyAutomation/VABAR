@@ -122,6 +122,11 @@ suites' original runtime rebuilt from its lock. The paper's 86.7 % / 46.7 % were
 under a configuration that is still being confirmed with the suite owners (SAM 3
 segmentation is the leading candidate). See [cable](validation/cable.md).
 
+**Since resolved.** It was not the segmentation. Both cells' graphs had been tuned on a
+different camera rig from the one the benchmark stages; with that corrected, cable insertion
+L1 scores 30/30 and cable routing L1 15-23/30 over full cells, under the shipped protocol.
+The README's cell tables carry the current figures, and [cable](validation/cable.md) the fixes.
+
 ## A fresh install
 
 The pushed commit was cloned from GitHub into an empty workspace beside the two sibling
@@ -142,7 +147,8 @@ repositories, and installed with a plain `uv sync`. From that clone:
 
 ## Not validated here
 
-- Full 30-instance runs of each cell (12 × 30 graph episodes).
+- Full 30-instance runs of each cell (12 × 30 graph episodes). Since run: the README's
+  cell tables, measured 2026-11-05.
 - Cable routing Level 2, the `weave_vision` graph, SAM 3 segmentation for the cable
   graphs, and multi-world Studio fleets.
 - The Isaac Lab Arena implementation, which is not part of this repository.

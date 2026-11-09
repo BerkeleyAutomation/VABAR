@@ -290,6 +290,8 @@ uv run python -m vabar run --task tool_hanging/wrenches_level1 --solve graph --g
 - **Independent attempts:** in tasks built from attempts that are independent by
   construction (sorting or hanging separately sampled objects), each object-level
   attempt is a trial. Success rate is the fraction of objects manipulated successfully.
+  A hung tool counts once it has been let go: no hand within the tool's own radius of it,
+  for a second ([`docs/validation/tool_hanging.md`](docs/validation/tool_hanging.md)).
 - **Sequential, state-dependent tasks:** in tasks like gear meshing, the whole instance
   is the unit, and subgoal success is reported as a diagnostic.
 - **Cycle time:** simulated time from policy start to success, failure or timeout. The
@@ -386,8 +388,11 @@ docs/                   running graphs, cable tasks, validation records
 
 ## How VABAR uses RoboSimStudio
 
-VABAR is a task collection for RoboSimStudio, not a fork of it. The pinned upstream
-release is installed unmodified. VABAR attaches to it in three ways:
+VABAR is a task collection for RoboSimStudio, not a fork of it, and edits nothing in the
+RoboSimStudio it installs. That package is pinned at `KeplerC/robosimstudio@39b7a6e`:
+upstream plus nine runtime commits not yet merged there (fleet waves, worker pools, shader
+and planner caches, the lockstep clock), which the `default` and `fast` configs use. VABAR
+attaches to it in three ways:
 - **The suites are an external task root.** `vabar.install()` calls RoboSimStudio's
   `add_task_root("tasks/")`, and the `assets/` beside that root is searched
   automatically. Any RoboSimStudio entry point therefore sees them:

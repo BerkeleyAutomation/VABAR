@@ -44,10 +44,17 @@
     ; idle one, so a one-armed robot is refused at build rather than
     ; discovered mid-rollout. The hammers say (:arms 1) for themselves.
     (:arms 2)
-    ; The reference routines own episode completion: after placement they
-    ; retract, return home and settle before requesting termination. Keep
-    ; reporting BDDL success, but do not let it cut those motions short.
-    (:terminate-on-success false)
+    ; Success ends the episode (the default, so nothing is stated), and a
+    ; policy that never asks to stop is scored when the tools are hung rather
+    ; than at its step budget. Every goal requires the release for that to be
+    ; safe: each tool's clause ends in
+    ;   (> (hands-clear TOOL) R)
+    ; -- no hand within R of the tool's origin, R being the tool's radius about
+    ; that origin plus 15 mm, rounded up to the centimetre, so a hand nearer
+    ; than R could still be holding it -- and holds for a second (the wrenches'
+    ; whole goal for two), so a tool sliding off as it is let go is not counted.
+    ; contact-force against the holder is not a release test: a tool lowered
+    ; onto its hook while still in the jaws reads well above its 0.2 N floor.
   )
 
   (:fixtures

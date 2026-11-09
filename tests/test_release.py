@@ -106,3 +106,29 @@ def test_tool_sort_blocked_descent_stops_on_a_stall():
         descend = workflow["subgraphs"][subgraph]["nodes"]["descend"]
         assert descend["tool"] == "robot.move_cartesian_until_contact"
         assert descend["inputs"]["stall_steps"] == 60
+
+
+def test_tool_hanging_goals_require_the_release(tasks):
+    """A tool pressed onto its hook while still in the jaws met every hanging goal, so success could not end an episode."""
+    from robosimstudio_bench.taskbuild.registry import get_task
+
+    docs = sorted((vabar.TASKS / "tool_hanging").glob("*.task"))
+    frozen = sorted((vabar.REPO / "benchmark" / "tool_hanging").glob("*/tasks/*.task"))
+    assert (len(docs), len(frozen)) == (13, 200)
+    for doc in docs + frozen:
+        text = re.sub(r";[^\n]*", "", doc.read_text())
+        objects = re.search(r"\(:objects([^()]*)\)", text).group(1)
+        goal = text[text.index("(:goal") : text.index("(:observe")]
+        assert "(hold-for " in goal, doc.name
+        for tool, _ in re.findall(r"(\S+)\s+-\s+(\S+)", objects):
+            if not tool.startswith("distractor"):
+                assert re.search(rf"\(> \(hands-clear {tool}\) 0\.\d\d\)", goal), (doc.name, tool)
+    assert all(get_task(f"tool_hanging/{doc.stem}").terminate_on_success for doc in docs)
+
+
+def test_tool_hanging_landmark_beads_stay_out_of_the_cameras(tasks):
+    """The debugging beads render in every camera a perception graph or a policy reads; VABAR_LANDMARK_MARKERS=1 opts in."""
+    from robosimstudio_bench.taskbuild.registry import get_task
+
+    for doc in (vabar.TASKS / "tool_hanging").glob("*.task"):
+        assert all(not spec.visual_markers for spec in get_task(f"tool_hanging/{doc.stem}").objects), doc.stem

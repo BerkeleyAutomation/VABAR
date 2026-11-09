@@ -39,16 +39,23 @@
   (:init)
 
   (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
     (And
-      (And
-        (threaded rack.hole_left screwdriver_1.shaft)
-        (>= (contact-force screwdriver_1 rack) 0.2)
-        (<= (speed screwdriver_1) 0.05)
+      (hold-for 1.0
+        (And
+          (threaded rack.hole_left screwdriver_1.shaft)
+          (>= (contact-force screwdriver_1 rack) 0.2)
+          (<= (speed screwdriver_1) 0.05)
+          (> (hands-clear screwdriver_1) 0.20)
+        )
       )
-      (And
-        (threaded rack.hole_right screwdriver_2.shaft)
-        (>= (contact-force screwdriver_2 rack) 0.2)
-        (<= (speed screwdriver_2) 0.05)
+      (hold-for 1.0
+        (And
+          (threaded rack.hole_right screwdriver_2.shaft)
+          (>= (contact-force screwdriver_2 rack) 0.2)
+          (<= (speed screwdriver_2) 0.05)
+          (> (hands-clear screwdriver_2) 0.12)
+        )
       )
     )
   )

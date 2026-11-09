@@ -54,6 +54,9 @@ and the graph then gives that tool up).
 
 ## Perception graph (`gap_perception`)
 
+**Since resolved:** on the current pins the graph runs, and is the cells' reference graph (see
+the 2026-11-09 section below for full-cell results). What follows is the 2026-10-28 record.
+
 **Not runnable under the pinned graph-as-policy (`KeplerC@09e45f8`).** The documented Level-1
 command
 
@@ -79,6 +82,74 @@ graph (canonical script names, SK3 signatures) or running this suite on the olde
 change something outside a conservative port, so neither was done. SAM 3, GroundingDINO, an HF
 token and Vertex VLM credentials were all present, so the models are not the blocker.
 `gap_perception_level2` was not attempted (same runtime, same graph family).
+
+## Release, termination and the landmark beads (2026-11-09)
+
+Three problems, reported against `scissors_level1` but true of the whole suite:
+
+- **No goal required the tool to be let go.** `contact-force` against the holder was meant to be the
+  release test ("a ring held around the arm by the gripper reads ~0 N"). It is not: lowered onto its
+  hook while still in the jaws, a tool reads well above the 0.2 N floor. Driving each routine and
+  reading the goal every step, `wrenches_level1`, `pliers_level1` and `scissors_level1` scored success
+  on 57, 21 and 6 steps with the gripper still shut on the tool, the first of them with the nearest
+  hand 9.7, 8.2 and 2.3 cm from the tool's origin.
+- **Success did not end the episode** (`(:terminate-on-success false)` in the suite), because of the
+  first problem: ending on a goal a held tool satisfies would have scored hangs the policy went on
+  to drop. A policy that never asks to stop therefore ran to its full step budget (8,500 at Level 1,
+  22,000 at Level 2) and was scored wherever it left things, a tool still in hand included.
+- **The landmark beads rendered in every camera**: red ring and bow centres, green bead circles on
+  the wrenches and scissors, red tip dots on the screwdrivers. They do not collide, but a perception
+  graph or a learned policy sees them.
+
+What changed:
+
+- Every tool's clause now ends in `(> (hands-clear TOOL) R)` and is held for a second,
+  `(hold-for 1.0 ...)` (`wrenches.task` already held its whole goal for two). `hands-clear` is the
+  distance from the tool's origin to the nearest TCP of either arm. R is the tool's radius about its
+  origin, measured off its collision hulls, plus 15 mm, rounded up to the centimetre: a hand nearer
+  than that could still be holding the tool, and one further away cannot.
+
+  | Tool record | Radius | R |
+  | --- | ---: | ---: |
+  | `scissor_pair_1` / `scissor_pair_2` | 79.6 / 84.1 mm | 0.10 m |
+  | `plier_combination` / `plier_cutter` | 87.8 / 111.4 mm | 0.11 / 0.13 m |
+  | `screwdriver_slim` / `screwdriver_grip` | 175.5 / 100.9 mm | 0.20 / 0.12 m |
+  | `wrench_adjustable_150` / `_200` / `_260` | 123.7 / 148.8 / 193.4 mm | 0.14 / 0.17 / 0.21 m |
+  | `hanging_hammer_1` / `_2` | 334.9 mm (origin at a corner of the mesh) | 0.35 m |
+
+- With the release in every goal the suite no longer states `(:terminate-on-success false)`, so
+  success ends the episode as it does elsewhere.
+- The 200 frozen copies under `benchmark/tool_hanging/` restate their goals, and carry the same clause.
+- The beads are off unless `VABAR_LANDMARK_MARKERS=1`, which restores exactly what was drawn before.
+
+Scripted routines, episode 0, before (`main@c421a21`) and after:
+
+| Task | Before | After | Success steps with the jaws shut |
+| --- | --- | --- | --- |
+| `wrenches_level1` | success, 1,165 (policy stop) | success, 1,042 (success) | 57 → 0 |
+| `pliers_level1` | success, 1,090 (policy stop) | success, 924 (success) | 21 → 0 |
+| `scissors_level1` | success, 915 (policy stop) | success, 773 (success) | 6 → 0 |
+| `screwdrivers_level1` | fail, 1,095 | fail, 1,095 | 0 → 0 |
+| `wrenches` | success, 2,330 (policy stop) | success, 2,270 (success) | 0 → 0 |
+| `screwdrivers` | success, 2,190 (policy stop) | success, 2,114 (success) | 0 → 0 |
+| `scissors` | fail, 1,830 | fail, 1,830 | 0 → 0 |
+| `pliers` | fail, 1 | fail, 1 | 0 → 0 |
+
+Every outcome is unchanged. After the change each first success comes with the jaws open and the
+nearest hand 13.8–30.9 cm from the tool's origin. The hammers and the Level-2 documents ship no routine;
+`hammers` ships no graph either, so its 0.35 m is unexercised by any shipped solution.
+
+The benchmark cells with their reference graph (`gap_perception`, cell flags, `--config fast --limit 30`,
+all 30 instances), before and after, on the same machine at the same time:
+
+| Cell | Before: solved, per-tool | After: solved, per-tool | How episodes ended, after |
+| --- | --- | --- | --- |
+| tool hanging L1 | 28/30, 95.6% | 30/30, 100.0% | success 30 |
+| tool hanging L2 | 23/30, 86.7% | 26/30, 91.7% | success 26, graph stopped 4 |
+
+Both are inside the spread the README records for repeated runs (29-30/30 and 21-26/30). In each of
+the four Level-2 failures after the change every hand was 15-42 cm clear of every tool; the tool that
+failed was not on its holder (no second of hold), so the release clause decided none of them.
 
 ## Requested shared changes
 
