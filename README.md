@@ -183,8 +183,8 @@ The [`isaaclab_arena/`](isaaclab_arena/) folder runs the same tasks and referenc
 that executes this repository's graphs unmodified. It has its own environment and setup:
 
 ```bash
+git lfs pull --include="isaaclab_arena/**" --exclude=""   # its scene assets, ~2.3 GB; a plain clone skips them
 cd isaaclab_arena
-git lfs pull
 ./setup.sh
 uv run vabar-arena run isaaclab_arena_gap/experiment_configs/gear_insertion/vabar_gear_insertion_easy_gap_baseline.yaml
 ```

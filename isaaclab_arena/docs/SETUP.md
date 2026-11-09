@@ -114,8 +114,9 @@ registers them with Arena at startup.
 ```bash
 git clone --branch vabar-robosimstudio \
   https://github.com/BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration.git
-cd AUTOLab-GaP-NVIDIA-Collaboration/isaaclab_arena
-git lfs pull  # only needed if the clone skipped LFS files
+cd AUTOLab-GaP-NVIDIA-Collaboration
+git lfs pull --include="isaaclab_arena/**" --exclude=""  # opt-in: .lfsconfig skips these ~2.3 GB on clone
+cd isaaclab_arena
 ```
 
 All later commands run from that `isaaclab_arena/` directory. To reproduce a recorded evaluation,

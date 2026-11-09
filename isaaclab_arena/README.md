@@ -56,10 +56,13 @@ is the score: a graph that finishes is not a success unless Arena's task check p
 From the root of the VABAR repository:
 
 ```bash
+git lfs pull --include="isaaclab_arena/**" --exclude=""  # this folder's scene assets (~2.3 GB)
 cd isaaclab_arena
-git lfs pull  # only needed if the clone skipped LFS files
 ./setup.sh
 ```
+
+The repository's `.lfsconfig` leaves this folder's LFS files out of a plain clone, so VABAR users
+do not download them; the `git lfs pull` above fetches them.
 
 `./setup.sh` checks out the pinned sources and builds the Isaac Sim environment (`.venv`), the RSS
 version's environment (`.venv-autolab`), and the GaP skill environments. It ends with a preflight
