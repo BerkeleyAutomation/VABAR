@@ -1,0 +1,158 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. The shallow end of the weave family -- see weave4.bddl, which is
+; where the shared design is written out: the fixture and why it is a spool, the
+; seat geometry and the 9.75 mm it is pinned to, the worst_of grouping and the
+; zero idle floor, and the 0.047 share.
+;
+; WHAT THIS ONE CHANGES: three stations instead of four, and they sit on an
+; IRREGULAR board -- off the 155 mm line by up to 5 mm in x and 10 mm in y, at
+; uneven gaps of 163 and 165 mm. Same rod material, same seats, same goal shape.
+;
+; ONE CROSSING FEWER IS NOT A THIRD LESS WORK. The crossings are what this
+; family measures, and three stations have two of them against four stations'
+; three -- so this is two thirds of the route, not three quarters. It is here
+; because a family needs a member its baseline can reach: a policy that scores
+; 0/4 on every arrangement tells you nothing about which arrangement is hard.
+;
+; WHY IRREGULAR RATHER THAN A LINE WITH ITS ENDS BROUGHT IN, which is what this
+; used to be. A row of thin posts at one x on an even pitch is the easiest thing
+; there is to perceive and the easiest thing to plan for: one standoff and one
+; gap serve every station, so a policy that is right about the first is right
+; about the rest for reasons that have nothing to do with seeing. The scatter is
+; small on purpose -- 5 mm against the 8.25 mm the seats alternate by, because a
+; larger one cancels the alternation and the board stops being a weave at all
+; (measured: 12 mm of scatter took the turning from 62 deg to 2.2). weave4 is
+; the even line that this is the irregular version of.
+;
+; 12.6 degrees of accumulated turning, which is L1 -- the shallowest board in
+; the suite, and shallower than weave4's 36.5 despite being the odd one. See
+; difficulty.py; the pitch moved and the whole table moved with it.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_THREE_PEGS)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the three pegs, alternating sides)
+
+  ; The cell, the robot, the arrangement and the episode are the suite's;
+  ; only what this arrangement changes is stated here.
+  (:staging
+    (:cameras cable_weave3@v1)
+    ; Two crossings rather than three, and the settle and retreat are the same.
+    (:max-steps 5000)
+    ; THE BOARD IS PUT DOWN SOMEWHERE ELSE EVERY EPISODE, and the rod is laid
+    ; differently in front of it: `staging:WEAVE_RIGID` yaws and translates the
+    ; declared board as one piece, jitters each station a little, and draws the
+    ; rod's bow, shift, yaw and second harmonic. Both change the MODEL, so an
+    ; episode is a rebuild rather than a re-pose.
+    ;
+    ; 30 rather than 8, because what this samples is placement and placement is
+    ; where the variance is: the sampler's own logistic fit over 30 trials puts
+    ; the whole task's success rate on one distance (how far station 0 sits from
+    ; where the rod spawns), and a fit like that needs the episodes.
+    ;
+    ; It falls back to the DECLARED board when no draw clears every guard, and
+    ; on this variant that is EVERY draw -- so these 30 episodes are 30 copies
+    ; of one scene, not 30 samples. Two guards refuse it and both are right: the
+    ; near stations stand 6 mm inside the clearance the rod's own spawn needs,
+    ; and the support hand still takes the family's original +0.17 anchor, a
+    ; hand's width from where the work hand finishes. The sampler warns rather
+    ; than falling back quietly. See MIN_HAND_GAP in staging.py for why that is
+    ; left standing rather than fixed here.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:WEAVE_RIGID))
+  )
+
+  ; THE FOREIGN PAIRING, and only on this member: one row keeps the claim cheap
+  ; to re-measure. Measured by tools/matrix.py as built, stepped and holding
+  ; home, and it is the pairing that keeps the arm-identity regression guard
+  ; alive -- yam_bimanual declares `left` first while the row claims
+  ; `right` works. The weaves can host the swap where `wrap` cannot because
+  ; they have no anchor pre-pose, the mechanism that left wrap's working arm
+  ; 1.04 rad off home on this robot. A row says how to stand the robot here,
+  ; never that the pairing works: that is a claim about the matrix.
+  (:hosts
+    (:host (:embodiment yam_bimanual (:work-arm right) (:support-arm left))
+           (:notes "compiles; no policy"))
+  )
+
+  ; The types say where things stand as well as what they are: `weave3_cable`
+  ; is a 0.70 m rod placed 100 mm short of this layout, and each
+  ; `weave3_peg<i>` is the F1 spool at this layout's station i, minted in
+  ; assets/layout.py from `cable_peg_round`'s own declaration -- see weave4.
+  (:objects
+    cable - weave3_cable
+  )
+
+  (:fixtures
+    peg0 - weave3_peg0
+    peg1 - weave3_peg1
+    peg2 - weave3_peg2
+  )
+
+  ; Sides -1, +1, -1: the outer two share a side, which is what makes this a
+  ; weave rather than a single hook. The boxes are weave4's, unchanged -- and
+  ; they are boxes in each station's own frame, so the scatter above moves them
+  ; with the stations and nothing here has to know the board is irregular.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+  )
+
+  ; No init constraint: both arms start at the embodiment's own home,
+  ; touching nothing. Taking the far end is a policy's first move now, not a
+  ; posture the scene arrives in -- see weave4.
+  (:init)
+
+  ; Three seats under the same worst_of, so the station group is a third each
+  ; rather than a quarter. Idle is still 0: min(0/3, 2/2).
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.021)
+        (>= (containment cable seat1) 0.021)
+        (>= (containment cable seat2) 0.021)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The routine and the graph; the tools the graph reaches for are the
+  ; suite's. The reference's scripted weave is not ported -- see weave4's note
+  ; on what it retained -- and what ships instead can at least read where the
+  ; rod actually is between crossings.
+  ; The routine and TWO graphs; the tools they reach for are the suite's. `gt`
+  ; is the oracle route -- it reads the stations and the rod out of the
+  ; simulator. `vision` is the same crossing loop over RGB-D from the `cable`
+  ; camera: SAM3 grounds the rod, TrackDLO orders its skeleton into a
+  ; centreline, and the planner is handed those four numbers instead. They are
+  ; two graph rows rather than two bodies behind one router because they do not
+  ; share a schedule -- the vision graph anchors the far end first and re-fits
+  ; between crossings, which the oracle has no reason to do.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial/newton newton_toolkit/tasks/vab_cable_route, its weave3")
+    (:note "Three F1 spools on weave4's axis, scattered off its 155 mm line by up to 5 mm in
+            x and 10 mm in y so the board is one somebody drilled rather than a row -- gaps of
+            163 and 165 mm, 12.6 deg of accumulated turning, L1. The rod is 0.70 m of 42
+            capsules at 7 mm gauge, laid 100 mm short of the stations. The reference ships a
+            three-peg variant too and scores it the same way. No scripted routine is ported.")
+  )
+)

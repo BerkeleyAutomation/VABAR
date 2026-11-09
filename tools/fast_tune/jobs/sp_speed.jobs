@@ -1,0 +1,17 @@
+# syringe_packing speed probes, run serially (--parallel 1): 600 idle steps, no renderer.
+syringe_packing sp_ref idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ref idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss6 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss6 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss4 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss4 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_it10 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_it10 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_it5 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_it5 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_pyr idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_pyr idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_noccd idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_noccd idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_buf idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_buf idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600

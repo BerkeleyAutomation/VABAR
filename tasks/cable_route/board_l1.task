@@ -1,0 +1,153 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design -- the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor -- and difficulty.py for what a LEVEL is.
+;
+; A DRAWN BOARD BESIDE weave3. This is weave3's station count, rod and seats with
+; the stations UN-FIXED: a layout drawn fresh for every episode instead of
+; written down.
+;
+; WHAT VARIES, per episode: the gap between each adjacent pair of stations, how
+; far each station is staggered off the line, a small wander on top of that, the
+; whole board's rotation, and where its centroid sits. Five things, none of them
+; the same twice, and the rod's own bow drawn beside them. What does NOT vary is
+; the station count -- this document declares three fixtures and three seats,
+; and a board with a different number of stations is a different document.
+;
+; WHY THIS IS A SAMPLE AND NOT A JITTER. Every draw is measured before it is
+; accepted: its accumulated turning angle has to land between 50 and 81 degrees,
+; which is L1's band with ten per cent of margin at each edge; every station has
+; to be wrapped by at least 9 degrees, so no board is quietly a row of stations
+; the route walks past; no two seats may overlap; every station has to be inside
+; the working arm's measured envelope; and the route has to fit the rod with the
+; family's 20 mm of slack to spare. A draw that misses any of them is thrown
+; away and another is taken. See WEAVE_BOARD in staging.py.
+;
+; That is the difference this variant exists to make. weave3 is ONE board and a
+; score on it is a score on that board -- its spacing, its particular reach,
+; whichever of its crossings happens to be the awkward one. A score here is a
+; score on the LEVEL, because the level is what the boards are drawn from and
+; the only thing eight of them have in common.
+;
+; The fixed rung stays, and both are wanted. A regression needs a layout that
+; does not move; a generalisation claim needs one that does.
+;
+; WHAT THE `_l1` IN THE NAME IS. The LADDER RUNG this is drawn beside, not the
+; band it lands in -- and at the shipped 155 mm pitch those stopped being the
+; same number. This document's own declared board -- the even three-station
+; line, where weave3's is scattered -- measures 24.3 degrees, which is L1, so
+; that is the band drawn here. The sampler reads the level off the declared
+; layout rather than off this document's name, so the two cannot disagree; the
+; name is what a reader of the ladder expects and difficulty.py is what says
+; which band it is. Nothing in the suite reaches L4 at this pitch.
+;
+; A DRAWN BOARD IS TIGHTER THAN THE FIXED ONE IT IS DRAWN BESIDE. The stations
+; go down on a 72 to 92 mm pitch against the fixed layouts' 155, because as many
+; as six of them have to fit inside the arm's measured band. What is held constant across
+; the two is the TURNING, which is the axis a level is a band in, and not the
+; spacing.
+; ---------------------------------------------------------------------------
+
+(define (problem DRAW_AND_WEAVE_A_THREE_STATION_BOARD)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the three pegs, alternating sides)
+
+  (:staging
+    (:cameras cable_board_l1@v1)
+    ; The board sampler, registered by this task beside its own documents
+    ; because every rule it draws under -- the reach band, the seat pitch, the
+    ; rod's length, the level -- is this suite's rather than the library's. It
+    ; emits the stations AND the rod's bow, and both change the model, so every
+    ; episode is a rebuild rather than a re-pose.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:WEAVE_BOARD))
+    ; weave3's budget. A drawn board is not systematically longer than the one
+    ; it is drawn beside -- the turning is what is held constant, and the route
+    ; length follows it.
+    (:max-steps 5000)
+  )
+
+  ; weave3's LENGTH, 0.70 m, discretised at the family's own pitch to 58
+  ; capsules -- weave3 itself keeps the 42 it was measured at. The DECLARED board below is
+  ; the even three-station line, and it is what the scene builds when nothing samples --
+  ; and, more to the point, what the sampler measures to find out which level it
+  ; is drawing for.
+  (:objects
+    cable - board_l1_cable
+  )
+
+  (:fixtures
+    peg0 - board_l1_peg0
+    peg1 - board_l1_peg1
+    peg2 - board_l1_peg2
+  )
+
+  ; -------------------------------------------------------------------------
+  ; THE SEATS ARE weave3'S, UNCHANGED, and this is the document where that stops
+  ; being tidiness and becomes the whole mechanism. A seat is a box in its own
+  ; station's frame. The stations move every episode; the boxes move with them,
+  ; and not one number below has to know where any of them went.
+  ;
+  ; That works because a region resolves against its frame's compiled pose
+  ; rather than against a constant -- so a board the episode arranges is scored
+  ; by the seats the episode arranged with it. A goal stated in world
+  ; coordinates could not have this variant at all.
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  ; 0.047 of this rod is about 2.7 of its 58 bodies. weave3's own 0.047 is 2.0
+  ; of its 42, so the SHARE is weave3's and the body count is not: this rod is
+  ; the same length, discretised finer. See weave4 for what a share means
+  ; and weave6 for why it moves when the capsule count does.
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.047)
+        (>= (containment cable seat1) 0.047)
+        (>= (containment cable seat2) 0.047)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine, the oracle graph, and the vision
+  ; graph that runs the same crossing loop off the `cable` camera. See weave4.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "this stack -- weave3's level, drawn rather than written down")
+    (:note "three F1 spools arranged per episode by staging:WEAVE_BOARD, rejection-sampled
+            until the accumulated turning angle of the scored route lands in L1's band with
+            ten per cent of margin -- 50 to 81 deg -- with every station wrapped by at least
+            9 deg, no two seats overlapping, every station inside the reach band measured by
+            rigs/weave_reach.py, and at least 20 mm of rod left over. Station spacing, stagger
+            depth, per-station wander, board rotation and centroid are all drawn; the station
+            count and the rod are weave3's. The declared layout is the even three-station line, measuring
+            24.3 deg, and it is what the sampler reads the target level off -- so this
+            document names no coordinates that the fixed rung does not already justify. No
+            scripted routine of its own -- RoutineWeave reads the stations off the compiled
+            scene rather than off the layout table, which is what lets it drive a board it has
+            never seen.")
+  )
+)

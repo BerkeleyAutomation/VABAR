@@ -1,0 +1,16 @@
+# environments and caches
+.venv/
+__pycache__/
+*.pyc
+.cache/
+.pytest_cache/
+.ruff_cache/
+
+# run output
+outputs/
+out/
+*.mp4
+!media/*.mp4
+
+# Warp / cuRobo kernel caches
+.warp_cache/

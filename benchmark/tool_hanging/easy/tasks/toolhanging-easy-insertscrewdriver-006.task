@@ -1,0 +1,97 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; LEVEL 1 -- one pegboard-mounted screwdriver box and one object.
+;
+; The single object is the small screwdriver_slim, placed at the table-centre
+; task pose x=0.600 m, y=0.
+; ---------------------------------------------------------------------------
+
+(define (problem TOOLHANGING-EASY-INSERTSCREWDRIVER-006)
+
+  (:domain tool_hanging)
+
+  (:language put the screwdriver upright into the small box on the pegboard)
+
+  (:staging
+    (:scene tool_hanging_bench)
+    (:embodiment yam_tool_hanging (:work-arm left) (:support-arm right))
+    (:physics tool_hanging_480hz@v1)
+    (:cameras tool_hanging_views_level1@v2)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 24) (:sampler fixed))
+    (:max-steps 6500)
+  )
+
+  (:objects
+    screwdriver_1 - screwdriver_slim
+  )
+
+  (:fixtures
+    rack - screwdriver_rack
+  )
+
+  ; The evaluation region is expressed in the box's local frame. Its XY bounds
+  ; match the rack CAD's 79 x 100 mm outer footprint after the rack's 180-degree
+  ; mounting rotation, with 2 mm lateral and 10 mm floor contact tolerance.
+  ; Containment is evaluated at screwdriver_1.tip below, so the region only
+  ; needs to cover the box itself rather than the screwdriver's high centre.
+  (:regions
+    (screwdriver_box_interior
+      (:target rack)
+      (:ranges ((-0.067 -0.1252 0.016 -0.0212)))
+      (:z-range -0.01 0.141)
+    )
+  )
+
+  (:init)
+
+  (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (And
+      (hold-for 1.0
+        (And
+          (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
+          (>= (contact-force screwdriver_1 rack) 0.2)
+          (<= (speed screwdriver_1) 0.15)
+          (> (hands-clear screwdriver_1) 0.20)
+        )
+      )
+    )
+  )
+
+  (:reward (fraction))
+
+  (:observe
+    (>= (containment screwdriver_1.tip screwdriver_box_interior) 1.0)
+  )
+
+  (:artifacts
+    (:routine "routine:InsertScrewdriverRoutineLevel1")
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_gt "graphs/gap_gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "A one-object, one-hole reduction of screwdrivers.task, authored
+              for GaP graph testing. Scene, goal shape and features are
+              screwdrivers.task's own -- the count is reduced and the rack is
+              shifted so its scored hole lies on the board centreline.")
+    (:note "InsertScrewdriverRoutineLevel1 trims InsertScrewdriverRoutine's job
+            table to this document's one screwdriver_1/hole_left job, reusing
+            the measured screwdriver_slim handle and tip landmarks. Both its
+            start and target hole use world
+            y=0; see tasks/tool_hanging/routine.py.")
+  )
+)
+
+
+  (:instance-layout
+    (:source-task tool_hanging/screwdrivers_level1)
+    (:source-episode 24)
+    (:seed 24)
+    (:object-xform screwdriver_1 -0.006789246533227385 -0.0037929073744342456 0.010499999999999954 0.0 0.0 1.0 0.0)
+  )
+)

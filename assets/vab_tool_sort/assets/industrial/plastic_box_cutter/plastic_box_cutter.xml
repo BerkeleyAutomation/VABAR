@@ -1,0 +1,23 @@
+<mujoco model="plastic_box_cutter">
+  <!-- Author: Kasra_ftn -->
+  <!-- Source: https://sketchfab.com/3d-models/plastic-box-cutter-99c887b186c0443d866152ed21b1b708 -->
+  <asset>
+    <texture name="plastic_box_cutter_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="plastic_box_cutter_mat" texture="plastic_box_cutter_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="plastic_box_cutter_mesh" file="meshes/plastic_box_cutter.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="plastic_box_cutter_mesh"
+              material="plastic_box_cutter_mat" mass="0.080000" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.017554" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.017554" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.085977 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,10 @@
+{
+  "note": "Level-2 nominal layout: two targets at y=+/-0.14 m; distractors are parked off-table for episode 0.",
+  "objects": {
+    "plier_1": {"pose": [0.0, 0.14, 0.007]},
+    "plier_2": {"pose": [0.0, -0.14, 0.007]},
+    "distractor_scissors_1": {"pose": [2.1, 2.5, 0.00950505]},
+    "distractor_wrench_2": {"pose": [2.3, 2.5, 0.0091]},
+    "distractor_scissors_3": {"pose": [2.5, 2.5, 0.00950505]}
+  }
+}

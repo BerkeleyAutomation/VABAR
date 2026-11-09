@@ -1,0 +1,44 @@
+<mujoco model="base">
+  <compiler angle="radian" meshdir="." inertiagrouprange="0 0" texturedir="." assetdir="." />
+  <option impratio="20" cone="elliptic" density="1.2" viscosity="0.00002" timestep="0.002" />
+  <size nconmax="5000" njmax="5000" />
+
+  <asset>
+  <texture builtin="gradient" height="256" rgb1=".9 .9 1." rgb2=".2 .3 .4" type="skybox" width="256" />
+    <material name="floorplane" reflectance="0.05" shininess="0.0" specular="0.0" texrepeat="8 8" texture="tex-concrete" texuniform="true" />
+    
+    <texture file="../assets/steel-brushed.png" type="cube" name="tex-steel-brushed" />
+    <material name="table_legs_metal" reflectance="0.8" shininess="0.8" texrepeat="1 1" texture="tex-steel-brushed" />
+    
+    <texture name="tex-concrete" type="2d" file="../assets/gray-plaster.png" /><texture name="tex-steel-plate" type="2d" file="../assets/steel-scratched.png" /><material name="steel_bench_mat" texture="tex-steel-plate" texrepeat="2 4" texuniform="true" reflectance="0.2" shininess="0.5" specular="0.35" rgba="0.38 0.41 0.46 1" /><mesh name="syringe_box_mesh" file="../assets/sealed_syringe_disposal_box.obj" /><texture name="syringe_0_syringe_tex" type="2d" file="../assets/diffuse_2.png" />
+    <material name="syringe_0_syringe_mat" texture="syringe_0_syringe_tex" specular="0.2" shininess="0.1" />
+    <mesh name="syringe_0_syringe_mesh" file="../assets/syringe.obj" />
+  </asset>
+
+  <visual>
+    <map znear="0.001" />
+  </visual>
+
+  <worldbody>
+  <geom condim="3" group="1" material="floorplane" name="floor" pos="0.0 0.0 0.0" size="3 3 .125" type="plane" />
+    
+    <body name="bin1" pos="0.1 -0.25 0.8">
+      </body>
+    <body name="bin2" pos="0.1 0.28 0.8">
+      <geom name="syringe_box_c0" type="box" pos="0.097500 -0.122500 -0.018000" size="0.048498 0.087033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c1" type="box" pos="0.051002 -0.122500 0.070000" size="0.002000 0.087033 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c2" type="box" pos="0.143998 -0.122500 0.070000" size="0.002000 0.087033 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c3" type="box" pos="0.097500 -0.207533 0.070000" size="0.044498 0.002000 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c4" type="box" pos="0.097500 -0.037467 0.070000" size="0.044498 0.002000 0.090000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c5" type="box" pos="0.061501 -0.122500 0.158000" size="0.008499 0.083033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c6" type="box" pos="0.133499 -0.122500 0.158000" size="0.008499 0.083033 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c7" type="box" pos="0.097500 -0.177766 0.158000" size="0.027500 0.027766 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c8" type="box" pos="0.097500 -0.067234 0.158000" size="0.027500 0.027766 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" /><geom name="syringe_box_c9" type="box" pos="0.120973 -0.099027 0.158000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="0.923880 0.000000 0.000000 0.382683" /><geom name="syringe_box_c10" type="box" pos="0.074027 -0.099027 0.158000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="0.382683 0.000000 0.000000 0.923880" /><geom name="syringe_box_c11" type="box" pos="0.074027 -0.145973 0.158000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="-0.382683 0.000000 0.000000 0.923880" /><geom name="syringe_box_c12" type="box" pos="0.120973 -0.145973 0.158000" size="0.005695 0.013750 0.002000" rgba="0.950 0.800 0.100 1" group="0" condim="4" friction="1.0 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2.0" solref="0.02 1.0" quat="-0.923880 0.000000 0.000000 0.382683" /><geom name="syringe_box_visual" type="mesh" mesh="syringe_box_mesh" pos="0.097500 -0.122500 0.070000" rgba="0.950 0.800 0.100 1" contype="0" conaffinity="0" group="1" /></body>
+    <light pos="1.0 1.0 1.5" dir="-0.2 -0.2 -1" specular="0.3 0.3 0.3" directional="true" castshadow="false" />
+    
+    <camera mode="fixed" name="frontview" pos="1.6 0.0 1.45" quat="0.56 0.43 0.43 0.56" />
+    
+    <camera mode="fixed" name="birdview" pos="-0.2 0.0 3.0" quat="0.7071 0 0 0.7071" />
+    
+    <camera mode="fixed" name="agentview" pos="1.0 0.0 1.75" quat="0.653 0.271 0.271 0.653" />
+  <geom name="workbench_top" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" group="0" friction="1 0.005 0.0001" /><geom name="workbench_top_visual" type="box" pos="0.1 0.015 0.76" size="0.28 0.58 0.02" contype="0" conaffinity="0" group="1" material="steel_bench_mat" /><geom name="workbench_leg0_visual" type="cylinder" pos="-0.14 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg1_visual" type="cylinder" pos="-0.14 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg2_visual" type="cylinder" pos="0.34 -0.5149999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><geom name="workbench_leg3_visual" type="cylinder" pos="0.34 0.5449999999999999 0.37" size="0.02 0.37" contype="0" conaffinity="0" group="1" material="table_legs_metal" /><body name="syringe_0_main">
+        <geom pos="-5.93676114e-15 9.36953917e-10 9.36959898e-10" type="box" mass="0.030000" group="0" condim="4" friction="1 0.05 0.02" solimp="0.9 0.95 0.001 0.5 2" solref="0.02 1" name="syringe_0_g0" rgba="0.5 0 0 1" size="0.00680099986 0.0117830001 0.075000003" quat="0.5 0.5 -0.5 0.5" />
+      <geom pos="-0.000000 -0.000000 -0.000000" type="mesh" mesh="syringe_0_syringe_mesh" material="syringe_0_syringe_mat" mass="1e-8" group="1" condim="4" friction="2.000 0.005 0.0001" solimp="0.998 0.998 0.001" solref="0.001 1" name="syringe_0_g0_visual" conaffinity="0" contype="0" />
+      <joint type="free" name="syringe_0_joint0" /><site pos="0 0 0" size="0.002 0.002 0.002" rgba="1 0 0 0" type="sphere" group="0" name="syringe_0_default_site" /></body>
+      </worldbody>
+
+  <equality>
+  </equality>
+<tendon /><contact /></mujoco>

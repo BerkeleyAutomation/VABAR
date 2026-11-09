@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    """Put the YAM's base frame on the underside of its base, where I2RT puts it.
+
+    MuJoCo Menagerie's yam.xml (71f066ad) comes from I2RT's first published
+    model (i2rt-robotics/i2rt@180dc6d, 2025-08), whose base frame sits 10 mm
+    above the bottom face of the base: the base mesh spans z = -10.0 .. 63.1 mm
+    in the `arm` body, and joint1's origin is at 63.1 mm. I2RT re-origined the
+    YAM on its Onshape CAD in v1.2.4 (#46, i2rt@5d47b35) and every release since
+    (v1.4.0, i2rt@fe78bae) keeps it there: the same 73.1 mm base mesh spans
+    0 .. 73.1 mm, joint1 is at 68.0 mm and the shoulder (joint2) axis is
+    113.5 mm above the frame (DH d1 = 0.1135 in robot_models/arm/yam/v1/README.md).
+
+    A consumer that stands the base frame on its mounting surface -- I2RT's
+    convention, and every YAM station built from I2RT's models -- otherwise
+    sinks the base 10 mm into the surface and carries the whole arm 10 mm low.
+
+    This layer moves the frame, nothing else: everything the `arm` body owns
+    (its visual mesh, its collider, its centre of mass and the link_1 subtree
+    with joint1's anchor) rises 10 mm in that body's frame, so every link keeps
+    its pose relative to every other. The shoulder axis then sits 114.0 mm above
+    the frame, 0.5 mm off I2RT's 113.5 mm: the residual difference between
+    MuJoCo Menagerie's meshes and I2RT's CAD-aligned ones, left alone here.
+    """
+)
+over "i2rt_yam"
+{
+    over "Geometry"
+    {
+        over "arm"
+        {
+            point3f physics:centerOfMass = (0, 0, 0.036)
+
+            over "model2"
+            {
+                double3 xformOp:translate = (0, 0, 0.0094)
+            }
+
+            over "Capsule"
+            {
+                double3 xformOp:translate = (0, 0, 0.036)
+            }
+
+            over "link_1"
+            {
+                double3 xformOp:translate = (0, 0, 0.0731)
+
+                over "joint1"
+                {
+                    point3f physics:localPos0 = (0, 0, 0.0731)
+                }
+            }
+        }
+    }
+}

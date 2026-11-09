@@ -1,0 +1,533 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "tool_sort_gt",
+    "description": "Pick the tool named by the variant's next outstanding BDDL goal out of the bin1 pile and place it in that goal's region, using ground-truth geometry instead of vision. Retargeted from VAB-industrial's graph/tool_sort_hammer_bddl: the structure, the skills and every generic script are that workflow's; only the two backend-specific literal nodes changed -- target_obb.py and container_obb.py ask the simulator (sim.get_object_obb / sim.get_region_obb) and pick their subject from sim.next_goal, so one workflow serves all six variants rather than only the hammer."
+  },
+  "nodes": {
+    "target": {
+      "type": "subgraph",
+      "ref": "target_sg"
+    },
+    "container": {
+      "type": "subgraph",
+      "ref": "container_sg"
+    },
+    "grasp": {
+      "type": "subgraph",
+      "ref": "grasp_sg"
+    },
+    "transport": {
+      "type": "subgraph",
+      "ref": "transport_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "robot.open_gripper",
+          "inputs": {}
+        },
+        {
+          "tool": "robot.go_home",
+          "inputs": {}
+        }
+      ]
+    },
+    "check": {
+      "type": "subgraph",
+      "ref": "check_sg"
+    },
+    "give_up": {
+      "type": "subgraph",
+      "ref": "give_up_sg"
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "check"
+    ]
+  ],
+  "conditional_edges": {
+    "check": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "target",
+        "finished": "done"
+      }
+    },
+    "target": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "container",
+        "missing": "give_up"
+      }
+    },
+    "container": {
+      "router_field": "exit",
+      "mapping": {
+        "found": "grasp",
+        "missing": "give_up"
+      }
+    },
+    "grasp": {
+      "router_field": "exit",
+      "mapping": {
+        "grasped": "transport",
+        "failed": "give_up",
+        "errored": "give_up"
+      }
+    },
+    "transport": {
+      "router_field": "exit",
+      "mapping": {
+        "placed": "check",
+        "blocked": "give_up"
+      }
+    },
+    "give_up": {
+      "router_field": "exit",
+      "mapping": {
+        "skipped": "check"
+      }
+    }
+  },
+  "subgraphs": {
+    "target_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {
+        "target_obb": {
+          "$ref": "target_obb.target_obb"
+        }
+      },
+      "nodes": {
+        "found": {
+          "type": "noop"
+        },
+        "target_obb": {
+          "type": "script",
+          "script": "scripts/target_obb.py",
+          "inputs": {
+            "object_name": ""
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "target_obb"
+        ],
+        [
+          "target_obb",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "missing"
+    },
+    "container_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {
+        "container_obb": {
+          "$ref": "container_obb.container_obb"
+        }
+      },
+      "nodes": {
+        "found": {
+          "type": "noop"
+        },
+        "container_obb": {
+          "type": "script",
+          "script": "scripts/container_obb.py",
+          "inputs": {
+            "region_name": ""
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "container_obb"
+        ],
+        [
+          "container_obb",
+          "found"
+        ],
+        [
+          "found",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "found"
+        ]
+      },
+      "on_error": "missing"
+    },
+    "grasp_sg": {
+      "skill": "grasping-direct-ik",
+      "inputs": {
+        "target_obb": "OrientedBoundingBox"
+      },
+      "outputs": {},
+      "nodes": {
+        "open": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 40
+          }
+        },
+        "compute_grasp": {
+          "type": "tool",
+          "tool": "geometry.top_down_grasp_candidates",
+          "inputs": {
+            "obb": {
+              "$ref": "in.target_obb"
+            },
+            "z_offset": -0.03
+          }
+        },
+        "compute_align": {
+          "type": "script",
+          "script": "scripts/compute_align_pose.py",
+          "inputs": {
+            "grasp_pose": {
+              "$ref": "clamp.grasp_pose"
+            },
+            "target_obb": {
+              "$ref": "in.target_obb"
+            }
+          }
+        },
+        "rotate_align": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_align.align_pose"
+            }
+          }
+        },
+        "descend": {
+          "type": "tool",
+          "tool": "robot.go_to_pose",
+          "inputs": {
+            "pose": {
+              "$ref": "clamp.grasp_pose"
+            }
+          }
+        },
+        "close": {
+          "type": "tool",
+          "tool": "robot.close_gripper",
+          "inputs": {
+            "settle_steps": 60
+          }
+        },
+        "grasped": {
+          "type": "noop"
+        },
+        "verify": {
+          "type": "script",
+          "script": "scripts/verify_grasp.py",
+          "inputs": {}
+        },
+        "failed": {
+          "type": "noop"
+        },
+        "yaw": {
+          "type": "script",
+          "script": "scripts/apply_grasp_yaw.py",
+          "inputs": {
+            "pose": {
+              "$ref": "compute_grasp.candidates.poses.0"
+            }
+          }
+        },
+        "clamp": {
+          "type": "script",
+          "script": "scripts/clamp_grasp_depth.py",
+          "inputs": {
+            "pose": {
+              "$ref": "yaw.grasp_pose"
+            },
+            "target_obb": {
+              "$ref": "in.target_obb"
+            },
+            "grip_height_frac": 0.5
+          }
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "open"
+        ],
+        [
+          "open",
+          "compute_grasp"
+        ],
+        [
+          "compute_grasp",
+          "yaw"
+        ],
+        [
+          "yaw",
+          "clamp"
+        ],
+        [
+          "clamp",
+          "compute_align"
+        ],
+        [
+          "compute_align",
+          "rotate_align"
+        ],
+        [
+          "rotate_align",
+          "descend"
+        ],
+        [
+          "descend",
+          "close"
+        ],
+        [
+          "grasped",
+          "END"
+        ],
+        [
+          "close",
+          "verify"
+        ],
+        [
+          "grasped",
+          "END"
+        ],
+        [
+          "failed",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "grasped",
+          "failed"
+        ]
+      },
+      "conditional_edges": {
+        "verify": {
+          "router_field": "route",
+          "mapping": {
+            "grasped": "grasped",
+            "failed": "failed"
+          }
+        }
+      },
+      "on_error": "errored"
+    },
+    "transport_sg": {
+      "skill": "transporting-objects",
+      "inputs": {
+        "container_obb": "OrientedBoundingBox"
+      },
+      "outputs": {
+        "drop_pose": {
+          "$ref": "compute_drop.drop_pose"
+        }
+      },
+      "nodes": {
+        "compute_drop": {
+          "type": "script",
+          "script": "scripts/compute_drop_pose.py",
+          "inputs": {
+            "container_obb": {
+              "$ref": "in.container_obb"
+            },
+            "container_interior_obb": {
+              "$ref": "in.container_obb"
+            }
+          }
+        },
+        "move_above": {
+          "type": "script",
+          "script": "scripts/waypoint_move.py",
+          "inputs": {
+            "drop_x": {
+              "$ref": "compute_drop.drop_position.x"
+            },
+            "drop_y": {
+              "$ref": "compute_drop.drop_position.y"
+            },
+            "drop_rotation": {
+              "$ref": "compute_drop.drop_pose.rotation"
+            },
+            "safe_height": 1.1
+          }
+        },
+        "release": {
+          "type": "script",
+          "script": "scripts/descend_release.py",
+          "inputs": {
+            "drop_position": {
+              "$ref": "compute_drop.drop_position"
+            },
+            "drop_rotation": {
+              "$ref": "compute_drop.drop_pose.rotation"
+            }
+          }
+        },
+        "placed": {
+          "type": "noop"
+        },
+        "choose": {
+          "type": "script",
+          "script": "scripts/choose_release.py",
+          "inputs": {}
+        },
+        "post": {
+          "type": "script",
+          "script": "scripts/post_upright.py",
+          "inputs": {}
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "compute_drop"
+        ],
+        [
+          "compute_drop",
+          "move_above"
+        ],
+        [
+          "release",
+          "placed"
+        ],
+        [
+          "placed",
+          "END"
+        ],
+        [
+          "move_above",
+          "choose"
+        ],
+        [
+          "post",
+          "placed"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "placed"
+        ]
+      },
+      "on_error": "blocked",
+      "conditional_edges": {
+        "choose": {
+          "router_field": "route",
+          "mapping": {
+            "compartment": "release",
+            "container": "post"
+          }
+        }
+      }
+    },
+    "check_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "next_goal": {
+          "type": "script",
+          "script": "scripts/next_goal.py",
+          "inputs": {}
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "next_goal"
+        ],
+        [
+          "next_goal",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "found",
+          "finished"
+        ]
+      }
+    },
+    "give_up_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "release": {
+          "type": "tool",
+          "tool": "robot.open_gripper",
+          "inputs": {
+            "settle_steps": 20
+          }
+        },
+        "give_up": {
+          "type": "script",
+          "script": "scripts/give_up.py",
+          "inputs": {}
+        },
+        "skipped": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "release"
+        ],
+        [
+          "release",
+          "give_up"
+        ],
+        [
+          "give_up",
+          "skipped"
+        ],
+        [
+          "skipped",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "skipped"
+        ]
+      }
+    }
+  }
+}

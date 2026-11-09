@@ -1,0 +1,12 @@
+{
+  "masks": [
+    "<ndarray shape=(480, 640) dtype=uint8>",
+    "<ndarray shape=(480, 640) dtype=uint8>",
+    "<ndarray shape=(480, 640) dtype=uint8>"
+  ],
+  "scores": [
+    0.91015625,
+    0.87109375,
+    0.86328125
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "skill": "computing-routing-waypoints",
+  "inputs": {
+    "index": "int",
+    "scene": "str",
+    "rod": "str"
+  },
+  "outputs": {
+    "plan": {
+      "$ref": "plan_crossing.plan"
+    },
+    "arm_id": {
+      "$ref": "plan_crossing.arm_id"
+    },
+    "grip_open_m": {
+      "$ref": "plan_crossing.grip_open_m"
+    },
+    "grip_close_m": {
+      "$ref": "plan_crossing.grip_close_m"
+    },
+    "worst_error_m": {
+      "$ref": "plan_crossing.worst_error_m"
+    }
+  },
+  "nodes": {
+    "plan_crossing": {
+      "type": "script",
+      "script": "scripts/plan_crossing.py",
+      "inputs": {
+        "index": {
+          "$ref": "in.index"
+        },
+        "scene": {
+          "$ref": "in.scene"
+        },
+        "rod": {
+          "$ref": "in.rod"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "plan_crossing"
+    ],
+    [
+      "plan_crossing",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "computed",
+      "infeasible"
+    ]
+  },
+  "on_error": "errored"
+}

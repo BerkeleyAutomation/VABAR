@@ -1,0 +1,245 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "assets/tool_hanging/scissors/scissor_1/scissor_1.obj",
+  "source_vertices": 230341,
+  "source_triangles": 347952,
+  "source_watertight": false,
+  "parameters": {
+    "threshold": 0.08,
+    "max_convex_hull": 48,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 60,
+    "resolution": 1000,
+    "mcts_nodes": 10,
+    "mcts_iterations": 80,
+    "mcts_max_depth": 3,
+    "merge": false,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "handle_clearance_validation": {
+    "sample_count": 686,
+    "protected_centers_m": [
+      [
+        -0.0225,
+        -0.037
+      ],
+      [
+        0.0225,
+        -0.037
+      ]
+    ],
+    "protected_ellipse_radii_m": [
+      0.003,
+      0.01
+    ],
+    "blocked_by": []
+  },
+  "hulls": [
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_00.obj",
+      "vertices": 60,
+      "triangles": 116,
+      "bounds_m": [
+        [
+          -0.007112428095191717,
+          0.008896638798713679,
+          -0.004697506863623857
+        ],
+        [
+          0.007202591456472874,
+          0.07646544184088706,
+          0.004549748053774238
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_01.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.015644365947693587,
+          0.002030073839426035,
+          -0.0054609623942524195
+        ],
+        [
+          0.015644365947693587,
+          0.008896638798713679,
+          0.005460204960778356
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_02.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          6.030689924955368e-06,
+          -0.038790184777975086,
+          -0.006185631114989519
+        ],
+        [
+          0.016520305529236792,
+          0.002026077169179911,
+          0.006186809856444597
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_03.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          7.513901218771934e-06,
+          -0.07787661601305008,
+          -0.006203680017963052
+        ],
+        [
+          0.014749407649040222,
+          -0.0388018340587616,
+          0.006205594321712852
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_04.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          0.01652266416326165,
+          -0.038794181448221214,
+          -0.005959424989297986
+        ],
+        [
+          0.04061184699833393,
+          0.0006473042100667898,
+          0.005959107281640172
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_05.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.014808475948870182,
+          -0.07787661601305008,
+          -0.006205594321712852
+        ],
+        [
+          4.621725529432297e-06,
+          -0.0388018340587616,
+          0.006203680017963052
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_06.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.01651307422667742,
+          -0.038790184777975086,
+          -0.00619118869677186
+        ],
+        [
+          6.029538810253143e-06,
+          0.002026077169179911,
+          0.0061856299638748165
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_07.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.04061181937158108,
+          -0.03879031370282174,
+          -0.0059564257599413395
+        ],
+        [
+          -0.016513076528906823,
+          0.0006531461171805803,
+          0.005951079983264208
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_08.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          0.01475209204852581,
+          -0.07776357654929161,
+          -0.006107906699180603
+        ],
+        [
+          0.0274372471421957,
+          -0.057653197509050375,
+          0.006151708915829658
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_09.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          0.027438490346074103,
+          -0.07345407937169075,
+          -0.005585668981075287
+        ],
+        [
+          0.041511470764875415,
+          -0.038794181448221214,
+          0.0056126764342188835
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_10.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.03143886948376894,
+          -0.07771080945134164,
+          -0.006144949570298195
+        ],
+        [
+          -0.014808478251099585,
+          -0.04985996679663659,
+          0.006115972559899091
+        ]
+      ]
+    },
+    {
+      "path": "assets/tool_hanging/scissors/scissor_1/collision_coacd/hull_11.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_m": [
+        [
+          -0.04150195334851742,
+          -0.0700732462823391,
+          -0.0054369127303361894
+        ],
+        [
+          -0.03144212253391743,
+          -0.03879723880887032,
+          0.005406878996640444
+        ]
+      ]
+    }
+  ]
+}

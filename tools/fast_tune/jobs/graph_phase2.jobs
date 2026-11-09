@@ -1,0 +1,13 @@
+# DISCARDED: seven graph processes at once starved the on-demand renderer ("render was not
+# answered within 180 s"); only the GL probe and the half-rig syringe abort are kept from it.
+# See graph_phase3.jobs for the re-run.
+# Real-fidelity phase 2, run together (sweep.py --parallel 5, with the SAM3 overlay, the HF
+# token and --open-robot-skills): tool_hanging Level 2 and syringe Level 1, reference and
+# candidate concurrently, plus the single-world GL renderer probe on tool_hanging.
+tool_hanging th_ref graph_w2e :: --task tool_hanging/wrenches_level2 --episodes 1,5 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 22000
+tool_hanging th_ce2_half graph_w2e :: --task tool_hanging/wrenches_level2 --episodes 1,5 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 22000
+syringe_packing sp_ref graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180
+syringe_packing sp_fast graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180
+tool_hanging th_ref graph_gl_w1e1b :: --task tool_hanging/wrenches_level1 --episodes 1 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer gl --bus-timeout 180 --max-steps 8500
+tool_sort ts_ref graph_l1_6 :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 20000
+tool_sort ts_fast graph_l1_6 :: --task tool_sort/level1_6 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception_loop --no-privileged --perception vision --renderer rtx --bus-timeout 180 --max-steps 20000

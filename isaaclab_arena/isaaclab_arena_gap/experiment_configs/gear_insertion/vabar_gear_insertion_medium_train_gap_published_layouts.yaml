@@ -1,0 +1,74 @@
+# AUTOLab's gear_mesh/gap_perception run through
+# RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+shared:
+  environment:
+    type: vabar_gear_insertion__medium_train
+    enable_cameras: true
+  policy:
+    type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+    robot_profile: fr3
+    gap_control_frequency_hz: 60
+    gap_graph: gear_mesh/gap_perception
+    gap_workspace:
+      # Arena world frame: the FR3 workcell table top, 0.132 m below the arm base.
+      surface_z: 0.78
+    auto_spawn: true
+    gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+    gap_host: 127.0.0.1
+    gap_io_timeout_s: 180
+    policy_device: cuda
+    gap_camera: top_camera
+    gap_bridge_camera: overhead
+    gap_aux_camera: iso_camera
+    gap_aux_bridge_camera: iso
+    gap_extra_cameras:
+      chain_camera: chain
+      front_camera: front
+  rollout_limit:
+    num_episodes: 1
+  num_rebuilds: 1
+
+# One Run per benchmark seed, each pinned to one AUTOLab document: the board,
+# gears and start poses come from that document's row, and the graph reads the
+# same document. Seeds 42-51 map to the documents the RSS comparison runs used.
+runs:
+  vabar_gear_insertion_medium_train_gap_s42:
+    environment: {layout_names: [gearmesh-medium-train-046]}
+    environment_builder: {placement_seed: 42, seed: 42}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-046}}
+  vabar_gear_insertion_medium_train_gap_s43:
+    environment: {layout_names: [gearmesh-medium-train-054]}
+    environment_builder: {placement_seed: 43, seed: 43}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-054}}
+  vabar_gear_insertion_medium_train_gap_s44:
+    environment: {layout_names: [gearmesh-medium-train-050]}
+    environment_builder: {placement_seed: 44, seed: 44}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-050}}
+  vabar_gear_insertion_medium_train_gap_s45:
+    environment: {layout_names: [gearmesh-medium-train-009]}
+    environment_builder: {placement_seed: 45, seed: 45}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-009}}
+  vabar_gear_insertion_medium_train_gap_s46:
+    environment: {layout_names: [gearmesh-medium-train-026]}
+    environment_builder: {placement_seed: 46, seed: 46}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-026}}
+  vabar_gear_insertion_medium_train_gap_s47:
+    environment: {layout_names: [gearmesh-medium-train-040]}
+    environment_builder: {placement_seed: 47, seed: 47}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-040}}
+  vabar_gear_insertion_medium_train_gap_s48:
+    environment: {layout_names: [gearmesh-medium-train-092]}
+    environment_builder: {placement_seed: 48, seed: 48}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-092}}
+  vabar_gear_insertion_medium_train_gap_s49:
+    environment: {layout_names: [gearmesh-medium-train-010]}
+    environment_builder: {placement_seed: 49, seed: 49}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-010}}
+  vabar_gear_insertion_medium_train_gap_s50:
+    environment: {layout_names: [gearmesh-medium-train-041]}
+    environment_builder: {placement_seed: 50, seed: 50}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-041}}
+  vabar_gear_insertion_medium_train_gap_s51:
+    environment: {layout_names: [gearmesh-medium-train-083]}
+    environment_builder: {placement_seed: 51, seed: 51}
+    policy: {gap_inputs: {autolab_task: gear_mesh/gearmesh-medium-train-083}}

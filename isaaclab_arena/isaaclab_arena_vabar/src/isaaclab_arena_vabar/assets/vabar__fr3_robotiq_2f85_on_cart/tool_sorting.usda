@@ -1,0 +1,64 @@
+#usda 1.0
+(
+    defaultPrim = "franka_fr3_v1"
+    metersPerUnit = 1
+    kilogramsPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "franka_fr3_v1" (
+    prepend references = @vabar__fr3_robotiq_2f85_on_cart.usda@
+)
+{
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                over "fr3_link1"
+                {
+                    over "fr3_link2"
+                    {
+                        over "fr3_link3"
+                        {
+                            over "fr3_link4"
+                            {
+                                over "fr3_link5"
+                                {
+                                    over "fr3_link6"
+                                    {
+                                        over "fr3_link7"
+                                        {
+                                            over "robotiq_attach"
+                                            {
+                                                over "Physics"
+                                                {
+                                                    over "PhysicsMaterial_1"
+                                                    {
+                                                        float newton:rollingFriction = 0.0001
+                                                        float newton:torsionalFriction = 0.005
+                                                        float physics:dynamicFriction = 0.7
+                                                        float physics:staticFriction = 0.7
+                                                    }
+
+                                                    over "PhysicsMaterial_2"
+                                                    {
+                                                        float newton:rollingFriction = 0.0001
+                                                        float newton:torsionalFriction = 0.005
+                                                        float physics:dynamicFriction = 0.6
+                                                        float physics:staticFriction = 0.6
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,160 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+    prepend references = @simready_syringe/sm_bin2_syringe_01.usd@</RootNode>
+)
+{
+    bool physics:kinematicEnabled = 1
+    bool physics:rigidBodyEnabled = 1
+    float3[] extentsHint = [(-0.21, -0.26, -0.02), (0.21, 0.26, 0.10)]
+    # The lid's drop hole: centre on the lid's top surface, and inscribed radius.
+    custom double3 vabar:aperture:center = (0.0975, -0.1225, 0.16)
+    custom double vabar:aperture:radius = 0.0275
+
+    # Keep the artist geometry for rendering, but use the matching analytic
+    # container proxy so contact does not alternate across decomposed hull seams.
+    over "Geometry" {
+        over "syringe_box_01_obj_00" {
+            over "syringe_box_01_mesh_00" {
+                bool physics:collisionEnabled = 0
+            }
+        }
+    }
+
+    def Xform "CollisionProxy" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    ) {
+        rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__yellow_a01> (
+            bindMaterialAs = "strongerThanDescendants"
+        )
+        token purpose = "guide"
+
+        def Cube "floor" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.048498, 0.087033, 0.002)
+            double3 xformOp:translate = (0.0975, -0.1225, -0.018)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "wall_x_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.002, 0.087033, 0.09)
+            double3 xformOp:translate = (0.051002, -0.1225, 0.07)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "wall_x_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.002, 0.087033, 0.09)
+            double3 xformOp:translate = (0.143998, -0.1225, 0.07)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "wall_y_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.044498, 0.002, 0.09)
+            double3 xformOp:translate = (0.0975, -0.207533, 0.07)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "wall_y_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.044498, 0.002, 0.09)
+            double3 xformOp:translate = (0.0975, -0.037467, 0.07)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "lid_x_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.008499, 0.083033, 0.002)
+            double3 xformOp:translate = (0.061501, -0.1225, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "lid_x_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.008499, 0.083033, 0.002)
+            double3 xformOp:translate = (0.133499, -0.1225, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "lid_y_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.0275, 0.027766, 0.002)
+            double3 xformOp:translate = (0.0975, -0.177766, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "lid_y_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            float3 xformOp:scale = (0.0275, 0.027766, 0.002)
+            double3 xformOp:translate = (0.0975, -0.067234, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+        }
+
+        def Cube "lid_corner_x_max_y_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            quatf xformOp:orient = (0.92387974, 0, 0, 0.38268292)
+            float3 xformOp:scale = (0.005695, 0.01375, 0.002)
+            double3 xformOp:translate = (0.120973, -0.099027, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "lid_corner_x_min_y_max" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            quatf xformOp:orient = (0.38268292, 0, 0, 0.92387974)
+            float3 xformOp:scale = (0.005695, 0.01375, 0.002)
+            double3 xformOp:translate = (0.074027, -0.099027, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "lid_corner_x_min_y_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            quatf xformOp:orient = (-0.38268292, 0, 0, 0.92387974)
+            float3 xformOp:scale = (0.005695, 0.01375, 0.002)
+            double3 xformOp:translate = (0.074027, -0.145973, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+
+        def Cube "lid_corner_x_max_y_min" (
+            prepend apiSchemas = ["PhysicsCollisionAPI"]
+        ) {
+            double size = 2
+            quatf xformOp:orient = (0.92387974, 0, 0, -0.38268292)
+            float3 xformOp:scale = (0.005695, 0.01375, 0.002)
+            double3 xformOp:translate = (0.120973, -0.145973, 0.158)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+        }
+    }
+}

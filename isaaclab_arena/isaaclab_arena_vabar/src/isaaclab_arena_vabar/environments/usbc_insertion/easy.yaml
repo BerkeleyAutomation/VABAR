@@ -1,0 +1,119 @@
+external_yaml: usbc_env_config.yaml
+env_name: easy
+embodiment:
+  id: yam
+  registry_name: vabar__bimanual_yam
+  params:
+    left_mount_position: [0.2525, 0.31, 0.75]
+    right_mount_position: [0.2525, -0.31, 0.75]
+    # AUTOLab's USB-C hand: the i2rt linear_4310, both fingers driven.
+    gripper: linear_4310
+    arm_stiffness: 1600.0
+    arm_damping: 70.0
+    # AUTOLab's USB-C finger servo, (:gripper-actuation (:ke 20000) (:kd 20)),
+    # within the linear_4310 actuators' 80 N force range.
+    gripper_stiffness: 20000.0
+    gripper_damping: 20.0
+    gripper_effort_limit_sim: 80.0
+background:
+  id: background
+  registry_name: vabar__yam_workcell_table
+  params:
+    initial_pose:
+      position_xyz: [0.2525, 0.0, 0.75]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+object_references:
+- id: table
+  parent_id: background
+  prim_path: placement_surface
+  object_type: base
+  params: {}
+objects:
+- id: hdr_shadow_receiver
+  registry_name: vabar__hdr_shadow_receiver
+  params: {}
+- id: empty_warehouse_hdr_light
+  registry_name: vabar__empty_warehouse_dome_light
+  params: {}
+- id: bench
+  registry_name: vabar__yam_usbc_bench
+  params:
+    instance_name: bench
+    initial_pose:
+      position_xyz: [0.44, -0.06285, 0.775]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+- id: port
+  registry_name: vabar__usbc_easy_port
+  params:
+    instance_name: port
+    initial_pose:
+      position_xyz: [0.44, 0.0233, 0.8234]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+- id: plug
+  registry_name: vabar__usbc_easy_plug
+  params: {instance_name: plug}
+relations:
+- kind: is_anchor
+  subject: table
+  params: {}
+- kind: "on"
+  subject: bench
+  reference: table
+  params: {clearance_m: 0.0}
+- kind: is_anchor
+  subject: bench
+  params: {}
+- kind: is_anchor
+  subject: port
+  params: {}
+# AUTOLab's bolted-port slop (PORT_JITTER_*): 5 mm across the bore, 1.5 mm along it
+# (the bench ends 2 mm short of the mouth), 5 deg yaw; draws that cut into the bench are redrawn.
+- kind: random_around_solution
+  subject: port
+  params: {x_half_m: 0.005, y_half_m: 0.0015, yaw_half_rad: 0.08726646259971647}
+- kind: "on"
+  subject: plug
+  reference: bench
+  params: {clearance_m: 0.0, edge_margin_m: 0.0}
+- kind: at_position
+  subject: plug
+  params: {x: 0.44, y: -0.07, relation_loss_weight: 1000.0}
+- kind: rotate_around_solution
+  subject: plug
+  params:
+    roll_rad: -1.5707963267948966
+    pitch_rad: -1.5707963267948966
+    yaw_rad: 0.0
+- kind: random_around_solution
+  subject: plug
+  params: {x_half_m: 0.012, y_half_m: 0.012, yaw_half_rad: 0.13962634015954636}
+task:
+  composition: atomic
+  description: insert the USB-C plug into the receptacle
+  subtasks:
+  - kind: UsbcInsertionTask
+    params:
+      episode_length_s: 150.0
+      plug: plug
+      bulkhead: port
+      bore:
+        mouth: [0.0, -0.013, 0.0]
+        axis: [0.0, 1.0, 0.0]
+        depth: 0.013
+        half_extents: [0.0084, 0.0026]
+        tip_offset: 0.0133
+      work_hand:
+        robot_name: right_robot
+        tcp_body_name: link_6
+        tcp_offset_xyz: [0.0, -0.044, 0.13]
+        gripper_action_name: right_gripper_action
+        gripper_joint_name: joint7
+        span_m: 0.095
+        open_joint_m: 0.0475
+        grasp_width_m: 0.01
+      goal:
+        depth_min: 0.0104
+        lateral_max: 0.0087931792
+        speed_max: 0.05
+        tcp_distance_min: 0.04
+        require_released: true

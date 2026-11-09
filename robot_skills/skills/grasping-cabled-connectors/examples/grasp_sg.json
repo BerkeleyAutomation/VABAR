@@ -1,0 +1,184 @@
+{
+  "skill": "grasping-cabled-connectors",
+  "inputs": {
+    "scene_plug_point": "Vec3",
+    "scene_mouth_point": "Vec3",
+    "scene_bore_axis": "Vec3",
+    "scene_plug_yaw_deg": "float"
+  },
+  "outputs": {},
+  "nodes": {
+    "plan": {
+      "type": "script",
+      "script": "scripts/plan_stroke.py",
+      "inputs": {
+        "plug_point": {
+          "$ref": "in.scene_plug_point"
+        },
+        "mouth_point": {
+          "$ref": "in.scene_mouth_point"
+        },
+        "bore_axis": {
+          "$ref": "in.scene_bore_axis"
+        },
+        "yaw_deg": {
+          "$ref": "in.scene_plug_yaw_deg"
+        },
+        "label": "reach",
+        "with_inspect": true
+      }
+    },
+    "open": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "open",
+        "settle_steps": 12
+      }
+    },
+    "approach": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "approach",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    },
+    "descend": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "descend",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    },
+    "pinch": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "pinch",
+        "settle_steps": 36
+      }
+    },
+    "close": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "width": "close",
+        "settle_steps": 72
+      }
+    },
+    "check": {
+      "type": "script",
+      "script": "scripts/check_grasp.py",
+      "inputs": {}
+    },
+    "held": {
+      "type": "noop"
+    },
+    "missed": {
+      "type": "noop"
+    },
+    "lift": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "lift",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    },
+    "look": {
+      "type": "script",
+      "script": "scripts/move_stage.py",
+      "inputs": {
+        "stages": {
+          "$ref": "plan.stages"
+        },
+        "stage": "look",
+        "arm_id": {
+          "$ref": "plan.arm_id"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "plan"
+    ],
+    [
+      "open",
+      "approach"
+    ],
+    [
+      "approach",
+      "descend"
+    ],
+    [
+      "descend",
+      "pinch"
+    ],
+    [
+      "pinch",
+      "close"
+    ],
+    [
+      "close",
+      "check"
+    ],
+    [
+      "lift",
+      "look"
+    ],
+    [
+      "look",
+      "held"
+    ],
+    [
+      "held",
+      "END"
+    ],
+    [
+      "missed",
+      "END"
+    ]
+  ],
+  "conditional_edges": {
+    "plan": {
+      "router_field": "route",
+      "mapping": {
+        "planned": "open"
+      }
+    },
+    "check": {
+      "router_field": "route",
+      "mapping": {
+        "held": "lift",
+        "missed": "missed"
+      }
+    }
+  },
+  "exit": {
+    "router_field": null,
+    "success_values": [
+      "held",
+      "missed"
+    ]
+  },
+  "on_error": "errored"
+}

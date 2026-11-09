@@ -1,0 +1,3 @@
+# syringe_packing: confirm on reference physics that the half-resolution rig alone loses the
+# syringe (phase 2 saw it with 8 substeps, on a contended machine). --bus-timeout 600.
+syringe_packing sp_cam_half graph_l1c :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 600

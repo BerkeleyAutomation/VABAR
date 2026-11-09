@@ -1,0 +1,42 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; The suite's own column, stated once: its listing line and where it came
+; from. Both used to be literals in task.py's register_suite call; the loader
+; that carried them is gone, and this file is what the registry reads instead.
+;
+; NOTHING ELSE IS SHARED, deliberately. Two variants, and each states its whole
+; staging itself -- the cell, the arm and which hand works, the arrangement,
+; the rig, the servo gains -- each beside the comment a reader wants next to
+; it. That is not an oversight of a shared column: the two documents differ in
+; almost every one of those keys, because one receptacle is bolted to a bench
+; and the other is 90 g of metal the support hand carries into the air. A
+; :staging block up here would be a list of things both documents override.
+;
+; The description carries parentheses and the provenance a semicolon, so both
+; are quoted strings: inside "..." the reader takes ";" and "(" literally.
+; ---------------------------------------------------------------------------
+
+(define (suite usbc_insert)
+
+  (:language "Mate a x2-scale USB-C plug into a receptacle that is either bolted down (port) or
+              held in the air by the other hand (bulkhead) -- 0.15 mm-class fit, hydroelastic
+              pair on the free one, YAM i2rt bimanual.")
+
+  ; Headline first; every document beside this file, and only those.
+  (:variants bulkhead port insert_easy insert_medium insert_easy_nocable insert_medium_nocable)
+
+  ; The tier is each document's own (:provenance (:tier ...)), stated where its
+  ; thresholds are -- `port` is a reproduction and `bulkhead` is original. What
+  ; is here is the suite's origin, verbatim from the loader that used to carry
+  ; it.
+  (:provenance
+    (:source "Ported from newton_tasks/sim/yam_usbc_mjc_sim.py (single-model MuJoCo variant) at
+              defaults for port; bulkhead is authored over it and inherits its thresholds
+              verbatim, the two mouths being coplanar on one mate line by construction. Meshes
+              from newton_tasks Assets/usb_c_mesh plus Bulkhead.stl, unmodified. On bulkhead
+              only, post-release retention is a modeled detent -- a criterion-gated weld standing
+              in for the shield spring this contact stack cannot express
+              (tasks/usbc_insert/assets/entity.py.SpecUsbcDetent records the evidence); a success
+              claims seated-to-click-depth, and entry is untouched contact physics.")
+  )
+)

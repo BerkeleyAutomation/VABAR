@@ -1,0 +1,111 @@
+# AUTOLab v1.0's cable_route/gt (graphs/weave) run through
+# RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+shared:
+  environment:
+    type: vabar_cable_routing__medium
+    enable_cameras: true
+  environment_builder:
+    placement_seed: 42
+  policy:
+    type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+    robot_profile: yam_bimanual_linear
+    gap_control_frequency_hz: 60
+    gap_graph: cable_route/gt
+    gap_inputs:
+      # AUTOLab's medium document: its gt graph is graphs/weave.
+      autolab_task: cable_route/port_medium
+    gap_work_arm: right
+    # The document's fixtures, as Arena's scene names them. Their poses are the static
+    # layout AUTOLab's compiled scene hands the cable tools under --no-privileged too.
+    gap_scene_statics:
+      peg0: peg_0
+      peg1: peg_1
+      peg2: peg_2
+      peg3: peg_3
+      anchor: anchor
+      port: port
+    gap_workspace:
+      surface_z: 0.767
+    # v1.0 scores after the graph ends and 60 settle steps (--settle-steps 60), win or lose.
+    # The RSS adapter steps those 60 itself before the graph process exits, so Arena adds none.
+    graph_success_settle_s: 0.0
+    graph_failure_settle_s: 0.0
+    auto_spawn: true
+    gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+    gap_host: 127.0.0.1
+    gap_io_timeout_s: 600
+    policy_device: cuda
+    gap_camera: top_camera
+    gap_bridge_camera: overhead
+    gap_wrist_camera: right_wrist_camera
+    gap_wrist_bridge_camera: wrist
+    gap_aux_camera: cable_camera
+    gap_aux_bridge_camera: cable
+  rollout_limit:
+    num_episodes: 1
+  num_rebuilds: 1
+
+# Published representative subset seed IDs, applied to the current base task.
+# This does not reproduce the older fixed .task files, which the RSS version rejects.
+# Each seed rebuilds the model and can run as its own parallel OSMO task.
+runs:
+  vabar_cable_routing_medium_gap_layout_10:
+    environment: {layout_seed: 10009}
+  vabar_cable_routing_medium_gap_layout_38:
+    environment: {layout_seed: 10037}
+  vabar_cable_routing_medium_gap_layout_85:
+    environment: {layout_seed: 10084}
+  vabar_cable_routing_medium_gap_layout_53:
+    environment: {layout_seed: 10052}
+  vabar_cable_routing_medium_gap_layout_41:
+    environment: {layout_seed: 10040}
+  vabar_cable_routing_medium_gap_layout_31:
+    environment: {layout_seed: 10030}
+  vabar_cable_routing_medium_gap_layout_44:
+    environment: {layout_seed: 10043}
+  vabar_cable_routing_medium_gap_layout_17:
+    environment: {layout_seed: 10016}
+  vabar_cable_routing_medium_gap_layout_27:
+    environment: {layout_seed: 10026}
+  vabar_cable_routing_medium_gap_layout_04:
+    environment: {layout_seed: 10003}
+  vabar_cable_routing_medium_gap_layout_05:
+    environment: {layout_seed: 10004}
+  vabar_cable_routing_medium_gap_layout_54:
+    environment: {layout_seed: 10053}
+  vabar_cable_routing_medium_gap_layout_55:
+    environment: {layout_seed: 10054}
+  vabar_cable_routing_medium_gap_layout_92:
+    environment: {layout_seed: 10091}
+  vabar_cable_routing_medium_gap_layout_14:
+    environment: {layout_seed: 10013}
+  vabar_cable_routing_medium_gap_layout_76:
+    environment: {layout_seed: 10075}
+  vabar_cable_routing_medium_gap_layout_94:
+    environment: {layout_seed: 10093}
+  vabar_cable_routing_medium_gap_layout_13:
+    environment: {layout_seed: 10012}
+  vabar_cable_routing_medium_gap_layout_33:
+    environment: {layout_seed: 10032}
+  vabar_cable_routing_medium_gap_layout_63:
+    environment: {layout_seed: 10062}
+  vabar_cable_routing_medium_gap_layout_29:
+    environment: {layout_seed: 10028}
+  vabar_cable_routing_medium_gap_layout_69:
+    environment: {layout_seed: 10068}
+  vabar_cable_routing_medium_gap_layout_95:
+    environment: {layout_seed: 10094}
+  vabar_cable_routing_medium_gap_layout_49:
+    environment: {layout_seed: 10048}
+  vabar_cable_routing_medium_gap_layout_56:
+    environment: {layout_seed: 10055}
+  vabar_cable_routing_medium_gap_layout_11:
+    environment: {layout_seed: 10010}
+  vabar_cable_routing_medium_gap_layout_45:
+    environment: {layout_seed: 10044}
+  vabar_cable_routing_medium_gap_layout_25:
+    environment: {layout_seed: 10024}
+  vabar_cable_routing_medium_gap_layout_90:
+    environment: {layout_seed: 10089}
+  vabar_cable_routing_medium_gap_layout_98:
+    environment: {layout_seed: 10097}

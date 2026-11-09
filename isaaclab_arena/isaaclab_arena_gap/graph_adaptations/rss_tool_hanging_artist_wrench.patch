@@ -1,0 +1,51 @@
+Tool hanging v1.0 (18b974e) wrench easy on the RSS adapter: register Arena's artist ring spanner CAD (ring at +X), fit Arena's hook mesh, query "wrench", carry at half transit speed. AUTOLab's mating offsets are kept.
+
+--- a/scripts/perceive_fixture.py
++++ b/scripts/perceive_fixture.py
+@@ -359,8 +359,13 @@ def run(ctx: NodeContext, observation: dict[str, Any], target_kind: str = "",
+     fixture_feature["usable_length"] = shaft_length
+     if profile.get("mating_profile"):
+         fixture_feature["mating_profile"] = dict(profile["mating_profile"])
+-    return {
++    result = {
+         "fixture_kind": "hook", "fixture_obb": obb, "fixture_mask": mask, "fixture_cloud": cloud,
+         "hook_tip": tip_dict, "fixture_axis": axis_dict,
+         "fixture_feature": fixture_feature,
+     }
++    if target_kind == "wrench":
++        from isaaclab_arena_gap.tool_hanging_asset_profile import refine_artist_hook
++
++        return refine_artist_hook(result)
++    return result
+--- a/scripts/perceive_target.py
++++ b/scripts/perceive_target.py
+@@ -298,6 +298,9 @@ def run(ctx: NodeContext, observation: dict[str, Any],
+         feature_type: str | None = None,
+         object_kind: str | None = None,
+         feature_profiles: list[dict[str, Any]] | None = None) -> Output:
++    from isaaclab_arena_gap.tool_hanging_asset_profile import artist_wrench_profiles
++
++    feature_profiles = artist_wrench_profiles(feature_profiles)
+     camera = _overhead(observation)
+     if not feature_profiles:
+         raise ValueError("feature_profiles must declare object semantics and geometry strategies")
+--- a/workflow.json
++++ b/workflow.json
+@@ -1611,7 +1611,7 @@
+                 "escape_distance_m": 0.06,
+                 "time_scale": 1.25,
+                 "lift_speed_scale": 1.0,
+-                "transit_speed_scale": 1.0,
++                "transit_speed_scale": 0.5,
+                 "use_attachment": false,
+                 "use_world": false,
+                 "max_attempts": 3,
+@@ -2317,7 +2317,7 @@
+             "source_categories": [
+               {
+                 "kind": "wrench",
+-                "query": "adjustable wrench",
++                "query": "wrench",
+                 "aliases": [
+                   "wrench"
+                 ]

@@ -1,0 +1,94 @@
+{
+  "source": "derived from assets/vab_tool_sort/scene_norobot.xml by tools/build_astro_workcell.py",
+  "variant": "astro_mixed",
+  "bddl": "corpus/tasks/astro/ (astro_mixed)",
+  "robosuite_version": "1.4.0",
+  "mujoco_version": "3.3.3",
+  "seed": 0,
+  "tool_collision": "box",
+  "n_per_tool": 1,
+  "bins": "arena",
+  "distractors": [],
+  "containers": {},
+  "bin1_pos": [
+    0.1,
+    -0.25,
+    0.8
+  ],
+  "bin2_pos": [
+    0.1,
+    0.28,
+    0.8
+  ],
+  "bin_size": [
+    0.39,
+    0.49,
+    0.82
+  ],
+  "compartment_to_tool": {
+    "0": "carton",
+    "1": "bottle",
+    "2": "hand_tool",
+    "3": "electrical"
+  },
+  "robot_base_body": "robot0_base",
+  "robot_base_xpos": [
+    -0.5,
+    -0.1,
+    0
+  ],
+  "robot_init_qpos": [
+    0.0,
+    0.19634954084936207,
+    0.0,
+    -2.617993877991494,
+    0.0,
+    2.941592653589793,
+    0.7853981633974483
+  ],
+  "robot_joints": [
+    "robot0_joint1",
+    "robot0_joint2",
+    "robot0_joint3",
+    "robot0_joint4",
+    "robot0_joint5",
+    "robot0_joint6",
+    "robot0_joint7"
+  ],
+  "gripper_joints": [
+    "gripper0_finger_joint1",
+    "gripper0_finger_joint2"
+  ],
+  "eef_site": "robot0_right_hand",
+  "objects": {},
+  "compartment_centers": {
+    "0": [
+      0.0025000000000000022,
+      0.15750000000000003,
+      0.8200000000000001
+    ],
+    "1": [
+      0.1975,
+      0.15750000000000003,
+      0.8200000000000001
+    ],
+    "2": [
+      0.0025000000000000022,
+      0.4025,
+      0.8200000000000001
+    ],
+    "3": [
+      0.1975,
+      0.4025,
+      0.8200000000000001
+    ]
+  },
+  "resettled_steps": 3000,
+  "settled_in_newton_steps": 1500,
+  "compartment_labels": {
+    "0": "CARTON",
+    "1": "BOTTLE",
+    "2": "HAND TOOL",
+    "3": "ELECTRICAL"
+  }
+}

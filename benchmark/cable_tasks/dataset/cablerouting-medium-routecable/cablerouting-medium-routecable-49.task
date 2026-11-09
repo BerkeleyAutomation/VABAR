@@ -1,0 +1,144 @@
+; robosimstudio-base-task: cable_route/port_medium
+; Single frozen sampler draw; run episode 0.
+; Medium: four guides, 80 mm nominal pitch, half the original lateral stagger.
+; The terminal is shifted 50 mm toward the robot. The start remains fixed.
+; The 840 mm cable has 70 capsules and 71 scored points; require two points
+; at each guide, three in the terminal region, and the free endpoint there.
+; The rod was 720 mm at 60 capsules until the route was measured: it ate 607 mm
+; median reaching the last station -- against 444 mm of straight lines between
+; the seat points -- leaving a 99 mm tail for a nominal 113 mm port leg. At that
+; length the scored portbox fraction sat at 0.049-0.066 against a 0.049 floor on
+; every one of thirty trials, which is marginal on its face; at 840 mm it about
+; doubles. 840 restores the reach at the SAME 12.00 mm capsule pitch and the same
+; bend stiffness; the two fractions below moved only because the denominator did
+; -- they are still two points and three points.
+; Full graph cycle and settling precede evaluation.
+
+(define (problem cablerouting-medium-routecable-49)
+
+  (:suite cable_route)
+
+  (:language weave the cable through the four pegs and route its free end into the port)
+
+  (:staging
+    (:cameras yam_station_cable@v1)
+    ; THE BOARD IS DRAWN IN CENTIMETRES, THE TWO ENDS IN MILLIMETRES.
+    ; `staging:PORT_BOARD` places all four pegs fresh every episode -- the gap between
+    ; them, each one's stagger off the line, a wobble on top, the board's rotation
+    ; and where it sits along the run -- inside the corridor its own two fittings
+    ; leave, and draws the rod's shape beside them through the same four fractions
+    ; `staging:CABLE_BOW` emits.
+    ;
+    ; Neither end is a constant either, and neither moves WITH the board. The
+    ; anchor follows the cable, as it always did. The port is drawn in the 6 mm
+    ; and 3 degrees of slop its own bolt slots leave -- enough that its mouth has
+    ; to be found in the image every episode instead of remembered, far too little
+    ; to make the reach into it a different task. The scored `portbox` rides the
+    ; fixture, so the tolerance the route is judged at is unchanged.
+    ;
+    ; Every draw is measured against THIS board rather than against a band: the
+    ; turning within a factor of two of its own 262.3 degrees and at its level, no
+    ; crossing wrapped less than half as far as its weakest, seats disjoint, the
+    ; hands not crowding, and the anchor-to-port run no longer than this one's
+    ; plus 20 mm. A tier whose pegs were drawn into L3 at large would be a
+    ; different experiment from the one its rates were calibrated on.
+    ;
+    ; The layout below is still what the scene builds when nothing samples, and
+    ; it is what the sampler measures to find out what it is drawing beside.
+    (:episodes (:count 1) (:seed 10048) (:sampler staging:PORT_BOARD_REACHABLE))
+    ; RAISED FROM 12000 WITH THE WRAP. The crossing template now carries the
+    ; span around each post instead of setting it down beside it, which costs
+    ; ~304 control steps a station -- 1216 across this tier's four crossings. The
+    ; ceiling was already binding: 6 of 18 pre-wrap Medium rows closed
+    ; `truncated` rather than `policy_request`, so leaving it here would have
+    ; scored the wrap on 90% of its own schedule and called the shortfall a
+    ; worse route. This moves the BUDGET, not the goal -- every clause,
+    ; tolerance, physics parameter and perception input is unchanged -- but
+    ; rates either side of it are not comparable.
+    ; RAISED AGAIN, from 13500. The first raise covered the wrap's own motion
+    ; and still left the ceiling binding: 6 of 10 episodes closed `truncated`,
+    ; and the one that seated ALL FOUR crossings was killed mid terminal carry
+    ; -- `[plug] mouth refused at every height: BusClosed`, with the support
+    ; hand already holding the free end. A truncated episode measures "did not
+    ; fit in the budget", not "cannot do the task", so more than half the
+    ; sample was saying nothing about the policy. Sized so the longest observed
+    ; run finishes its carry, its restore pass and its verify with room over.
+    ; THIRD RAISE, and the evidence for it is a completed route that scored 0.50.
+    ; Episode 15 at the 18000 ceiling satisfied EVERY routing clause -- all four
+    ; seats, cable in the port, free end in the port, goal.0 True throughout -- and
+    ; failed only `goal.1.0`, the hand-clear check, with the TCP still 7.3 mm from
+    ; the rod it had just placed against a 50 mm bar. The goal is worst_of(route,
+    ; hand clear and settled), so a finished route scores 0.50 while the arm is
+    ; still leaning on it. It was truncated mid-retreat, one motion short.
+    ;
+    ; 5 of 8 episodes closed `truncated` at 18000. Sized so the retreat and the
+    ; settle that follow a completed route fit inside the budget rather than
+    ; falling off the end of it. Slowness stays visible: cycle time is reported
+    ; per successful episode, so a policy that needs every step of this says so.
+    (:max-steps 24000)
+    (:terminate-on-success false)
+  )
+
+  (:objects
+    cable - port_medium_cable
+  )
+
+  (:fixtures
+    peg0   - port_medium_peg0
+    peg1   - port_medium_peg1
+    peg2   - port_medium_peg2
+    peg3   - port_medium_peg3
+    anchor - port_medium_anchor
+    port   - port_medium_port
+  )
+
+  (:regions
+    (seat0    (:target peg0) (:ranges ((-0.045 -0.035 -0.003  0.035))))
+    (seat1    (:target peg1) (:ranges (( 0.003 -0.035  0.045  0.035))))
+    (seat2    (:target peg2) (:ranges ((-0.045 -0.035 -0.003  0.035))))
+    (seat3    (:target peg3) (:ranges (( 0.003 -0.035  0.045  0.035))))
+    (portbox  (:target port) (:ranges ((-0.045 -0.045  0.045 0.045))))
+  )
+
+  (:init)
+
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.028169014085)
+        (>= (containment cable seat1) 0.028169014085)
+        (>= (containment cable seat2) 0.028169014085)
+        (>= (containment cable seat3) 0.028169014085)
+        (>= (containment cable portbox) 0.042253521127)
+        (>= (containment cable.end_b portbox) 1.0)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:reward (fraction))
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "AUTHORED -- no upstream. a four-station board at weave5's own pitch and depth with a terminal added at each end
+              of the run, per VABAR Sec. V-A.6's Medium tier.")
+    (:note "The reference cable scenes end at a peg line; a real run starts at something
+            that holds it and finishes at something it is got into. The anchor is a
+            bracket the rod is welded to (RodSpec.anchors), and the port is a goal
+            clause rather than scenery.")
+  )
+)

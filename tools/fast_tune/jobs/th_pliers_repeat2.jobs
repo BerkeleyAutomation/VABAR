@@ -1,0 +1,3 @@
+# tool_hanging: two more pliers_level1 routines on the winner's physics.
+tool_hanging th_ce2 routine_p1_r4 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 routine_p1_r5 :: --task tool_hanging/pliers_level1 --solve routine

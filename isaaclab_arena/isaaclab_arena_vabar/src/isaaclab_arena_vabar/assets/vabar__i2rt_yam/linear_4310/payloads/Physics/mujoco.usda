@@ -1,0 +1,57 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.5.0"
+    }
+    defaultPrim = "linear_4310"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @./physics.usda@
+    ]
+    upAxis = "Z"
+)
+
+over "linear_4310"
+{
+    custom uniform token mjc:compiler:angle = "radian"
+
+    over "Geometry"
+    {
+        over "gripper"
+        {
+            over "tcp_site" (
+                prepend apiSchemas = ["MjcSiteAPI"]
+            )
+            {
+            }
+
+            over "grasp_site" (
+                prepend apiSchemas = ["MjcSiteAPI"]
+            )
+            {
+            }
+
+            over "tip_left"
+            {
+                over "joint7" (
+                    delete apiSchemas = ["PhysicsDriveAPI:linear", "PhysicsJointStateAPI:linear"]
+                    prepend apiSchemas = ["MjcJointAPI", "MjcEqualityJointAPI"]
+                )
+                {
+                    rel newton:mimicJoint = </linear_4310/Geometry/gripper/tip_right/joint8>
+                }
+            }
+
+            over "tip_right"
+            {
+                over "joint8" (
+                    delete apiSchemas = ["PhysicsDriveAPI:linear", "PhysicsJointStateAPI:linear"]
+                    prepend apiSchemas = ["MjcJointAPI"]
+                )
+                {
+                }
+            }
+        }
+    }
+}

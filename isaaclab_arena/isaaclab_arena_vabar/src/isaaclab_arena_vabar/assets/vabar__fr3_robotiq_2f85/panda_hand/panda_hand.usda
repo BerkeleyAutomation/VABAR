@@ -1,0 +1,62 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "tn__pandahand_k9"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "tn__pandahand_k9" (
+    prepend apiSchemas = ["GeomModelAPI"]
+    assetInfo = {
+        string name = "panda hand"
+    }
+    displayName = "panda hand"
+    kind = "component"
+    prepend payload = @./Payload/Contents.usda@
+)
+{
+    float3[] extentsHint = [(-0.031525, -0.10057, -0.025946), (0.03152, 0.103946, 0.1123), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.031615783, -0.10042588, -0.025924802), (0.031635918, 0.10398972, 0.112258)]
+
+    over "Geometry"
+    {
+        over "hand"
+        {
+            over "left_finger"
+            {
+                over "finger_joint1"
+                {
+                    custom double newton:linear:limitDamping = 100
+                    custom double newton:linear:limitStiffness = 2500
+                }
+            }
+
+            over "right_finger"
+            {
+                over "finger_joint2"
+                {
+                    custom double newton:linear:limitDamping = 100
+                    custom double newton:linear:limitStiffness = 2500
+                }
+            }
+        }
+    }
+
+    over "Physics"
+    {
+        over "actuator8"
+        {
+            uniform double[] mjc:biasPrm = [0, -100, -10, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:biasType = "affine"
+            uniform double mjc:ctrlRange:max = 255
+            uniform double mjc:ctrlRange:min = 0
+            uniform double mjc:forceRange:max = 100
+            uniform double mjc:forceRange:min = -100
+            uniform double[] mjc:gainPrm = [0.01568627451, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            uniform token mjc:gainType = "fixed"
+        }
+    }
+}

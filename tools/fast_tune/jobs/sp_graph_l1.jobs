@@ -1,0 +1,5 @@
+# syringe_packing real fidelity, Level 1: the cell's graph protocol on tray_pair_both_t05,
+# two worlds of the one document (episodes 0 and 1); reference and candidate concurrently.
+# Needs the SAM3 overlay: sweep.py --pythonpath <torchvision overlay> --hf-token-file ...
+syringe_packing sp_ref graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180
+syringe_packing sp_fast graph_l1 :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 180

@@ -1,0 +1,25 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @vabar__usbc_easy_plug.usda@</Asset>
+) {
+    over "ArtistFrame" {
+        over "SourceCollisionMesh" (
+            prepend apiSchemas = ["NewtonSDFCollisionAPI"]
+        ) {
+            uniform token physics:approximation = "none"
+            bool newton:hydroelasticEnabled = true
+            float newton:sdfTargetVoxelSize = 0.00025
+            float newton:sdfNarrowBandInner = -0.005
+            float newton:sdfNarrowBandOuter = 0.005
+            float newton:sdfPadding = 0.006
+            float newton:hydroelasticStiffness = 1e10
+            int mjc:condim = 3
+        }
+    }
+}

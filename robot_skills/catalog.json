@@ -1,0 +1,382 @@
+[
+  {
+    "name": "perceiving-connector-pair",
+    "title": "Locate a cabled plug and receptacle",
+    "category": "perception",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "ground_oracle_sg",
+      "ground_vision_sg"
+    ],
+    "description": "Locates the plug, receptacle mouth, insertion axis, and support grasp point from the bench RGB-D view. Use when beginning a USB-C mating attempt.",
+    "guidance": [
+      "Run the vision example at the start of a mating attempt. It segments the physical parts and derives metric feature positions from calibrated depth. Pass the measured plug point, mouth point, axis, and barrel point to downstream planning.",
+      "The receptacle-held flag selects the support brace for the free Medium bulkhead. A fixed socket uses the same downstream interface. Keep oracle and vision outputs and exits identical; select oracle only for an explicitly privileged diagnostic run.",
+      "Check that the receptacle mask excludes the support surface. In the palette backend, the blue-grey bench can have the same hue as the socket but much lower saturation; a larger merged mask produces an incorrect mouth and brace point."
+    ],
+    "exit_conditions": {
+      "found": "The requested features were measured and the declared estimates are available.",
+      "not_found": "The requested target could not be identified; route to abort.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "reobserving-held-mate",
+    "title": "Reobserve the mate after grasping",
+    "category": "perception",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "relook_oracle_sg",
+      "relook_vision_sg"
+    ],
+    "description": "Updates plug and receptacle features from the work wrist after grasping or insertion motion. Use when contact may have displaced either part.",
+    "guidance": [
+      "Read the standard work-wrist RGB-D view after grasping and after the first push. Fit the held plug's known local surface to recover its shoulder and attitude. For a free bulkhead, fit its current surface to update both mouth and 3D bore axis; a fixed fixture keeps its earlier camera measurement. The shape tools expose local geometry only, never a scene pose.",
+      "A lost view is an explicit exit. Do not replace missing features with simulator poses. This same recipe is reused inside the bounded insertion reseat branch."
+    ],
+    "exit_conditions": {
+      "found": "The requested features were measured and the declared estimates are available.",
+      "lost": "The visible evidence is insufficient to update the estimate; route to abort.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "bracing-receptacles",
+    "title": "Brace a free bulkhead with contact",
+    "category": "manipulation",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "hold_sg"
+    ],
+    "description": "Plans and commands a support-hand brace at a measured receptacle point. Use when the receptacle is free to move during insertion.",
+    "guidance": [
+      "Route fixed receptacles to bare. For a free bulkhead, plan the support hand from scene_barrel_point, open, stage, seat, close with settling time, and lift 30 mm to clear the bench.",
+      "Braced means the contact-grasp sequence completed. It does not create a constraint or guarantee that friction will resist the later insertion load."
+    ],
+    "exit_conditions": {
+      "braced": "The support gripper completed its contact brace on the free receptacle.",
+      "bare": "The receptacle is fixed; no support-hand brace was requested.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "grasping-cabled-connectors",
+    "title": "Grasp and lift a cabled connector",
+    "category": "manipulation",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "grasp_sg"
+    ],
+    "description": "Approaches and pinches a cabled plug, checks gripper aperture, and lifts to a wrist observation pose. Use when a measured plug is ready for insertion.",
+    "guidance": [
+      "Plan from measured plug and bore features. Open before approach; descend before pinching; allow the fingers to settle. Check the observed gripper aperture before lifting and looking.",
+      "The aperture check is proprioceptive evidence of a pinch, not ground-truth attachment. A missed check aborts. Keep the real trailing cable and its contact forces present.",
+      "Grasp 32 mm behind the plug shoulder with the wrist tilted 20 degrees away from the port. The planner accounts for the lowest full-finger corner when choosing pickup height. Keep the full fingertip and housing contact geometry enabled."
+    ],
+    "exit_conditions": {
+      "held": "The gripper aperture check accepted the pinch and the lift/look commands completed.",
+      "missed": "The grasp check or grasp command failed; no held-object claim is available.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "inserting-cabled-connectors",
+    "title": "Insert, reobserve, and release a cabled plug",
+    "category": "manipulation",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "stroke_sg"
+    ],
+    "description": "Executes a measured insertion stroke, one visual reseat, and release with retreat. Use after the cabled plug is grasped and the mating frame is reobserved.",
+    "guidance": [
+      "Replan around mate_plug_point, mate_mouth_point, and mate_bore_axis. Move back, ease grip, push, restore grip, and select the matching perception body for one reseat. Replan the second push from that new observation.",
+      "If the reseat view is lost, release and retreat rather than inventing an alignment. The released exit means commands completed. The independent settled evaluator decides whether the plug stayed inserted; the workflow has no visual success-claim node.",
+      "Before aligning to a tilted held bore, establish enough axial clearance for the tab, then advance along the measured bore axis. Do not lower the tab into the mouth during transverse alignment.",
+      "Bound each entry and axial retry by the full hand geometry, maintaining 3 mm clearance from the measured mouth plane. Preload cannot override this bound. Release upward outside that plane, including when the free receptacle is pitched."
+    ],
+    "exit_conditions": {
+      "released": "The insertion stroke, opening command, and work-hand retreat completed.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "positioning-for-mouth-inspection",
+    "title": "Position the wrist to inspect the port mouth",
+    "category": "manipulation",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "aim_sg"
+    ],
+    "description": "Plans a wrist inspection pose from the measured plug and receptacle frame. Use before refining the bore mouth estimate.",
+    "guidance": [
+      "Plan from the current bench measurements and move through the planned viewpoint stages. Export aim_stages and aim_arm_id so the outer graph can unlook and cross after inspection.",
+      "Keep the inspection movement before the plug grasp so the wrist sees the bore without the held connector occluding it.",
+      "Aim tool hanging's standard D405 optical calibration at the measured mouth. Keep the mate heading for the empty-hand inspection round trip, then turn to the pickup heading above the plug to avoid the opposite wrist IK branch."
+    ],
+    "exit_conditions": {
+      "aimed": "The work arm reached the planned wrist inspection pose.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "inspecting-receptacle-mouth",
+    "title": "Refine the receptacle mouth from wrist depth",
+    "category": "perception",
+    "graph": "tasks/usbc_insert/graphs/mate",
+    "subgraphs": [
+      "inspect_oracle_sg",
+      "inspect_vision_sg"
+    ],
+    "description": "Refines the mouth point and bore axis using wrist depth geometry. Use after the wrist reaches its planned inspection pose.",
+    "guidance": [
+      "The vision recipe finds the rim and bore depth discontinuity inside the wrist crop using bore_cv. It does not require an additional SAM3 segmentation call.",
+      "Publish the refined scene_mouth_point and scene_bore_axis under the same names so subsequent subgraphs consume the latest frame. Also preserve inspect_mouth_point and inspect_bore_axis as the reference for later reobservation.",
+      "Fit the front plane and shallow chamfer sections before using a local recess detector. Oblique views of a deep inner wall can yield plausible horizontal coordinates but place the aperture too high. Reject inconsistent refinements and preserve the previous camera estimate when occluded.",
+      "A free bulkhead can pitch while being braced: preserve its observed 3D bore normal, with an 18-degree consistency gate. Keep the fixed port heading planar with its tighter 8-degree gate."
+    ],
+    "exit_conditions": {
+      "found": "The requested features were measured and the declared estimates are available.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "perceiving-routing-fixtures",
+    "title": "Measure the routing fixtures",
+    "category": "perception",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "perceive_vision_sg"
+    ],
+    "description": "Reconstructs routing posts and their crossing order from calibrated RGB-D. Use when beginning a cable-routing run.",
+    "guidance": [
+      "Segment and fit the fixture geometry, then publish the measured scene and station count. Scene is a JSON string carrying these measured values; consumers must decode it without consulting simulator object state.",
+      "This is the starting point of the vision-only weave graph. Easy and Medium use the same graph with different physical layouts.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "found": "The requested features were measured and the declared estimates are available.",
+      "not_found": "The requested target could not be identified; route to abort.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "sequencing-crossings",
+    "title": "Advance the explicit crossing loop",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "station_sg"
+    ],
+    "description": "Selects the next crossing using the measured station count and episode-local progress. Use when selecting the next cable-routing iteration.",
+    "guidance": [
+      "Advance cable.next_station once per loop pass. Found means another indexed station is available; finished sends control to terminal insertion. The counter records policy progress, not simulator success.",
+      "Keep the loop in workflow edges so its iterations and failures appear in the GaP trace.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "found": "Another measured station is available at index; continue by observing the cable.",
+      "finished": "The explicit crossing counter reached the number of planned stations.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "perceiving-deformable-linear-objects",
+    "title": "Observe and track the cable centreline",
+    "category": "perception",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "rod_sg"
+    ],
+    "description": "Fits an ordered metric cable curve and refines the next grasp using RGB-D. Use before planning a crossing or after cable motion.",
+    "guidance": [
+      "Fit the fresh cable mask into an ordered polyline. When the fit is incomplete, use the prior observed curve and visibility-gated tracking. Store only perception-derived curves in cable.curve_memory.",
+      "Refine the local grasp from the camera evidence. Lost evidence raises the lost exit. No simulator centreline or point index may substitute for the measured shape. During the crossing loop, lost aborts. The final retrack may instead continue to terminal insertion, whose own vision helpers can attempt a fresh observation.",
+      "Fit depth only at pixels inside the cable mask, including after skeleton upsampling and rounding. Spline residuals are in squared metres: use the metric default (1 mm RMS). Establish the opening length from a curve consistent with the observed bench height before using it as the slack or tracking reference.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence. Before retaining the prior, clear the view rather than the estimator: when a hand stands low over the rod, step it behind the run and observe once more from the same camera. A retained prior is reported as such, so a crossing planned on a curve that predates the last one is visible in the trace rather than indistinguishable from a fresh read.",
+      "Filter segmented pixels by height above the bench measured from cable-camera depth before fitting. A plausible arc length is insufficient: reject fresh or tracked curves that extend through the table or up robot links. When only a fragment is visible, update the existing curve from the visible jacket instead of replacing it with that fragment."
+    ],
+    "exit_conditions": {
+      "found": "The requested features were measured and the declared estimates are available.",
+      "lost": "The visible evidence is insufficient to update the estimate; route to abort."
+    }
+  },
+  {
+    "name": "computing-routing-waypoints",
+    "title": "Plan one cable crossing",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "mate_sg"
+    ],
+    "description": "Plans crossing waypoints from the measured fixtures and cable curve. Use when a station index and fresh centreline are available.",
+    "guidance": [
+      "Pass scene, rod, and index into cable.plan_station_from. Carry the planned grasp point, measured available slack, selected arm, jaw widths, and solve error with the plan.",
+      "Do not drop measured slack when a grasp is refused: support-feed feasibility still needs the actual observed value. The current graph routes infeasible plans back to the station counter; final route verification must detect any crossing left incomplete.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence.",
+      "If a complete fixed-end crossing plan exceeds the IK residual gate, try the equivalent 180-degree parallel-jaw orientation from the same observed joints. Keep the lower residual; never execute an infeasible plan."
+    ],
+    "exit_conditions": {
+      "computed": "A crossing trajectory was planned from the supplied measured scene and cable curve.",
+      "infeasible": "The planner reported excessive solve error; the current graph skips to the next station and final vision verification detects missing crossings.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "grasping-curve-point",
+    "title": "Pinch the selected cable point",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "take_sg"
+    ],
+    "description": "Opens, approaches, and pinches the planned material point on a cable. Use before carrying one routing crossing.",
+    "guidance": [
+      "Use run_legs with the take-phase arguments in the example. Open before approach and close after arrival, on the arm selected by the plan. Settle after closing.",
+      "Done means the sequence finished, not that the cable is attached. Carry depends on physical pad friction, and later camera observations expose slip.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "done": "The requested motion phase completed; this does not certify cable contact or task success.",
+      "missed": "The grasp check or grasp command failed; no held-object claim is available."
+    }
+  },
+  {
+    "name": "executing-held-object-motion",
+    "title": "Carry a cable crossing with support feed",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "carry_sg"
+    ],
+    "description": "Streams crossing motion while the support arm pays out observed slack. Use after the work gripper closes on the cable.",
+    "guidance": [
+      "Use run_legs with the carry-phase arguments. Read the previous commanded support joint state from cable.support_memory and pass the measured plan into cable.carry_with_feed.",
+      "Both routing Easy and Medium have a fixed start and skip the initial support grasp, so their crossing carry uses the selected work arm with empty q_support. When another layout supplies a support configuration, cable.carry_with_feed schedules the support joint trajectory. Preserve the measured material/slack fields; these are motion commands, not cable forces or attachments.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence.",
+      "For a fixed end with no support-feed trajectory, stream the consecutive carry and crossing waypoints as one continuous motion. Avoid inserting a settling pause at every short arc segment."
+    ],
+    "exit_conditions": {
+      "done": "The requested motion phase completed; this does not certify cable contact or task success.",
+      "blocked": "A motion or perception exception interrupted the phase."
+    }
+  },
+  {
+    "name": "seating-and-checking",
+    "title": "Seat and measure a cable crossing",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "seat_sg"
+    ],
+    "description": "Seats a routed cable segment and measures its observed coverage at the station. Use after the crossing carry phase.",
+    "guidance": [
+      "Run the seat phase and reobserve the curve to compute seated and fraction. The current correction displacement is zero; the code measures the outcome and does not pretend to repair a failed seat.",
+      "Done means the phase completed even when seated is false. Export that distinction for diagnosis and let final routing verification inspect the full route.",
+      "When the gripper occludes the cable, divide visible seat coverage by the previously observed whole cable length. A short visible fragment must not be treated as the entire cable. For the two/four-peg cases, check at least 24 mm of cable in the seat footprint.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "done": "The requested motion phase completed; this does not certify cable contact or task success.",
+      "blocked": "A motion or perception exception interrupted the phase."
+    }
+  },
+  {
+    "name": "releasing-routed-cable",
+    "title": "Release and clear the routed cable",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "release_sg"
+    ],
+    "description": "Opens the work gripper before clearing a seated cable segment. Use before the next crossing iteration.",
+    "guidance": [
+      "Open before the clearing leg so the retreat cannot intentionally drag the still-pinched cable. Use the selected arm and jaw limits in the plan.",
+      "Route done back to the crossing counter; the next iteration obtains a fresh cable observation. Route a motion error through blocked.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "done": "The requested motion phase completed; this does not certify cable contact or task success.",
+      "blocked": "A motion or perception exception interrupted the phase."
+    }
+  },
+  {
+    "name": "verifying-routing-state",
+    "title": "Verify the complete cable route",
+    "category": "perception",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "verify_vision_sg"
+    ],
+    "description": "Checks required cable crossings from the final RGB-D cable curve. Use after all crossings and terminal insertion have completed.",
+    "guidance": [
+      "Measure every required crossing against the perceived fixture scene. Woven is a visual routing claim and short is a visible route failure.",
+      "The independent evaluator also checks the terminal and settled physical arrangement. Do not call simulator scoring tools from this vision skill.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "woven": "The RGB-D route check accepted all required cable crossings.",
+      "short": "The measured final arrangement does not satisfy this perception module\u2019s completion test.",
+      "errored": "A tool, planning, or script exception aborted the operation."
+    }
+  },
+  {
+    "name": "supporting-cable-run",
+    "title": "Establish cable support",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "anchor_sg"
+    ],
+    "description": "Recognizes a physically fixed cable start or commands a support-hand friction grasp. Use before routing a cable run.",
+    "guidance": [
+      "Read the observed curve and ask cable.plan_support for the rig and grasp plan. For both routing Easy and Medium, start_fixed is true: return anchored with empty q_support and quat, without closing a support gripper. The physical bench fixture already fixes end_a.",
+      "For a free-start diagnostic layout, execute the planned support approach, close through contact friction, and export the commanded support configuration for feed planning. This conditional recipe never installs a latch or weld on the hand.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "anchored": "The run already has a physical fixed start, or the support friction-grasp sequence completed; no cable latch is installed.",
+      "unanchored": "The support grasp could not be planned or executed."
+    }
+  },
+  {
+    "name": "terminating-the-run",
+    "title": "Insert the routed cable\u2019s free end",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "plug_sg"
+    ],
+    "description": "Locates the terminal cable tail and commands insertion into the destination port. Use when the crossing loop is finished.",
+    "guidance": [
+      "Use the observed curve and terminal/tail RGB-D helpers to choose a feasible free-end grasp. Execute the routine\u2019s bounded grasp, feed, insertion, and release sequence.",
+      "Terminal geometry must come from observations. Plugged means the routine finished; the evaluator still checks physical port occupancy after settling. Preserve the current retry bounds when composing the recipe. The current outer graph runs visual verification even after unplugged; keep the terminal failure visible alongside that visual route claim.",
+      "Check the full terminal mask in the selected renderer. Tiled orange fittings have hue 9; excluding that hue leaves only highlights and incorrectly suppresses the insertion attempt. Missing visual evidence means the terminal was not detected, not that the layout has no port.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence.",
+      "Reject apparent cable tips at orange fixture occlusions before correcting terminal placement; use the same orange hue range as fixture perception. After releasing and retreating, let the cable settle before measuring the terminal tail so a temporarily raised tip is not mistaken for lost visual evidence."
+    ],
+    "exit_conditions": {
+      "plugged": "The terminal insertion and release routine completed; independent evaluation checks the final port state.",
+      "unplugged": "The terminal routine could not complete or could not observe the target."
+    }
+  },
+  {
+    "name": "restoring-displaced-seats",
+    "title": "Restore cable seats after terminal placement",
+    "category": "manipulation",
+    "graph": "tasks/cable_route/graphs/weave",
+    "subgraphs": [
+      "restore_sg"
+    ],
+    "description": "Reobserves routing seats after the terminal carry and makes at most one contact-based repair per peg. Use before final whole-route verification.",
+    "guidance": [
+      "Observe a fresh RGB-D centreline before each seat. Measure metric cable arclength inside the observed seat footprint; curve resampling must not change the decision.",
+      "Skip seated spans and refuse infeasible plans. For a missing span, reuse the ordinary grasp, carry, placement, release and retreat stages. All holding is through contact friction.",
+      "The pass is bounded by the number of observed pegs. It may disturb the terminal or another seat; always run the separate whole-route verifier and settled physical evaluator afterwards.",
+      "For fixed-end Easy (two pegs) and Medium (four pegs), use only the fixed third-person cable RGB-D camera for fixture detection, centreline tracking, grasp refinement, terminal placement, and verification. Do not use overhead or wrist fallbacks; if the cable view is occluded, retain the measured prior or report lost evidence."
+    ],
+    "exit_conditions": {
+      "checked": "The single repair pass finished; this is not a claim that the whole route succeeded.",
+      "unobserved": "The pass could not observe or execute a required repair; final verification must retain the failure."
+    }
+  }
+]

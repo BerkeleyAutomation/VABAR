@@ -1,0 +1,7 @@
+# tool_hanging speed probes, second round (broad phase, buffers, combinations); serial.
+tool_hanging th_sap idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_sap routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_nxn idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_buf2 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ss4_ce2 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ss4_ce2 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine

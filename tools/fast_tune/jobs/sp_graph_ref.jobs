@@ -1,0 +1,4 @@
+# syringe_packing reference for sp_ss8's graph run (sp_graph_l1b.jobs). Its first two
+# attempts beside other starts lost the first observation to "render was not answered
+# within 180 s" on a CPU-starved machine; --bus-timeout 600, otherwise the cell's protocol.
+syringe_packing sp_ref graph_l1c :: --task syringe_packing/tray_pair_both_t05 --episodes 0:2 --num-worlds 2 --solve graph --graph gap_perception --motion curobo --no-privileged --perception vision --renderer rtx --bus-timeout 600

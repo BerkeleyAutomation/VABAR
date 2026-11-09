@@ -1,0 +1,203 @@
+# Level-2 tool pairs with Arena placement and fixed fixtures.
+external_yaml: tool_hanging_env_config.yaml
+env_name: scissors_medium
+embodiment:
+  id: yam
+  registry_name: vabar__bimanual_yam
+  params:
+    left_mount_position: [0.3025, 0.17, 0.81]
+    right_mount_position: [0.3025, -0.17, 0.81]
+    # AUTOLab's tool-hanging hand: the crank hand opening to 47.5 mm per finger.
+    gripper: crank_4310_wide
+    left_initial_joint_pose: [0, 1.047, 1.047, 0, 0, 0]
+    right_initial_joint_pose: [0, 1.047, 1.047, 0, 0, 0]
+background:
+  id: background
+  registry_name: vabar__yam_workcell_table
+  params:
+    initial_pose:
+      position_xyz: [0.2525, 0.0, 0.75]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+object_references:
+- id: table
+  parent_id: background
+  prim_path: placement_surface
+  object_type: base
+  params: {}
+objects:
+- id: hdr_shadow_receiver
+  registry_name: vabar__hdr_shadow_receiver
+  params: {}
+- id: pegboard_rack
+  registry_name: vabar__pegboard_rack
+  params:
+    instance_name: pegboard_rack
+    initial_pose:
+      position_xyz: [0.88, -0.16, 1.12800769]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+- id: empty_warehouse_hdr_light
+  registry_name: vabar__empty_warehouse_dome_light
+  params: {}
+- id: scissor_hook_1
+  registry_name: vabar__wrench_hook_2
+  params:
+    instance_name: scissor_hook_1
+    initial_pose:
+      position_xyz: [0.88, 0.09750847500000001, 1.128515762]
+      rotation_xyzw: [0.0, 0.0, 1.0, 0.0]
+- id: scissor_hook_2
+  registry_name: vabar__wrench_hook_2
+  params:
+    instance_name: scissor_hook_2
+    initial_pose:
+      position_xyz: [0.88, -0.102491525, 1.128515762]
+      rotation_xyzw: [0.0, 0.0, 1.0, 0.0]
+- id: scissors_1
+  registry_name: vabar__scissor_pair_1
+  params:
+    instance_name: scissors_1
+- id: scissors_2
+  registry_name: vabar__scissor_pair_1
+  params:
+    instance_name: scissors_2
+- id: distractor_wrench_1
+  registry_name: vabar__wrench_ring_19
+  params:
+    instance_name: distractor_wrench_1
+- id: distractor_pliers_2
+  registry_name: vabar__plier_combination
+  params:
+    instance_name: distractor_pliers_2
+relations:
+- kind: is_anchor
+  subject: table
+  params: {}
+- kind: is_anchor
+  subject: pegboard_rack
+  params: {}
+- kind: is_anchor
+  subject: scissor_hook_1
+  params: {}
+- kind: is_anchor
+  subject: scissor_hook_2
+  params: {}
+- kind: 'on'
+  subject: scissors_1
+  reference: table
+  params:
+    clearance_m: 0.004
+- kind: at_position
+  subject: scissors_1
+  params: {x: 0.6, y: 0.14}
+- kind: rotate_around_solution
+  subject: scissors_1
+  params: &id001
+    roll_rad: -1.5707963267948966
+    yaw_rad: 1.5707963267948966
+- kind: random_around_solution
+  subject: scissors_1
+  params:
+    x_half_m: 0.05
+    y_half_m: 0.05
+    yaw_half_rad: 0.08726646259971647
+- kind: 'on'
+  subject: scissors_2
+  reference: table
+  params:
+    clearance_m: 0.004
+- kind: at_position
+  subject: scissors_2
+  params: {x: 0.6, y: -0.14}
+- kind: rotate_around_solution
+  subject: scissors_2
+  params: *id001
+- kind: random_around_solution
+  subject: scissors_2
+  params:
+    x_half_m: 0.05
+    y_half_m: 0.05
+    yaw_half_rad: 0.08726646259971647
+- kind: 'on'
+  subject: distractor_wrench_1
+  reference: table
+  params:
+    clearance_m: 0.0
+- kind: position_limits
+  subject: distractor_wrench_1
+  params:
+    x_min: 0.4279999316
+    x_max: 1.0279999316
+    y_min: -0.1785213292
+    y_max: 0.6214786708
+- kind: rotate_around_solution
+  subject: distractor_wrench_1
+  params:
+    yaw_rad: 3.141592653589793
+- kind: random_around_solution
+  subject: distractor_wrench_1
+  params:
+    yaw_half_rad: 3.141592653589793
+- kind: 'on'
+  subject: distractor_pliers_2
+  reference: table
+  params:
+    clearance_m: 0.004
+- kind: position_limits
+  subject: distractor_pliers_2
+  params:
+    x_min: 0.3
+    x_max: 0.9
+    y_min: -0.4
+    y_max: 0.4
+- kind: rotate_around_solution
+  subject: distractor_pliers_2
+  params: {}
+- kind: random_around_solution
+  subject: distractor_pliers_2
+  params:
+    yaw_half_rad: 3.141592653589793
+task:
+  composition: atomic
+  description: hang both scissors on the two hooks
+  subtasks:
+  - kind: IndustrialToolHangingTask
+    params:
+      episode_length_s: 366.6666666666667
+      # Scored on the episode's final state, exactly as AUTOLab v1.0 scores tool hanging.
+      tools: [scissors_1, scissors_2]
+      fixtures: [scissor_hook_1, scissor_hook_2]
+      goals:
+      - tool: scissors_1
+        fixture: scissor_hook_1
+        loop:
+          center_xyz: [0.0217, 0, -0.0385]
+          normal_xyz: [0, -1, 0]
+          radius_m: 0.029
+        rod:
+          start_xyz: [0.0611, -0.00249, 0.0042]
+          end_xyz: [0, -0.00249, 0.0042]
+          radius_m: 0.00249
+        contact_force_n: 0.2
+        speed_m_s: 0.15
+        predicate: encloses
+        alternative_loops:
+        - center_xyz: [-0.02183, 0, -0.03853]
+          normal_xyz: [0, -1, 0]
+          radius_m: 0.029
+      - tool: scissors_2
+        fixture: scissor_hook_2
+        loop:
+          center_xyz: [0.0217, 0, -0.0385]
+          normal_xyz: [0, -1, 0]
+          radius_m: 0.029
+        rod:
+          start_xyz: [0.0611, -0.00249, 0.0042]
+          end_xyz: [0, -0.00249, 0.0042]
+          radius_m: 0.00249
+        contact_force_n: 0.2
+        speed_m_s: 0.15
+        predicate: encloses
+        alternative_loops:
+        - center_xyz: [-0.02183, 0, -0.03853]
+          normal_xyz: [0, -1, 0]
+          radius_m: 0.029

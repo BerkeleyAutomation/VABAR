@@ -1,0 +1,58 @@
+; -*- mode: lisp -*-
+(define (problem HANG_TWO_PLIERS_LEVEL2)
+  (:suite tool_hanging)
+  (:language hang both pliers on the two supports)
+  (:staging
+    (:physics tool_hanging_480hz@v1)
+    (:cameras yam_station_tool_hanging@v1)
+    (:episodes (:count 5) (:seed 0) (:sampler layouts:sample_level2_layout))
+    (:max-steps 22000)
+    (:start-poses poses/pliers_level2_start.json)
+  )
+  (:objects
+    plier_1 - plier_combination
+    plier_2 - plier_combination
+    distractor_scissors_1 - scissor_pair_1
+    distractor_wrench_2 - wrench_adjustable_260
+    distractor_scissors_3 - scissor_pair_1
+  )
+  (:fixtures
+    plier_support_left - plier_support_level2_left
+    plier_support_right - plier_support_level2_right
+  )
+  (:regions
+    (hang_left (:target plier_support_left) (:ranges ((0.072 -0.203 0.143 -0.123))) (:z-range -0.02 0.10))
+    (hang_right (:target plier_support_right) (:ranges ((0.072 -0.203 0.143 -0.123))) (:z-range -0.02 0.10))
+  )
+  (:init)
+  (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (And
+      (hold-for 1.0
+        (And
+          (>= (containment plier_1 hang_left) 1.0)
+          (>= (contact-force plier_1 plier_support_left) 0.2)
+          (<= (speed plier_1) 0.15)
+          (> (hands-clear plier_1) 0.11)
+        )
+      )
+      (hold-for 1.0
+        (And
+          (>= (containment plier_2 hang_right) 1.0)
+          (>= (contact-force plier_2 plier_support_right) 0.2)
+          (<= (speed plier_2) 0.15)
+          (> (hands-clear plier_2) 0.11)
+        )
+      )
+    )
+  )
+  (:reward (fraction))
+  (:observe
+    (contact-force plier_1 plier_support_left)
+    (contact-force plier_2 plier_support_right)
+  )
+  (:artifacts
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gap_perception "graphs/gap_perception_level2")
+  )
+)

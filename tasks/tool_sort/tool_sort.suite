@@ -1,0 +1,203 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; What every tool_sort variant shares, stated once.
+;
+; Eleven documents stand in one workcell, on one robot, under one import
+; profile. Everything a loader used to add after lowering lives here now:
+; the suite's description and provenance, `(:arms 1)` and `(:monolithic
+; true)` for the requirements, the predicate table the documents are read
+; under, the collider every free tool wears, the order the variants are
+; listed in, and the three foreign pairings that stand another robot in the
+; cell -- and the one look all eleven render under. The workcell static, the
+; sidecar's start poses and the welded container's region rebase need no
+; clause at all: `(:export X)` in each document is what the library acts on,
+; and `(:objects-from ...)` on the two USD restatements is acted on the same
+; way.
+;
+; What is NOT here, and why. The documents each keep their own `(:profile
+; ...)`, their `bin1`/`bin2` fixtures and their own `:artifacts` entries --
+; which merge with the suite's by kind, so the `:render` below reaches all
+; eleven while each keeps its routine, its tools and its graphs -- although
+; ten of the eleven agree on them: a document is read on its own by the
+; exporter, the typechecker sweep and the lowering tests, and a document that
+; only made sense beside this file would be a document that could not be
+; handed to somebody. The suite restates the profile so a reader of this file
+; alone knows which convention the variants inherit; `syringe` overrides it
+; with `vab_industrial@v1`, a sibling profile differing in one camera.
+;
+; The suite's provenance is prose written as bare tokens, which the reader
+; joins back into one sentence; `;` opens a comment and a parenthesis opens a
+; form, which is why the sentence has neither. A "..." string would do as
+; well now that the reader has one -- the `:notes` on the hosts below use it.
+; -------------------------------------------------------------------------
+
+(define (suite tool_sort)
+
+  (:language Sort YCB hand tools out of a cluttered bin into labelled
+             compartments, on a Franka Panda)
+
+  ; Headline first: a bare `tool_sort` resolves to `sort_all`, and every
+  ; golden, test and tool has always said `tool_sort/sort_all`. The names are
+  ; what each variant IS rather than what its problem asks -- `hammer` is
+  ; PICK_UP_THE_HAMMER_AND_PLACE_IT_IN_BIN2's document, and the problem name
+  ; inside each file is still the upstream one.
+  ;
+  ; `syringe` is last rather than tenth because it left and came back. It was
+  ; its own suite, `sharps_disposal`, on the argument that posting one object
+  ; through a sealed aperture is a different skill from sorting a pile into
+  ; compartments -- which is true, and `sort_power`'s third goal is that same
+  ; skill inside this suite anyway. The fork was 59% byte-identical to this
+  ; directory and its tools.py differed in four lines, so it merged back on
+  ; 2026-09-02 (as the five bench suites merged into `rgbs`). Its header says
+  ; what it kept of its own.
+  ;
+  ; `level1_N` is the thirty-document Level-1 tier, delivered September 2026:
+  ; four separated industrial objects per scene, each with a labelled
+  ; compartment of its own, staged under `vab_industrial_robotiq@v1` rather
+  ; than this suite's own profile. They are listed after the eleven above
+  ; rather than among them because the headline has to stay `sort_all`, and
+  ; because the tier is a sweep -- one draw per document -- rather than eleven
+  ; scenes each worth an argument.
+  ;
+  ; `level2_N` is the heap tier above it, the same way: the same bench and pool,
+  ; but 8 to 12 objects dropped into a pile rather than laid out, so an object
+  ; can be under another. Ported from RoboSimStudio-dev `tool_perception`
+  ; (7ffc4017, 97309ce3, 067645c6).
+  (:variants sort_all sort_all_neat hammer sort_new sort_bench sort_power
+             sort_electrical sort_wiring sort_electrical_usd sort_electrical_usd_geom
+             syringe
+             level1_1 level1_2 level1_3 level1_4 level1_5 level1_6
+             level1_7 level1_8 level1_9 level1_10 level1_11 level1_12
+             level1_13 level1_14 level1_15 level1_16 level1_17 level1_18
+             level1_19 level1_20 level1_21 level1_22 level1_23 level1_24
+             level1_25 level1_26 level1_27 level1_28 level1_29 level1_30
+             level2_1 level2_2 level2_3 level2_4 level2_5 level2_6
+             level2_7 level2_8 level2_9 level2_10 level2_11 level2_12
+             level2_13 level2_14 level2_15 level2_16 level2_17 level2_18
+             level2_19 level2_20 level2_21 level2_22 level2_23 level2_24
+             level2_25 level2_26 level2_27 level2_28 level2_29 level2_30)
+
+  (:staging
+    (:profile vab_tool_sort@v2)
+
+    ; One arm. Every variant is a one-handed pick-and-place on the Panda the
+    ; export welds into the cell.
+    (:arms 1)
+
+    ; The arena and its robot arrive in one import, so neither axis can be
+    ; swapped until a binding names the robot-stripped variant -- which is
+    ; what every `:host` below does -- and the profile's `scene-resident` is
+    ; the other half of that, without which the compiler would import the
+    ; extracted standalone Panda as well and the scene would hold two arms.
+    (:monolithic true)
+
+    ; Which predicate semantics these files are read under.
+    ;
+    ; Reproduction tier: `In` binds to the weak box test the source benchmark
+    ; uses, not to the stronger contact-and-at-rest predicate this stack also
+    ; has. That is a deliberate choice for comparability and is recorded in
+    ; every built spec's provenance.
+    ;
+
+    ; What a free object in these cells collides on, and why it is not the box.
+    ;
+    ; The export fits each tool one oriented box and marks the mesh beside it
+    ; `contype="0" conaffinity="0"` -- drawn, never touched. That box is VAB's
+    ; own approximation, not this repository's, and it is a big one. Measured
+    ; as the largest distance, over every heading a top-down jaw could close
+    ; along, that the collider stands proud of the mesh a viewer sees:
+    ;
+    ;     object                 authored box     drawn hull
+    ;     drill                     27.1 mm         0.00 mm
+    ;     clamp                     26.2            0.00
+    ;     adjustable_wrench         19.5            0.00
+    ;     pliers                    16.8            0.00
+    ;     utility_knife             15.9            0.00
+    ;     phillips_screwdriver       8.9            0.00
+    ;
+    ; Two centimetres of invisible shell is a gripper that closes on nothing
+    ; and a Robotiq linkage that deflects against it, which is what this suite
+    ; looked like.
+    ;
+    ; THIS IS A DEPARTURE FROM THE EXPORT AND IT IS NARROW. The hammer and the
+    ; round nut come through untouched, because upstream authored *them* as
+    ; real primitives -- a cylinder handle, a box head, nine boxes for the nut
+    ; -- and those already measure 0.00 mm proud. What `drawn_hull` replaces
+    ; is only the case where the file itself says "this shape is for looking
+    ; at": see robosimstudio.domains.rigid.EntityRigid._add_drawn_collider.
+    ;
+    ; The old note here said boxes were chosen because "a raw convex hull
+    ; leaves a thin tool rocking in a limit cycle that creeps 15-25 mm while
+    ; nominally settled". That was true and the cause was elsewhere:
+    ; mujoco_warp gives a convex pair one contact point unless
+    ; `enable_multiccd` is on, and one point is what a body rocks about.
+    ; `vab_500hz@v1` states the flag; without it the same creep comes straight
+    ; back.
+    ;
+    ; The three `sort_electrical*` documents override this with the box the
+    ; USD stage authors: they are one scene described three ways, and the
+    ; collider is one of the things held still. See sort_electrical.task.
+    (:collider drawn_hull)
+  )
+
+  ; The pairings that stand a foreign robot in this workcell.
+  ;
+  ; Each carries a `static-override` naming a *different file* -- the same
+  ; arena with the Panda cut out of it. The export welds its robot into the
+  ; room, so a foreign one needs the *stripped* file, and a bare file name
+  ; resolves under each variant's own `(:export ...)`: four of the six exports
+  ; carry their own object set, so which file it is depends on the variant.
+  ; `scene-resident` is left unstated (false) because the point is that there
+  ; is no longer a robot in there to index.
+  ;
+  ; What a document must never do is assert that a foreign pairing *works*.
+  ; That is a fact about the matrix, discovered by running it, and a file
+  ; asserting it would go stale with nothing to notice. These rows say only
+  ; "here is how to stand this robot here", and every one carries the note it
+  ; has always had.
+  (:hosts
+    ; The stripped arena hosting a YAM.
+    (:host (:embodiment yam_i2rt (:work-arm right) (:support-arm left))
+           (:static-override workcell scene_norobot.xml)
+           (:notes "compiles; no policy"))
+    ; The same stripped arena hosting the six-jointed arm. Its hand is welded
+    ; on rather than shipped with it, so this row is the whole fourth axis in
+    ; one binding: a task's scene, another robot, and a hand that came from a
+    ; third file.
+    (:host (:embodiment ur5 (:work-arm right))
+           (:static-override workcell scene_norobot.xml)
+           (:notes "compiles; no policy"))
+    ; The same robot wearing a different hand -- the fourth axis, taking a
+    ; value. The i2rt gripper was measured on a YAM and its closing axis
+    ; holds to 0.3 degrees here, which is what makes it one hand rather than
+    ; two that happen to share a name.
+    (:host (:embodiment ur5 (:work-arm right)) (:gripper linear_4310_attached)
+           (:static-override workcell scene_norobot.xml)
+           (:notes "compiles; no policy"))
+    ; The export's own Panda wearing a Robotiq 2F-85 is NOT a row here, and the
+    ; Level-1 delivery's attempt to add one is why this note exists. A `:host`
+    ; is a pairing offered to every variant in the suite, and the thirty
+    ; `level1_N` documents already stage that exact pairing themselves through
+    ; `vab_industrial_robotiq@v1` -- so the row lands a second time on each of
+    ; them and the suite refuses to build: "duplicate binding for
+    ; scene='robosuite_bench' embodiment='panda_robotiq' gripper=''".
+  )
+
+  ; -------------------------------------------------------------------------
+  ; How the cell looks under the path tracer: the wood, steel and print the
+  ; export's own MJCF states, and a lit shop around it. Every variant renders
+  ; under it. The materials themselves are put on the shapes by the workcell
+  ; entity each document names -- see assets/look.py for why one clause here
+  ; could not have done it, and for the two places a texture was being lost.
+  (:artifacts
+    (:render "assets.look:TOOL_SORT_LOOK")
+  )
+
+  (:provenance
+    (:source VAB-industrial ToolSortPickPlace,
+             robosuite 1.4.0, MuJoCo 3.3.3, seed 0 -- regions and goals
+             transcribed into the .task documents beside this file, see any of
+             their headers for what 'reconstructed' means and why a round trip
+             through them proves less than it looks)
+  )
+)

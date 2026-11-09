@@ -1,0 +1,19 @@
+# tool_hanging speed probes, run serially (--parallel 1) so the rates are not contended.
+tool_hanging th_ref idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ref routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ss4 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ss4 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_it10 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_it10 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_it5 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_it5 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_pyr idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_pyr routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ce2 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ce2 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ref idle_p2 :: --task tool_hanging/pliers_level2 --solve idle --max-steps 600
+tool_hanging th_sup_coacd idle_p2 :: --task tool_hanging/pliers_level2 --solve idle --max-steps 600
+tool_hanging th_sup_dec idle_p2 :: --task tool_hanging/pliers_level2 --solve idle --max-steps 600
+tool_hanging th_ref routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_sup_coacd routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_sup_dec routine_p1 :: --task tool_hanging/pliers_level1 --solve routine

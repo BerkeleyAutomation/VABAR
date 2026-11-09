@@ -1,0 +1,35 @@
+# AUTOLab's usbc_insert/mate run through
+# RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+runs:
+  vabar_usbc_insertion_medium_gap:
+    environment:
+      type: vabar_usbc_insertion__medium
+      enable_cameras: true
+    environment_builder:
+      placement_seed: 42
+    policy:
+      type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+      robot_profile: yam_bimanual_linear
+      gap_control_frequency_hz: 60
+      gap_graph: usbc_insert/mate
+      # Arena's plug has a silver nose and its receptacle is a silver metal bulkhead;
+      # the graph's colour prompts are retargeted to them (graph_adaptations/README.md).
+      gap_adaptation: rss_usbc_insert_medium
+      gap_inputs:
+        # AUTOLab's medium document: its declared receptacle is what the graph mates into.
+        autolab_task: usbc_insert/insert_medium
+      gap_work_arm: right
+      auto_spawn: true
+      gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+      gap_host: 127.0.0.1
+      gap_io_timeout_s: 600
+      policy_device: cuda
+      gap_camera: top_camera
+      gap_bridge_camera: topdown
+      gap_wrist_camera: right_wrist_camera
+      gap_wrist_bridge_camera: wrist
+      gap_aux_camera: side_camera
+      gap_aux_bridge_camera: side
+    rollout_limit:
+      num_episodes: 1
+    num_rebuilds: 1

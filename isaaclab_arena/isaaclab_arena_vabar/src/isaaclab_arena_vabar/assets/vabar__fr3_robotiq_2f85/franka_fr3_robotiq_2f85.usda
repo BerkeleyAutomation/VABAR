@@ -1,0 +1,166 @@
+#usda 1.0
+(
+    defaultPrim = "franka_fr3_v1"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [@./franka_fr3_v1.usda@]
+    upAxis = "Z"
+)
+over "franka_fr3_v1" (
+    variants = {
+        string gripper = "robotiq_2f85"
+    }
+)
+{
+    over "Geometry"
+    {
+        over "base"
+        {
+            over "fr3_link0"
+            {
+                over "fr3_link1"
+                {
+                    custom float mjc:gravcomp = 1
+
+                    over "fr3_joint1"
+                    {
+                        float drive:angular:physics:stiffness = 0.001
+                        custom bool mjc:actuatorgravcomp = 1
+                    }
+
+                    over "fr3_link2"
+                    {
+                        custom float mjc:gravcomp = 1
+
+                        over "fr3_joint2"
+                        {
+                            float drive:angular:physics:stiffness = 0.001
+                            custom bool mjc:actuatorgravcomp = 1
+                        }
+
+                        over "fr3_link3"
+                        {
+                            custom float mjc:gravcomp = 1
+
+                            over "fr3_joint3"
+                            {
+                                float drive:angular:physics:stiffness = 0.001
+                                custom bool mjc:actuatorgravcomp = 1
+                            }
+
+                            over "fr3_link4"
+                            {
+                                custom float mjc:gravcomp = 1
+
+                                over "fr3_joint4"
+                                {
+                                    float drive:angular:physics:stiffness = 0.001
+                                    custom bool mjc:actuatorgravcomp = 1
+                                }
+
+                                over "fr3_link5"
+                                {
+                                    custom float mjc:gravcomp = 1
+
+                                    over "fr3_joint5"
+                                    {
+                                        float drive:angular:physics:stiffness = 0.001
+                                        custom bool mjc:actuatorgravcomp = 1
+                                    }
+
+                                    over "fr3_link6"
+                                    {
+                                        custom float mjc:gravcomp = 1
+
+                                        over "fr3_joint6"
+                                        {
+                                            float drive:angular:physics:stiffness = 0.001
+                                            custom bool mjc:actuatorgravcomp = 1
+                                        }
+
+                                        over "fr3_link7"
+                                        {
+                                            custom float mjc:gravcomp = 1
+
+                                            over "fr3_joint7"
+                                            {
+                                                float drive:angular:physics:stiffness = 0.001
+                                                custom bool mjc:actuatorgravcomp = 1
+                                            }
+
+                                            over "robotiq_attach"
+                                            {
+                                                over "Geometry"
+                                                {
+                                                    over "robotiq_base"
+                                                    {
+                                                        custom float mjc:gravcomp = 1
+
+                                                        over "robotiq_left_driver"
+                                                        {
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "left_driver_joint"
+                                                            {
+                                                                float drive:angular:physics:stiffness = 0.001
+                                                            }
+
+                                                            over "robotiq_left_coupler"
+                                                            {
+                                                                custom float mjc:gravcomp = 1
+                                                            }
+                                                        }
+
+                                                        over "robotiq_left_spring_link"
+                                                        {
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "robotiq_left_follower"
+                                                            {
+                                                                custom float mjc:gravcomp = 1
+
+                                                                over "robotiq_left_pad"
+                                                                {
+                                                                    custom float mjc:gravcomp = 1
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_driver"
+                                                        {
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "robotiq_right_coupler"
+                                                            {
+                                                                custom float mjc:gravcomp = 1
+                                                            }
+                                                        }
+
+                                                        over "robotiq_right_spring_link"
+                                                        {
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "robotiq_right_follower"
+                                                            {
+                                                                custom float mjc:gravcomp = 1
+
+                                                                over "robotiq_right_pad"
+                                                                {
+                                                                    custom float mjc:gravcomp = 1
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

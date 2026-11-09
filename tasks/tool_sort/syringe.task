@@ -1,0 +1,181 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; RECONSTRUCTED -- not the upstream file.
+;
+; provenance.tier: reconstructed
+; source-of-record: robosimstudio/tasks/tool_sort/suite.py
+; upstream:         VAB-industrial/bddl_files/tool_sort/put_the_syringe_in_the_sharps_box.bddl
+;
+; The upstream .bddl files are NOT vendored here -- assets/PROVENANCE.md is
+; explicit that the VAB-industrial BDDL content is transcribed into the suite
+; as region literals and goal pairs, not copied as files. This reverses that
+; transcription: every number below is read back out of the suite, which took
+; them from the original to the digit.
+;
+; READ THE CIRCULARITY BEFORE TRUSTING A ROUND TRIP. A parser checked against
+; this file is checked against our own transcription, not against upstream.
+;
+; One object, posted through a hole. The scene has no bins -- the syringe
+; lies on the workbench and the box stands on it, because a 0.18 m box on
+; a bin floor puts its hole above what reach the arm has left while
+; holding a syringe on end. The bin bodies remain as the frames everything
+; else is placed in. Containment is literal: the region is the box's
+; cavity, so a syringe left on the lid is 0.17 m above it and does not
+; count.
+;
+; This was `sharps_disposal/syringe` for a while -- forked out of tool_sort
+; because posting one object through a sealed aperture read as a different
+; skill from sorting a pile -- and merged back on 2026-09-02. The fork was
+; 59% byte-identical to its parent and its solution differed by four lines
+; (a class name and a register-function name): one goal, one export family,
+; one cell. What it kept of its own is below: its profile, its records, a
+; grasp offset in routine.py and a perception graph of its own.
+; -------------------------------------------------------------------------
+
+(define (problem PUT_THE_SYRINGE_IN_THE_SHARPS_BOX)
+
+  (:language pick up the syringe from the workbench and drop it through the
+             hole in the top of the yellow sharps disposal box)
+
+  ; What BDDL cannot say: which cell, which robot, which export. The profile
+  ; supplies the first two for every VAB-industrial problem; the export is
+  ; this variant's own, and names the dumped scene its poses come from.
+  (:staging
+    ; Not the suite's `vab_tool_sort@v2`, and the difference is one camera:
+    ; `agentview@v1`'s overhead is lower and near-vertical, which is the view
+    ; graphs/gap_perception_syringe fits the lid plane and finds the hole in.
+    ; The two profiles share the cell, the robot, the rates and the dialect
+    ; table; see tool_sort/staging.py for both.
+    (:profile vab_industrial@v1)
+    ; The workcell wearing the materials its MJCF states -- see assets/look.py.
+    (:export vab_tool_sort/syringe
+      (:entity tool_sort_workcell))
+    ; The suite's `drawn_hull`, cut into boxes rather than wrapped in one, and
+    ; this variant is the one that needs the difference. A convex hull of a
+    ; syringe is not a syringe: the drawn mesh carries no vertices over the
+    ; 60 mm between the barrel's end ring and the plunger flange, so the hull
+    ; interpolates straight between them and the tool becomes a taper. Measured
+    ; on that hull, against the 19.57 mm the routine closed to:
+    ;
+    ;     s [mm from centre]    hull width    interference
+    ;              45.0           23.24 mm       +3.67 mm
+    ;              52.5 (grasp)   21.88          +2.31
+    ;              60.0           19.12          -0.45   <- no contact at all
+    ;
+    ; 0.37 mm of width shed per mm of slide, so 6.2 mm of travel along its own
+    ; axis takes the grip to zero -- and standing the tool upright over the hole
+    ; is exactly what supplies that travel, the gravity component along the tool
+    ; growing 1.6 -> 7.3 m/s^2 through the turn. The grip impulse was measured
+    ; falling 0.0125 -> 0.0000 N s across 45 steps of `over_hole`, the fingers
+    ; losing contact outright rather than sliding. No grip force, no grasp
+    ; offset, no rotation rate and no sequencing fixes that, because all four
+    ; adjust force and what runs out is width.
+    ;
+    ; The slabs have no taper to slide along:
+    ;
+    ;     -75.0 .. -56.2 mm    0.41 mm   needle
+    ;     -56.2 ..  37.5 mm   10.70 mm   barrel -- 93.7 mm at ONE width
+    ;      37.5 ..  56.3 mm   23.57 mm   plunger flange
+    ;      56.3 ..  75.0 mm   13.60 mm   thumb rest
+    ;
+    ; The grasp stays on the flange, at +52.5 mm -- `routine.py`'s
+    ; GRASP_HANDLE_FRAC is unchanged, and it was re-swept against these boxes
+    ; rather than assumed: every station on the barrel (frac 0.00 to -0.45)
+    ; lifts and then loses the tool, and -0.70 is the one that posts. What
+    ; changed is not where it grips but what is under the fingers there -- one
+    ; box of ONE width for its whole 18.8 mm instead of the shoulder of a
+    ; taper, so sliding within it costs nothing, and the 13.60 mm thumb rest
+    ; above and 10.70 mm barrel below are steps rather than slopes.
+    ;
+    ; Nothing here is fitted: the bands are the drawn mesh's own bound, taken
+    ; per slice.
+    (:collider drawn_slabs)
+    ; 2400 for one goal, plus a flat 9000 for the container goal.
+    ;
+    ; 2400 is sized for reference-parity motion, not for the plan-mode
+    ; lunge: the benchmark's own scripted pick is ~8 waypoints
+    ; held 45-80 control steps each at 20 Hz, about 24 s of simulated time,
+    ; which at this suite's 50 Hz is ~1200 steps before any margin. A ceiling
+    ; that punished moving the way the benchmark moves would be measuring the
+    ; ceiling. A container goal adds a flat 9000, measured rather than scaled:
+    ; posting a tool through a hole is a much longer sequence than releasing
+    ; it over an open compartment, and the goal is retried once before being
+    ; given up, so the budget has to cover two passes.
+    (:max-steps 11400)
+  )
+
+  ; Fixtures carry the regions; the tools are what moves.
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    ; Welded into bin2 as geometry rather than a body of its own, so it
+    ; has a frame and no handle. The export records the offset.
+    syringe_box - sharps_box
+  )
+
+  (:objects
+    syringe_0 - syringe
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as
+  ; (x0 y0 x1 y1). bin2's compartments are the quadrants of its floor.
+  ;
+  ; The height window is BDDL's own _eval_in: from the frame origin up
+  ; 0.15 m. It starts at the origin rather than below it, which is what makes
+  ; an object held ABOVE a bin fail the test and one resting on its floor
+  ; pass -- and what lets a tool still between the fingers score, 15 cm up.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        ; The file's own ranges, in the BOX's frame. The export records
+        ; where that frame sits inside bin2; folding the two is the
+        ; loader's job and happens in exactly one place.
+        (:ranges ((-0.0445 -0.083 0.0445 0.083)))
+    )
+  )
+
+  ; No init constraint. This export was dumped with (:bins none): the
+  ; syringe lies on the workbench and the box stands on it, so the pile
+  ; every other variant starts from does not exist here. Stating one
+  ; anyway would be stating something false, and an init is verified
+  ; after settling -- a false one is a task that refuses to start.
+  (:init)
+
+  ; NOTE ON SEMANTICS, for whoever binds these predicates: BDDL's In is a box
+  ; test that a CARRIED object satisfies. A reproduction-tier import must
+  ; bind it to the weak box test and not to the stronger contact-and-at-rest
+  ; predicate this stack also has, because comparability with the source
+  ; benchmark outranks rigor. Rebinding it is a re-labelling, not a bug fix.
+  (:goal
+    (In syringe_0 syringe_box_region)
+  )
+
+  ; A solution is a thing that RUNS, so it stays code and is referenced.
+  (:artifacts
+    ; The suite's routine with one number changed: the grasp slides onto the
+    ; plunger flange rather than the centroid, because the hull the syringe
+    ; collides on is 0.4 mm wide at the needle and 10.7 mm at the barrel.
+    ; See routine.py::GRASP_HANDLE_FRAC.
+    (:routine "routine:RoutineSyringe")
+    (:tools   "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    ; Its own: the sorting graph releases over an open compartment, and this
+    ; one perceives an aperture and mates a tip with it.
+    (:graph gap_perception "graphs/gap_perception_syringe")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial ToolSortPickPlace,
+              robosuite 1.4.0, MuJoCo 3.3.3, seed 0")
+    (:upstream-file "put_the_syringe_in_the_sharps_box.bddl")
+  )
+)

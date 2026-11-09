@@ -1,0 +1,149 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED. See weave4.task for the shared design: the spool fixture, the seat
+; geometry and the 8.25 mm it is pinned to, the worst_of grouping and the zero
+; idle floor. See weave5.task for what a LEVEL is; this is the top of that
+; ladder.
+;
+; L3. Six stations at weave_stagger's full 25 mm depth: 232.2 degrees of
+; accumulated turning, which is two thirds of a turn and the most of any
+; arrangement this suite ships.
+;
+;   weave3   3 stations   scatter     12.6 deg   L1
+;   weave4   4 stations   0    mm     36.5 deg   L1
+;   weave5   5 stations  12.5  mm    119.9 deg   L2
+;   weave6   6 stations  25    mm    232.2 deg   L3   <- this one
+;
+; PAST HALF A TURN THE ROUTE STOPS BEING DRIVEABLE FROM ONE END, and that is
+; what the top band is for rather than "more of the same". Tension through a
+; route falls as exp(-mu * Theta), so a pull at the free end arrives at the far
+; station with 30% of its strength here against weave4's 83%. There is no drag
+; that reaches the whole route. Every station has to be given its own slack,
+; from a hand that is already there, and the support arm's feed stops being a
+; correction and becomes the mechanism.
+;
+; NOTHING IN THIS SUITE IS L4, and that is a measurement rather than an
+; omission. Reaching a full turn on a 155 mm pitch needs a ninth station or a
+; stagger deeper than the working arm's envelope allows -- the band any board
+; may stand in is 80 mm wide -- and adding either to make a table look complete
+; would be adding a task to fit a label. See difficulty.py, where the ladder
+; moved when the pitch did.
+;
+; THE ROD IS 1.15 m AT 96 CAPSULES. Five crossings of 2 * (25 + 8.25) mm need a
+; long rod, and a long rod at weave4's constant 42 would be a COARSE one --
+; 27.4 mm per capsule against 11.9. A 90 degree station turn around the 8.25 mm
+; seated radius spans about 13 mm of arc, so at 42 the entire turn would fall
+; inside a single capsule and the rod would corner rather than bend. 96 holds
+; the family's pitch. See weave_segments in assets/cable.py.
+;
+; WHICH IS WHY THE SHARE IS 0.039 AND NOT 0.047. Both ask for about the same
+; LENGTH of rod in the box -- 0.039 of 96 capsules is 3.7 bodies, or 45 mm,
+; against weave4's 0.047 of 42 at 19 mm pitch, which is 2 bodies and 38 mm. The
+; share moved because the rod did; what it asks for did not.
+;
+; ONE THING THIS BOARD DOES NOT HAVE. Its near row stands at x = 0.495, the
+; nearest in the family, so its near-side seat boxes reach back to 0.450 -- and
+; the rod's whole spawn envelope reaches 0.480, which is 29.9 mm inside one of
+; them. That is the widest breach of any layout here. Against the BOW alone,
+; which is the term the 0.42 spawn line was sized against, it still clears by
+; 10 mm. WEAVE_CABLE_WAVE in assets/cable.py has the per-layout table and says
+; what the envelope is and is not: no rollout has measured an idle score at
+; these constants.
+; ---------------------------------------------------------------------------
+
+(define (problem WEAVE_THE_CABLE_THROUGH_SIX_STAGGERED_PEGS)
+
+  (:suite cable_route)
+
+  (:language weave the cable between the six staggered pegs, alternating sides)
+
+  (:staging
+    (:cameras cable_weave6@v1)
+    ; The longest in the family by half again: five crossings at
+    ; weave_stagger's 66.5 mm of x-travel each, on a rod a quarter longer than
+    ; its own, and a support feed at every one of them.
+    (:max-steps 12000)
+    ; The rod's own shape and placement, drawn per episode; the board does not
+    ; move. See weave4.
+    (:episodes (:count 8) (:seed 0) (:sampler staging:CABLE_BOW))
+  )
+
+  (:objects
+    cable - weave6_cable
+  )
+
+  (:fixtures
+    peg0 - weave6_peg0
+    peg1 - weave6_peg1
+    peg2 - weave6_peg2
+    peg3 - weave6_peg3
+    peg4 - weave6_peg4
+    peg5 - weave6_peg5
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Six stations, two rows, alternating sides -1, +1, -1, +1, -1, +1 -- and the
+  ; seats are still weave4's box, stated in each station's own frame. Two
+  ; different world x, one definition of "seated on the near side".
+  (:regions
+    (seat0 (:target peg0) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat1 (:target peg1) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat2 (:target peg2) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat3 (:target peg3) (:ranges (( 0.003 -0.035  0.045 0.035))))
+    (seat4 (:target peg4) (:ranges ((-0.045 -0.035 -0.003 0.035))))
+    (seat5 (:target peg5) (:ranges (( 0.003 -0.035  0.045 0.035))))
+  )
+
+  ; No init constraint: both arms at home, touching nothing. See weave4.
+  (:init)
+
+  (:goal
+    (worst_of
+      (And
+        (>= (containment cable seat0) 0.039)
+        (>= (containment cable seat1) 0.039)
+        (>= (containment cable seat2) 0.039)
+        (>= (containment cable seat3) 0.039)
+        (>= (containment cable seat4) 0.039)
+        (>= (containment cable seat5) 0.039)
+      )
+      (And
+        (> (tcp-distance cable) 0.05)
+        (<= (speed cable) 0.05)
+      )
+    )
+  )
+
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; The same motion three ways: a routine, the oracle graph, and the vision
+  ; graph that runs the same crossing loop off the `cable` camera. See weave4.
+  (:artifacts
+    (:routine "routine:RoutineWeave")
+    (:graph gt "graphs/weave")
+    (:graph vision "graphs/weave_vision")
+  )
+
+  (:provenance
+    (:tier authored)
+    (:source "this stack -- the L3 rung of the cable_route difficulty ladder")
+    (:note "Six F1 spools on weave4's 155 mm y-pitch, offset +/-25 mm in x and phased against
+            the required sides -- weave_stagger's geometry carried to six stations.
+            Accumulated turning of the scored route is 232.2 deg at a mean crossing obliquity
+            of 23.2 deg, the most of any arrangement here; see tasks/cable_route/difficulty.py.
+            The rod is 1.15 m at 96 capsules, discretised at the family's 11.9 mm pitch rather
+            than at weave4's constant count, which is why the share is 0.039 rather than 0.047
+            -- both are about 45 mm of rod in a 70 mm box. The seated route is 923 mm with its
+            tails, clearing WEAVE_MIN_SLACK by 207 mm. Reach-checked against rigs/weave_reach.py:
+            the right arm's band is y in [-0.36, +0.10] over the x this layout spans, and the
+            stations run y = -0.448 to +0.328, so both ends of this board sit past it -- the
+            widest layout in the suite and the one whose outer stations the routine reaches by
+            chaining rather than from home. The support anchor at WEAVE_ANCHOR_Y = 0.17 sits
+            BETWEEN the outermost two stations here rather than clear of them, which is the
+            defect weave_anchor_y fixes for the terminated runs and deliberately does not fix
+            for the plain weaves. No scripted routine of its own.")
+  )
+)

@@ -1,0 +1,23 @@
+<mujoco model="measuring_tape">
+  <!-- Author: ScanSource 3D -->
+  <!-- Source: https://sketchfab.com/3d-models/measuring-tape-7138f5e13b2e4e17975c23ba5584164b -->
+  <asset>
+    <texture name="measuring_tape_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="measuring_tape_mat" texture="measuring_tape_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="measuring_tape_mesh" file="meshes/measuring_tape.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="measuring_tape_mesh"
+              material="measuring_tape_mat" mass="0.250000" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.023424" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.023424" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.054522 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

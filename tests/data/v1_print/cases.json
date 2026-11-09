@@ -1,0 +1,19 @@
+{
+ "_comment": "What `python -m vabar bench <argv> --print` printed at v1.0 (commit 18b974e), before experiment configs existed. `--config paper` must still print exactly this, except that syringe packing's two files now state its Robotiq and tiled renderer (vabar/configs/paper.toml).",
+ "tool_sorting_L1.txt": ["--cell", "tool_sorting/L1"],
+ "tool_hanging_L1.txt": ["--cell", "tool_hanging/L1"],
+ "tool_hanging_L2.txt": ["--cell", "tool_hanging/L2"],
+ "gear_meshing_L1.txt": ["--cell", "gear_meshing/L1"],
+ "gear_meshing_L2.txt": ["--cell", "gear_meshing/L2"],
+ "syringe_packing_L1.txt": ["--cell", "syringe_packing/L1"],
+ "syringe_packing_L2.txt": ["--cell", "syringe_packing/L2"],
+ "cable_insertion_L1.txt": ["--cell", "cable_insertion/L1"],
+ "cable_insertion_L2.txt": ["--cell", "cable_insertion/L2"],
+ "cable_routing_L1.txt": ["--cell", "cable_routing/L1"],
+ "cable_routing_L2.txt": ["--cell", "cable_routing/L2"],
+ "tool_hanging_L1_limit3.txt": ["--cell", "tool_hanging/L1", "--limit", "3"],
+ "tool_hanging_L1_routine.txt": ["--cell", "tool_hanging/L1", "--solve", "routine"],
+ "tool_hanging_L1_extra.txt": ["--cell", "tool_hanging/L1", "--workers", "8", "--out", "outputs/bench"],
+ "cable_routing_L2_limit5.txt": ["--cell", "cable_routing/L2", "--limit", "5"],
+ "gear_meshing_L1_idle_limit2.txt": ["--cell", "gear_meshing/L1", "--limit", "2", "--solve", "idle"]
+}

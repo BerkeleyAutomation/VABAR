@@ -1,0 +1,486 @@
+{
+  "version": 3,
+  "meta": {
+    "name": "usbc_bulkhead_gt",
+    "description": "Mate the USB-C plug into the panel-mount bulkhead using ground truth, bimanually. The support arm braces the receptacle first (sim.plan_brace): its cradle has no axial stop, so an insertion run without a brace shoves the 90 g part along its own axis instead of seating into it. The working arm then runs the suite's full-pose joint-space plan (sim.plan_insert) with calibrated partial grips (sim.set_gripper) and the closed-loop correction the open-loop reference lacks -- measure the plug's true pose in the jaws after lifting (sim.get_insertion_state), then re-plan the stroke displaced by exactly that error. The verify reads the evaluator's own gate."
+  },
+  "nodes": {
+    "brace": {
+      "type": "subgraph",
+      "ref": "brace_sg"
+    },
+    "insert": {
+      "type": "subgraph",
+      "ref": "insert_sg"
+    },
+    "verify": {
+      "type": "subgraph",
+      "ref": "verify_sg"
+    },
+    "done": {
+      "type": "end",
+      "status": "success"
+    },
+    "abort": {
+      "type": "end",
+      "status": "failure",
+      "recovery": [
+        {
+          "tool": "sim.set_gripper",
+          "inputs": {
+            "width": "open"
+          }
+        }
+      ]
+    },
+    "linger": {
+      "type": "script",
+      "script": "scripts/grip_step.py",
+      "inputs": {
+        "preset": "open",
+        "settle_steps": 150
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "brace"
+    ],
+    [
+      "linger",
+      "done"
+    ]
+  ],
+  "conditional_edges": {
+    "brace": {
+      "router_field": "exit",
+      "mapping": {
+        "braced": "insert",
+        "errored": "abort"
+      }
+    },
+    "insert": {
+      "router_field": "exit",
+      "mapping": {
+        "released": "verify",
+        "missed": "abort",
+        "errored": "abort"
+      }
+    },
+    "verify": {
+      "router_field": "exit",
+      "mapping": {
+        "inserted": "linger",
+        "short": "abort"
+      }
+    }
+  },
+  "subgraphs": {
+    "insert_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "scripts/plan_stages.py",
+          "inputs": {}
+        },
+        "open": {
+          "type": "script",
+          "script": "scripts/grip_step.py",
+          "inputs": {
+            "preset": "open",
+            "settle_steps": 12
+          }
+        },
+        "approach": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "approach"
+          }
+        },
+        "descend": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "descend"
+          }
+        },
+        "pinch": {
+          "type": "script",
+          "script": "scripts/grip_step.py",
+          "inputs": {
+            "preset": "pinch",
+            "settle_steps": 36
+          }
+        },
+        "close": {
+          "type": "script",
+          "script": "scripts/grip_step.py",
+          "inputs": {
+            "preset": "close",
+            "settle_steps": 72
+          }
+        },
+        "check_grasp": {
+          "type": "script",
+          "script": "scripts/verify_grasp.py",
+          "inputs": {}
+        },
+        "missed": {
+          "type": "noop"
+        },
+        "lift": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "lift"
+          }
+        },
+        "correct": {
+          "type": "script",
+          "script": "scripts/correct_plan.py",
+          "inputs": {}
+        },
+        "ease": {
+          "type": "script",
+          "script": "scripts/grip_step.py",
+          "inputs": {
+            "preset": "insert",
+            "settle_steps": 24
+          }
+        },
+        "push": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "correct.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "insert"
+          }
+        },
+        "seat_check": {
+          "type": "script",
+          "script": "scripts/seat_check.py",
+          "inputs": {
+            "allow_retry": true
+          }
+        },
+        "correct_retry": {
+          "type": "script",
+          "script": "scripts/correct_plan.py",
+          "inputs": {
+            "retry_from": 0.03
+          }
+        },
+        "push_retry": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "correct_retry.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "insert"
+          }
+        },
+        "seat_check_final": {
+          "type": "script",
+          "script": "scripts/seat_check.py",
+          "inputs": {
+            "allow_retry": false
+          }
+        },
+        "release": {
+          "type": "script",
+          "script": "scripts/grip_step.py",
+          "inputs": {
+            "preset": "open",
+            "settle_steps": 48
+          }
+        },
+        "retract": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "correct.stages"
+            },
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            },
+            "stage": "retract"
+          }
+        },
+        "released": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "open",
+          "approach"
+        ],
+        [
+          "approach",
+          "descend"
+        ],
+        [
+          "descend",
+          "pinch"
+        ],
+        [
+          "pinch",
+          "close"
+        ],
+        [
+          "close",
+          "check_grasp"
+        ],
+        [
+          "lift",
+          "correct"
+        ],
+        [
+          "correct",
+          "ease"
+        ],
+        [
+          "ease",
+          "push"
+        ],
+        [
+          "push",
+          "seat_check"
+        ],
+        [
+          "correct_retry",
+          "push_retry"
+        ],
+        [
+          "push_retry",
+          "seat_check_final"
+        ],
+        [
+          "release",
+          "retract"
+        ],
+        [
+          "retract",
+          "released"
+        ],
+        [
+          "released",
+          "END"
+        ],
+        [
+          "missed",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "plan": {
+          "router_field": "route",
+          "mapping": {
+            "planned": "open"
+          }
+        },
+        "check_grasp": {
+          "router_field": "route",
+          "mapping": {
+            "held": "lift",
+            "missed": "missed"
+          }
+        },
+        "seat_check": {
+          "router_field": "route",
+          "mapping": {
+            "seated": "release",
+            "again": "correct_retry",
+            "lost": "missed"
+          }
+        },
+        "seat_check_final": {
+          "router_field": "route",
+          "mapping": {
+            "seated": "release",
+            "lost": "missed"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "released",
+          "missed"
+        ]
+      },
+      "on_error": "errored"
+    },
+    "verify_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "check": {
+          "type": "script",
+          "script": "scripts/verify_insert.py",
+          "inputs": {}
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "check"
+        ],
+        [
+          "check",
+          "END"
+        ]
+      ],
+      "exit": {
+        "router_field": "route",
+        "success_values": [
+          "inserted",
+          "short"
+        ]
+      }
+    },
+    "brace_sg": {
+      "skill": "generic",
+      "inputs": {},
+      "outputs": {},
+      "nodes": {
+        "plan": {
+          "type": "script",
+          "script": "scripts/plan_brace.py",
+          "inputs": {}
+        },
+        "open": {
+          "type": "script",
+          "script": "scripts/brace_grip.py",
+          "inputs": {
+            "width": 0.0475,
+            "arm": {
+              "$ref": "plan.arm_name"
+            },
+            "settle_steps": 24
+          }
+        },
+        "stage": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "stage": "stage",
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            }
+          }
+        },
+        "seat": {
+          "type": "script",
+          "script": "scripts/move_stage.py",
+          "inputs": {
+            "stages": {
+              "$ref": "plan.stages"
+            },
+            "stage": "seat",
+            "arm_id": {
+              "$ref": "plan.arm_id"
+            }
+          }
+        },
+        "close": {
+          "type": "script",
+          "script": "scripts/brace_grip.py",
+          "inputs": {
+            "width": {
+              "$ref": "plan.grip_m"
+            },
+            "arm": {
+              "$ref": "plan.arm_name"
+            }
+          }
+        },
+        "braced": {
+          "type": "noop"
+        }
+      },
+      "edges": [
+        [
+          "START",
+          "plan"
+        ],
+        [
+          "open",
+          "stage"
+        ],
+        [
+          "stage",
+          "seat"
+        ],
+        [
+          "seat",
+          "close"
+        ],
+        [
+          "close",
+          "braced"
+        ],
+        [
+          "braced",
+          "END"
+        ]
+      ],
+      "conditional_edges": {
+        "plan": {
+          "router_field": "route",
+          "mapping": {
+            "planned": "open"
+          }
+        }
+      },
+      "exit": {
+        "router_field": null,
+        "success_values": [
+          "braced"
+        ]
+      },
+      "on_error": "errored"
+    }
+  }
+}

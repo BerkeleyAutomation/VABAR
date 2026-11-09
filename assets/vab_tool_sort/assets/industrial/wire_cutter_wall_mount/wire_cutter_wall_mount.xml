@@ -1,0 +1,21 @@
+<mujoco model="wire_cutter_wall_mount">
+  <asset>
+    <texture name="wire_cutter_wall_mount_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="wire_cutter_wall_mount_mat" texture="wire_cutter_wall_mount_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="wire_cutter_wall_mount_mesh" file="meshes/wire_cutter_wall_mount.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="wire_cutter_wall_mount_mesh"
+              material="wire_cutter_wall_mount_mat" mass="0.129367" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.021750" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.021750" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.070140 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

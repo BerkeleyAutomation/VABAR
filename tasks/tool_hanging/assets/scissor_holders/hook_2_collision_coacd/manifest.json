@@ -1,0 +1,159 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "tasks/tool_hanging/assets/scissor_holders/hook_2.stl",
+  "source_vertices": 260,
+  "source_triangles": 516,
+  "source_watertight": true,
+  "parameters": {
+    "threshold": 0.025,
+    "max_convex_hull": 32,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 80,
+    "resolution": 2000,
+    "mcts_nodes": 20,
+    "mcts_iterations": 120,
+    "mcts_max_depth": 3,
+    "merge": false,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "hulls": [
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_00.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          54.388680269422366,
+          -0.16501006976136523,
+          -0.2090312834876329
+        ],
+        [
+          61.30036960341067,
+          8.37167498209169,
+          5.175558368167032
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_01.obj",
+      "vertices": 60,
+      "triangles": 116,
+      "bounds_mm": [
+        [
+          15.900072412584677,
+          -0.20643816227789102,
+          -0.20329450133908722
+        ],
+        [
+          53.77606558306775,
+          5.120964371863465,
+          5.177286890419509
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_02.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          9.786040453125906,
+          -0.2047503780745501,
+          -0.19552195466803823
+        ],
+        [
+          15.476196425119952,
+          14.807563929807202,
+          5.171162983010731
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_03.obj",
+      "vertices": 57,
+      "triangles": 110,
+      "bounds_mm": [
+        [
+          9.78601132200697,
+          14.809035051313458,
+          -0.19881399869464644
+        ],
+        [
+          15.171084368166476,
+          52.920385814458314,
+          5.177275738663042
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_04.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_mm": [
+        [
+          5.492803565373833,
+          47.33230892460506,
+          -0.18952185451473724
+        ],
+        [
+          9.785485141171193,
+          53.176051438408194,
+          5.182218242646854
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_05.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          5.506065507269341,
+          7.273371715280518,
+          -0.1903723466355416
+        ],
+        [
+          9.785066381336492,
+          13.640895388938588,
+          5.166550479983613
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_06.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          -0.20834576262859628,
+          39.8032292214516,
+          -0.18517858675090793
+        ],
+        [
+          5.492803565373833,
+          53.17362081067199,
+          5.179439407004622
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/scissor_holders/hook_2_collision_coacd/hull_07.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_mm": [
+        [
+          -0.20586597612918922,
+          -0.18486656870595652,
+          -0.1990277027624643
+        ],
+        [
+          5.505085973395126,
+          13.15649950188481,
+          5.183674798593643
+        ]
+      ]
+    }
+  ]
+}

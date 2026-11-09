@@ -1,0 +1,69 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsMassAPI"]
+    customData = {
+        dictionary autolab = {
+            string sourcePath = "tasks/usbc_insert/assets/stage.py:load_plug"
+            string sourceRevision = "34c6f8d087c49beae924698de79edf4becbd5f72"
+        }
+    }
+    prepend references = @../vabar__plug/task_frame_plug.usda@</Asset>
+)
+{
+    float physics:density = 2000
+
+    over "ArtistFrame"
+    {
+        over "SourceCollisionMesh"
+        {
+            token visibility = "invisible"
+        }
+
+        over "PhysicsMaterials"
+        {
+            over "physics_mat_m_opaque__plastic__glossy_white_a01" (
+                prepend apiSchemas = ["PhysicsMaterialAPI"]
+            )
+            {
+                float physics:dynamicFriction = 0.35
+                float physics:restitution = 0
+                float physics:staticFriction = 0.35
+            }
+        }
+
+        over "Materials"
+        {
+            over "m_opaque__plastic__blue_a01"
+            {
+                over "Albedo"
+                {
+                    asset inputs:file = @textures/t_plastic_orange_a01_tile_alb.png@
+                }
+
+                over "OmniPBR_Shader"
+                {
+                    asset inputs:diffuse_texture = @textures/t_plastic_orange_a01_tile_alb.png@
+                }
+            }
+
+            over "m_opaque__plastic__glossy_white_a01"
+            {
+                over "Albedo"
+                {
+                    asset inputs:file = @textures/t_plastic_glossy_orange_a01_tile_alb.png@
+                }
+
+                over "OmniPBR_Shader"
+                {
+                    asset inputs:diffuse_texture = @textures/t_plastic_glossy_orange_a01_tile_alb.png@
+                }
+            }
+        }
+    }
+}

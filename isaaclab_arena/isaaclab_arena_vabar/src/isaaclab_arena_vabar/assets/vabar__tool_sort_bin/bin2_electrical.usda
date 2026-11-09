@@ -1,0 +1,32 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend apiSchemas = ["PhysicsRigidBodyAPI"]
+    prepend references = @simready_electrical/sm_bin2_electrical_01.usd@</RootNode>
+)
+{
+    bool physics:kinematicEnabled = 1
+    bool physics:rigidBodyEnabled = 1
+    float3[] extentsHint = [(-0.21, -0.26, -0.02), (0.21, 0.26, 0.10)]
+
+    # The delivered bin prints AUTOLab sort_electrical's "safety glasses" label here. Tool sort
+    # stages the cutting pliers in that compartment instead (AUTOLab v1.0's level-1
+    # suite, which runs this graph on the 2F-85, never stages the safety glasses), so the
+    # label is AUTOLab's own cutting pliers print.
+    over "Materials" {
+        over "m_opaque__paper__decal_a04" {
+            over "Image_Texture" {
+                asset inputs:file = @./simready_electrical/textures/bin2_3_cutting_pliers.png@
+            }
+            over "OmniPBR_Shader" {
+                asset inputs:diffuse_texture = @./simready_electrical/textures/bin2_3_cutting_pliers.png@
+            }
+        }
+    }
+}

@@ -1,0 +1,39 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__phillips_screwdriver_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "screwdriver_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Two-material inertia of the voxelised visual mesh at the delivered mass: its metal
+            # parts 6.2x as dense as the handle, the split closest to the delivered centre of
+            # mass. Taken about the delivered centre of mass, 0.2 mm from this model's. The
+            # delivered inertia was 1.3/5.4/5.4x this on its principal axes (above the physical
+            # limit for this shape). Mass unchanged.
+            point3f physics:centerOfMass = (-3.959573e-07, -0.020833664, -1.5741236e-06)
+            float3 physics:diagonalInertia = (3.5574034e-06, 0.00021726812, 0.00021743815)
+            float physics:mass = 0.0847674
+            quatf physics:principalAxes = (0.66267605, -0.24213604, -0.24039983, 0.66666221)
+
+            over "screwdriver_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__yellow_a01" {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+    }
+}

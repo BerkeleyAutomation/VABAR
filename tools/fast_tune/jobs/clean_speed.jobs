@@ -1,0 +1,50 @@
+# The speed table of record: every candidate's 600-step idle (and the reference routines),
+# serially (--parallel 1) with nothing else of ours on GPU 6. The first-round speed sweeps
+# overlapped fidelity and graph runs and are kept only as screening.
+syringe_packing sp_ref idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ref idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss8 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss8 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss6 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss6 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss4 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss4 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_it10 idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_it10 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_it5 idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_pyr idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_noccd idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_noccd idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_buf idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ref routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_noccd routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ss8 routine_ts_syringe :: --task tool_sort/syringe --solve routine
+syringe_packing sp_ss8_noccd idle_l1 :: --task syringe_packing/tray_pair_both_t00 --solve idle --max-steps 600
+syringe_packing sp_ss8_noccd idle_l2 :: --task syringe_packing/tray_clutter_t00 --solve idle --max-steps 600
+syringe_packing sp_ss8_noccd routine_ts_syringe :: --task tool_sort/syringe --solve routine
+tool_sort ts_ref idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ss8 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ss6 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_it10 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_noccd idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_buf idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_hull32 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ref routine_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_sort ts_noccd routine_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_sort ts_ss4 idle_l1 :: --task tool_sort/level1_1 --solve idle --max-steps 600
+tool_sort ts_ss6 routine_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_sort ts_ss4 routine_l1_1 :: --task tool_sort/level1_1 --solve routine
+tool_hanging th_ref idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ce2 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ce4 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ss4 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_pyr idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_it10 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_buf2 idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_sap idle_w2 :: --task tool_hanging/wrenches_level2 --solve idle --max-steps 600
+tool_hanging th_ref routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ce2 routine_w1 :: --task tool_hanging/wrenches_level1 --solve routine
+tool_hanging th_ref routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ce2 routine_p1 :: --task tool_hanging/pliers_level1 --solve routine
+tool_hanging th_ref idle_w1 :: --task tool_hanging/wrenches_level1 --solve idle --max-steps 600
+tool_hanging th_ce2 idle_w1 :: --task tool_hanging/wrenches_level1 --solve idle --max-steps 600

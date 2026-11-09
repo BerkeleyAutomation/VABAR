@@ -1,0 +1,192 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED -- there is no upstream .bddl for this task.
+;
+; provenance.tier: reproduction
+; source-of-record: robosimstudio/tasks/cable_route/suite.py + evaluator.py
+; upstream:         newton_tasks/sim/yam_cable_sim.py, at its defaults.
+;
+; WHAT MAKES THIS ONE INTERESTING. It is the first document about a CHAIN --
+; a 0.91 m rod of 28 capsules -- and the first whose start state is a robot
+; posture rather than an object pose. The second hand is closed on the cable
+; before the first step, and stays closed for the episode; without it the whole
+; rod follows the working hand around the peg instead of winding onto it.
+;
+; The reference ships NO success predicate for either cable variant -- a NaN
+; guard is its only assertion -- so both goals are designed. What is transcribed
+; is the scene, the physics and the script; what is committed to here is what
+; counts as done.
+; ---------------------------------------------------------------------------
+
+(define (problem WIND_THE_CABLE_AROUND_THE_FRONT_PEG)
+
+  (:suite cable_route)
+
+  (:language wind the cable around the front peg while the other hand anchors it)
+
+  ; The cell, the robot, the arrangement -- a named one, never a solver config
+  ; -- and the episode are the suite's; only what this variant changes is here.
+  (:staging
+    ; Fixed rather than aimed: both views look at the middle of the working
+    ; area, a constant of the bench.
+    (:cameras cable_overhead_corner@v1)
+    ; The script is 60 settle + ~790 steps; a graph blocks on every robot.* call
+    ; and needs several times that.
+    (:max-steps 5000)
+  )
+
+  ; `cable_rod` -- the reference's own 0.91 m rod with its anchor feature --
+  ; laid along the reference's line with the second hand on it. The type is the
+  ; placed record: `wrap_cable` is `cable_rod`'s declaration with the factory
+  ; that puts it there, minted in assets/layout.py.
+  (:objects
+    cable - wrap_cable
+  )
+
+  (:fixtures
+    ; Three pegs stand on the bench and the task uses one of them. The other two
+    ; are declared because they are THERE -- the rod can foul them, and a
+    ; document that named only the peg it wraps would describe a different
+    ; scene than the one that runs. Each type is `cable_peg` at one of the
+    ; reference's three posts; `peg0.axis` below is that declaration's.
+    peg0 - wrap_peg0
+    peg1 - wrap_peg1
+    peg2 - wrap_peg2
+  )
+
+  ; No regions. Everything this variant scores on is measured against the peg's
+  ; own declared axis or against the rod itself, which is why the same goal aimed
+  ; at a bollard, a spool or a doorknob needs no new numbers.
+
+  ; -------------------------------------------------------------------------
+  ; THE ANCHOR, and it is an init constraint rather than a goal.
+  ;
+  ; `cable.anchor` is an `anchor` feature on the rod: hold me at s = 0.6361 --
+  ; the reference's own y = 0.12, in the rod's own parameterisation, which is
+  ; the form that survives a table of a different height -- at a 10 mm finger
+  ; command, and never let go. The kind's contract says an anchor
+  ; "shapes the state an episode begins in and must be verified to have taken
+  ; hold before the episode counts as started", and `anchor-held` is that
+  ; verification -- a latch flag the entity publishes, because a kinematic
+  ; coupling written into a device array is not something a pose or a contact
+  ; can be asked about.
+  ;
+  ; ARRANGING it is the loader's, not this file's: the compiler owns the scene
+  ; lifecycle and the order is exact -- solve the support arm's full pose above
+  ; the grasp, chain a second solve down onto it, write the result into both
+  ; states AND the control targets, run FK, copy body_q across, then latch. Get
+  ; the order wrong and the cable starts somewhere subtly else; get the targets
+  ; wrong and the arm spends the settle climbing away from its own pinch,
+  ; sweeping the rod 150 mm across the table on the way out.
+  (:init
+    (anchor-held cable)
+  )
+
+  ; -------------------------------------------------------------------------
+  ; THREE CLAUSES, and NOTHING LATCHES.
+  ;
+  ; (winding-turns cable peg0.axis) >= 0.5
+  ;     Walk the chain; for each consecutive pair of segments within 0.10 m of
+  ;     the axis, accumulate the SIGNED angle their midpoints subtend about it.
+  ;     The magnitude of that sum is how many turns are actually on the peg -- a
+  ;     hank dumped beside it scores zero, a figure-eight cancels itself, and
+  ;     those two properties are what "wrapped" has to mean.
+  ;
+  ;     THE GATE CARRIES ITS CALIBRATION, and this is the one threshold in the
+  ;     repo that earned its number rather than being chosen: every wrap the
+  ;     shipped routine or graph produces retains 0.55-0.96 turns after release
+  ;     (run-to-run variance is real -- the runtime thread's timing changes the
+  ;     drag dynamics lap to lap), while every non-wrap outcome ever traced --
+  ;     drag-pasts, slipped grasps, a two-lap coil springing open -- measures
+  ;     0.25 or less. Half a turn sits in the middle of that valley: physically
+  ;     it means the rod is bent around the peg and staying there, which a
+  ;     drag-past cannot fake by a factor of three. The atom records the same
+  ;     two populations as data; see AtomCalibration on `winding_turns`.
+  ;
+  ;     Of the SCRIPT's 3 laps, not of its 2: friction takes some of every lap,
+  ;     and demanding the scripted number would measure slack, not wrapping.
+  ;
+  ; (tcp-distance cable) > 0.05
+  ;     Let go. Read against the NEAREST segment, because release is a claim
+  ;     about the whole rod: a hand off the middle but still closed on one end
+  ;     has not released. There is no jaw-stall signal to read here -- the hold
+  ;     is a kinematic latch and the fingers never carry the load -- which is
+  ;     why this is `tcp-distance` and not `gripped`.
+  ;
+  ; (speed cable) <= 0.05
+  ;     Still moving is not wound. The mean of the segment SPEEDS, not the speed
+  ;     of the mean: a rod mid-drag has segments going opposite ways and the
+  ;     centroid barely moves, so the vector average would call it at rest.
+  ;
+  ; NOTHING LATCHES, and that is the shipped reading rather than the obvious
+  ; one. A `once` here would score a wrap that sprang open two seconds later --
+  ; and springing open is precisely the failure the third lap was added to
+  ; prevent, so latching would hide the thing the task is measuring. The
+  ; evaluator this replaces says it in one line: "Neither condition latches: a
+  ; placement dragged off the mark or a wrap that unwinds after release is
+  ; scored where it *is*."
+  (:goal
+    (And
+      (>= (winding-turns cable peg0.axis) 0.5)
+      (> (tcp-distance cable) 0.05)
+      (<= (speed cable) 0.05)
+    )
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Progress toward the winding gate, clipped.
+  ;
+  ; NOT the satisfied share, which is what the other cable variant uses and what
+  ; a reader assumes. The shipped evaluator computes `clip(turns / gate)` and
+  ; falls back to 1.0 once all three flags hold -- which is the same number,
+  ; since all three holding requires turns >= gate and the clip is already 1.0
+  ; there. The special case was redundant; this is what it computed.
+  (:reward (progress (winding-turns cable peg0.axis) (:gate 0.5)))
+
+  ; -------------------------------------------------------------------------
+  ; Recorded every step, gating nothing.
+  ;
+  ; `grasped_ever` in the Python's metrics, restated: the hand was on the rod at
+  ; some point. It is what separates a grasp that slipped from one that never
+  ; happened, and the two look identical in a final-state reading.
+  (:observe
+    (once (<= (tcp-distance cable) 0.05))
+    (straightness cable)
+  )
+
+  ; -------------------------------------------------------------------------
+  (:artifacts
+    (:routine "routine:RoutineCableRoute")
+    (:graph gt "graphs/gt")
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Inputs to the ARTIFACT, not statements about the world. The keyframe tables
+  ; live with the routine; these are the numbers that pick which table and where
+  ; to aim it, and they are fenced off here because the moment routine
+  ; parameters mix with goal parameters the untyped side channel this port
+  ; exists to delete has been reinvented under a new name.
+  (:policy-params
+    (mode wrap)
+    ; Where the script reaches for the rod [m]. The reference's own bend, and a
+    ; coordinate rather than an arc length because that is what it is: an input
+    ; to a scripted table, not a statement about the world -- which is exactly
+    ; the line this section draws. The routine re-detects the nearest segment
+    ; live before it closes, so this aims the search rather than fixing the
+    ; grasp, and the ring's start angle is struck from it.
+    (grasp-y -0.18)
+    (routine-solves true)
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "newton_tasks/sim/yam_cable_sim.py at defaults")
+    (:note "28-capsule add_rod cable, SolverCoupledProxy(mjc+vbd), the reference's own
+            keyframe scripts. The reference ships no success condition -- the winding
+            measure and its gate are designed here, and the gate is calibrated into a
+            measured separation rather than chosen. The script runs 3 laps where the
+            reference scripts 2: one lap around a 13 mm peg has no capstan margin
+            against this rod's bend energy and springs back to a quarter turn within
+            two seconds of release.")
+  )
+)

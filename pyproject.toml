@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+# VABAR is a task collection for RoboSimStudio, not a fork of it: the six suites
+# under tasks/ load through the upstream library's own external task-root
+# mechanism, and the `vabar` package holds only what upstream does not ship
+# (the scripted groundtruth routines, a few robots, the CLI). Upstream is pinned
+# by commit below and installed unmodified.
+[project]
+name = "vabar"
+version = "1.0.0"
+description = "VABAR: a Variational Automation Benchmark for Agentic Robotics, on RoboSimStudio"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.12"
+keywords = ["robotics", "benchmark", "manipulation", "simulation", "newton", "agentic-robotics"]
+dependencies = [
+    # The simulator, benchmark tier, policy agent and studio. [gap] is the graph
+    # runtime every reference solution is written for; [curobo] the
+    # collision-aware planner those graphs move through.
+    "robosimstudio[gap,curobo]",
+    "trimesh",
+    # What the suites' graph nodes and the cable perception tools import beyond
+    # RoboSimStudio's own stack (rtree backs trimesh's proximity queries).
+    "scikit-image",
+    "opencv-python",
+    "pillow",
+    "matplotlib",
+    "rtree",
+]
+
+[project.urls]
+Homepage = "https://vabar-benchmark.github.io/"
+RoboSimStudio = "https://github.com/robosimstudio/robosimstudio"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["vabar"]
+
+# Every pin below is upstream's own at the RoboSimStudio commit named here, so
+# this environment resolves to exactly what that commit was tested with. One
+# stack serves all six suites.
+[tool.uv.sources]
+robosimstudio = { git = "https://github.com/KeplerC/robosimstudio.git", rev = "39b7a6e75ddfbd1f68ebb7242caf098804da6774" }
+ovrtx = { index = "nvidia" }
+graph-as-policy = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "06dd6193e13eab816123febef1369deda0849d91" }
+graph-as-policy-core = { git = "https://github.com/KeplerC/graph-as-policy.git", rev = "06dd6193e13eab816123febef1369deda0849d91", subdirectory = "gap-core" }
+nvidia-curobo = { git = "https://github.com/NVlabs/curobo.git", tag = "v0.8.0" }
+
+[[tool.uv.index]]
+name = "nvidia"
+url = "https://pypi.nvidia.com"
+explicit = true
+
+[dependency-groups]
+# The path-traced renderer, installed by default as upstream does; a GPU without
+# RT cores renders with the tiled tracer either way. UV_NO_GROUP=rtx leaves it out.
+rtx = ["robosimstudio[rtx]; sys_platform == 'linux' or sys_platform == 'win32'"]
+dev = ["pytest", "ruff==0.16.1"]
+
+[tool.uv]
+default-groups = ["rtx", "dev"]
+# Upstream's overrides: the graph runtime's own simulator stack is never imported.
+override-dependencies = [
+    "PyOpenGL>=3.1.7",
+    "libero; sys_platform == 'never'",
+    "robosuite; sys_platform == 'never'",
+    "gym; sys_platform == 'never'",
+    "bddl; sys_platform == 'never'",
+    "mujoco~=3.15.0",
+]
+
+# Skill registries a graph's subgraphs may name: the cable bundles shipped here,
+# then a clone of open-robot-skills beside this checkout. $GAP_SKILLS_PATH overrides.
+[tool.gap]
+registries = ["robot_skills", "../open-robot-skills"]
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["tasks", "robot_skills", "vabar/_upstream", "vabar/cable/curve_tools.py", "vabar/cable/trackdlo_skeleton.py", "isaaclab_arena"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

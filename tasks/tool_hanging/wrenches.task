@@ -1,0 +1,121 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED, over a ported scene. The branch this suite arrived on defined the
+; scene and the objects in a Python suite whose
+; evaluator returned failure unconditionally -- a scaffold, by its own label.
+; The scene is ported unchanged; the goal below is what the
+; scaffold was missing, written in the vocabulary the assetlib already had
+; waiting: `threaded`'s own provenance reads "designed here for the hanging
+; fixtures".
+;
+; WHAT "HUNG" MEANS, in four clauses per wrench, all four load-bearing:
+;
+;   (encloses ring.ring hook.shank)
+;       "Hanging on the hook" means the hook arm's centreline crosses the
+;       wrench ring's opening. It need not cross the ring's exact mathematical
+;       plane or pass through its centre: natural tilt and any offset are valid
+;       while the closest point on the finite hook centreline remains within
+;       the ring's inner radius. Hook thickness is not subtracted here.
+;       This is unfakeable by resting nearby -- contact cannot tell hanging
+;       from leaning, which is the reason this atom exists.
+;
+;   (>= (contact-force ring hook) 0.2)
+;       The load path: the hook bears the wrench. 0.2 N against a ~3 N tool
+;       weight: a floor, not a calibration. It is NOT a release test: a ring
+;       lowered onto the arm while still in the jaws reads well above 0.2 N,
+;       and the Level-1 routines met this clause with the gripper still shut.
+;
+;   (<= (speed ring) 0.05)
+;       At rest, not mid-swing through the goal geometry.
+;
+;   (> (hands-clear ring) R)
+;       Let go: no hand within the wrench's own radius of its origin (see
+;       tool_hanging.suite).
+;
+; All eight clauses must remain true continuously for two simulated seconds.
+; Grouped per wrench under one And each, so (fraction) pays half for one wrench
+; genuinely hung while the hold timer advances, and the do-nothing floor is zero.
+; ---------------------------------------------------------------------------
+
+(define (problem HANG_THE_TWO_WRENCHES)
+
+  (:suite tool_hanging)
+
+  (:language hang the dark 19 mm wrench on the left hook, then the medium-gray
+             17 mm wrench on the right hook)
+
+  (:staging
+    ; The cell, the arms, the arrangement and the rig are the suite's --
+    ; tool_hanging.suite -- and every variant inherits them. The budget is this
+    ; document's own.
+    (:physics tool_hanging_480hz@v1)
+    (:max-steps 2400)
+  )
+
+  (:objects
+    ring_spanner_19 - wrench_adjustable_150
+    ring_spanner_17 - wrench_adjustable_200
+  )
+
+  (:fixtures
+    ; The two hooks the rings go over, each typed by its station on the
+    ; wrenches' tighter row: hook 1 is the right hook, hook 2 the left. The
+    ; pegboard wall behind them is the suite's fixture -- tool_hanging.suite
+    ; -- and nothing scores against it.
+    wrench_hook_1 - pegboard_hook_wrench_right
+    wrench_hook_2 - pegboard_hook_wrench_left
+  )
+
+  ; No regions: both goals measure declared features against declared
+  ; features, which travel with their bodies.
+
+  ; No init constraint: both wrenches spawn flat on the table where the
+  ; assembly puts them, rings toward the board, nothing latched or pre-posed.
+  (:init)
+
+  (:goal
+    ; Both wrenches hung and let go, for two seconds: see tool_hanging.suite for the release clause.
+    (hold-for 2.0
+      (And
+        (And
+          (encloses ring_spanner_19.ring wrench_hook_2.shank)
+          (>= (contact-force ring_spanner_19 wrench_hook_2) 0.2)
+          (<= (speed ring_spanner_19) 0.05)
+          (> (hands-clear ring_spanner_19) 0.14)
+        )
+        (And
+          (encloses ring_spanner_17.ring wrench_hook_1.shank)
+          (>= (contact-force ring_spanner_17 wrench_hook_1) 0.2)
+          (<= (speed ring_spanner_17) 0.05)
+          (> (hands-clear ring_spanner_17) 0.17)
+        )
+      )
+    )
+  )
+
+
+  ; Recorded every step, gating nothing: the clearance is the margin the ring
+  ; has around the arm, and watching it shrink is how a near-miss reads.
+  (:observe
+    (encloses ring_spanner_19.ring wrench_hook_2.shank)
+    (encloses ring_spanner_17.ring wrench_hook_1.shank)
+  )
+
+  (:artifacts
+    (:routine "routine:HangWrenchRoutine")
+    (:tools   "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. Scene and objects ported from the
+              tool-hanging branch's Python suite at 3e20fc7, whose evaluator was a
+              scaffold stub. The goal is new, over features measured off the
+              vendored meshes -- tasks/tool_hanging/assets/records.py.")
+    (:note "The wrenches are the supplied 8-19 mm set's 19 and 17, thickened 1.35x
+            and 1.50x so the stamped rings survive convex decomposition, with the
+            source masses preserved through effective densities. Both hang on the
+            same 516-triangle hook mesh the scissors use, on a tighter row.")
+  )
+)

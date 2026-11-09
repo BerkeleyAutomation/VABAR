@@ -1,0 +1,550 @@
+{
+  "method": "CoACD 1.0.11 approximate convex decomposition",
+  "source": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder.stl",
+  "source_vertices": 884,
+  "source_triangles": 1764,
+  "source_watertight": true,
+  "parameters": {
+    "threshold": 0.025,
+    "max_convex_hull": 32,
+    "preprocess_mode": "on",
+    "preprocess_resolution": 80,
+    "resolution": 2000,
+    "mcts_nodes": 20,
+    "mcts_iterations": 120,
+    "mcts_max_depth": 3,
+    "merge": false,
+    "decimate": true,
+    "max_ch_vertex": 64,
+    "seed": 0
+  },
+  "hulls": [
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_00.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          20.914058305190792,
+          12.467273056710837,
+          -0.3186310841597333
+        ],
+        [
+          45.496137250815536,
+          24.532919610355748,
+          28.36779734848369
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_01.obj",
+      "vertices": 57,
+      "triangles": 110,
+      "bounds_mm": [
+        [
+          20.9164511388376,
+          -0.5323916283050494,
+          -0.23337137253975015
+        ],
+        [
+          45.35650755459528,
+          3.5325246069260174,
+          28.530424578122165
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_02.obj",
+      "vertices": 44,
+      "triangles": 84,
+      "bounds_mm": [
+        [
+          20.914058305190792,
+          101.46729085475954,
+          0.46372966641979474
+        ],
+        [
+          44.67017542188887,
+          101.53390447947731,
+          27.53628419169013
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_03.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          -0.5304129016858496,
+          -0.5327057454633177,
+          -0.5297316726259851
+        ],
+        [
+          20.914058305190792,
+          5.213051403661666,
+          28.532336997291623
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_04.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          -0.5308933161632012,
+          91.25600491904697,
+          -0.5328139472414932
+        ],
+        [
+          9.036171818373305,
+          122.3816985957983,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_05.obj",
+      "vertices": 58,
+      "triangles": 112,
+      "bounds_mm": [
+        [
+          9.037109550478135,
+          100.24696186268193,
+          -0.5328151020839869
+        ],
+        [
+          20.914058305190792,
+          121.71290159151522,
+          27.557943262658227
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_06.obj",
+      "vertices": 61,
+      "triangles": 118,
+      "bounds_mm": [
+        [
+          20.91646615179002,
+          101.53390447947731,
+          -0.5082746990942724
+        ],
+        [
+          45.46371158327929,
+          121.5329216985674,
+          28.523922814883008
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_07.obj",
+      "vertices": 59,
+      "triangles": 114,
+      "bounds_mm": [
+        [
+          10.824778014403137,
+          33.46290087032685,
+          -0.5328127923989996
+        ],
+        [
+          20.914058305190792,
+          56.53726364996328,
+          26.62640342327859
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_08.obj",
+      "vertices": 55,
+      "triangles": 106,
+      "bounds_mm": [
+        [
+          8.78225659929808,
+          130.21619626630854,
+          -0.5328139472414932
+        ],
+        [
+          20.914058305190792,
+          142.78846760254055,
+          27.698927589123514
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_09.obj",
+      "vertices": 58,
+      "triangles": 112,
+      "bounds_mm": [
+        [
+          8.78225659929808,
+          151.24741170620837,
+          -0.5319720670636343
+        ],
+        [
+          20.914058305190792,
+          155.53280123158402,
+          27.71255126602091
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_10.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          20.914058305190792,
+          130.4672775019044,
+          -0.4665756463341495
+        ],
+        [
+          45.46492185821262,
+          142.5329240555493,
+          28.36779734848369
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_11.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          20.914058305190792,
+          151.46806515178196,
+          -0.404232629157832
+        ],
+        [
+          45.03018371116923,
+          155.53267188922473,
+          28.530406100642267
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_12.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          20.91646384210503,
+          65.46830967471351,
+          -0.49547211520985
+        ],
+        [
+          45.46368848642942,
+          86.532917962738,
+          28.36779734848369
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_13.obj",
+      "vertices": 58,
+      "triangles": 112,
+      "bounds_mm": [
+        [
+          10.824778014403137,
+          65.4628703665685,
+          -0.5328151020839869
+        ],
+        [
+          20.914058305190792,
+          86.9144600225759,
+          26.627301890738636
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_14.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          20.914058305190792,
+          33.46728003306271,
+          -0.49449742814522324
+        ],
+        [
+          45.464875664512874,
+          56.53292144218722,
+          28.513614690784834
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_15.obj",
+      "vertices": 49,
+      "triangles": 94,
+      "bounds_mm": [
+        [
+          -0.5327456835229896,
+          122.3816985957983,
+          -0.5328139472414932
+        ],
+        [
+          7.5157212042076935,
+          125.8826451895784,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_16.obj",
+      "vertices": 62,
+      "triangles": 120,
+      "bounds_mm": [
+        [
+          -0.5320135133820258,
+          29.502303867230694,
+          -0.5328139472414932
+        ],
+        [
+          7.591268690456218,
+          60.5728746020759,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_17.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          -0.5318356676380063,
+          125.8826451895784,
+          -0.5328139472414932
+        ],
+        [
+          8.782255444455586,
+          135.93604798861634,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_18.obj",
+      "vertices": 53,
+      "triangles": 102,
+      "bounds_mm": [
+        [
+          11.154315784488972,
+          12.466764926013639,
+          -0.5328139472414932
+        ],
+        [
+          20.91310267302731,
+          24.534610299766427,
+          26.48081589463368
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_19.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          -0.5310850200171444,
+          146.44644505923497,
+          -0.5297720921132623
+        ],
+        [
+          8.781345428570603,
+          155.53174801522982,
+          28.52970511124863
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_20.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          -0.5327872578527604,
+          60.57287575691839,
+          -0.5328139472414932
+        ],
+        [
+          7.589680782027472,
+          91.24991312489306,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_21.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          -0.5325793862039063,
+          5.215314894949188,
+          -0.5328139472414932
+        ],
+        [
+          8.45429403437356,
+          16.805286444836383,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_22.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          7.5912698452987115,
+          64.6797231682508,
+          -0.5328139472414932
+        ],
+        [
+          10.824778014403137,
+          88.9446200036291,
+          28.276977070256862
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_23.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          7.5912698452987115,
+          32.675958859575076,
+          -0.5328139472414932
+        ],
+        [
+          10.824778014403137,
+          57.316495932227554,
+          28.276956283091977
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_24.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          8.45429403437356,
+          12.125116322697068,
+          -0.5328127923989996
+        ],
+        [
+          11.153359574904243,
+          24.867024782503904,
+          27.886881669489867
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_25.obj",
+      "vertices": 63,
+      "triangles": 122,
+      "bounds_mm": [
+        [
+          -0.5324939278593774,
+          138.66199364302884,
+          -0.5328139472414932
+        ],
+        [
+          8.781345428570603,
+          146.44492528651335,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_26.obj",
+      "vertices": 64,
+      "triangles": 124,
+      "bounds_mm": [
+        [
+          -0.5328126643876203,
+          19.17645062709471,
+          -0.5328139472414932
+        ],
+        [
+          8.45429403437356,
+          29.502303867230694,
+          28.532813947241493
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_27.obj",
+      "vertices": 36,
+      "triangles": 68,
+      "bounds_mm": [
+        [
+          3.410387791384437,
+          16.805522032705085,
+          -0.5328127923989996
+        ],
+        [
+          8.45429403437356,
+          19.176219658595983,
+          4.128853288464825
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_28.obj",
+      "vertices": 51,
+      "triangles": 98,
+      "bounds_mm": [
+        [
+          3.5210771347142327,
+          135.93604798861634,
+          12.92049827580854
+        ],
+        [
+          8.782255444455586,
+          138.66199364302884,
+          28.531286090622416
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_29.obj",
+      "vertices": 33,
+      "triangles": 62,
+      "bounds_mm": [
+        [
+          3.5215910396238996,
+          135.93604798861634,
+          -0.5328139472414932
+        ],
+        [
+          8.78174153954592,
+          138.66199364302884,
+          4.047808751946604
+        ]
+      ]
+    },
+    {
+      "path": "tasks/tool_hanging/assets/screwdriver_holders/screwdriver_holder_collision_coacd/hull_30.obj",
+      "vertices": 56,
+      "triangles": 108,
+      "bounds_mm": [
+        [
+          3.40993740281192,
+          16.805522032705085,
+          12.798208539630195
+        ],
+        [
+          8.45380091662878,
+          19.176219658595983,
+          28.532813947241493
+        ]
+      ]
+    }
+  ]
+}

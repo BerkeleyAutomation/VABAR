@@ -1,0 +1,21 @@
+<mujoco model="tactical_flashlight">
+  <asset>
+    <texture name="tactical_flashlight_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="tactical_flashlight_mat" texture="tactical_flashlight_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="tactical_flashlight_mesh" file="meshes/tactical_flashlight.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="tactical_flashlight_mesh"
+              material="tactical_flashlight_mat" mass="0.122178" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.013856" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.013856" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.061235 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

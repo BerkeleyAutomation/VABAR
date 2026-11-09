@@ -1,0 +1,70 @@
+<!-- Unwindable variant of wire_spool: the same 30 mm spool, but with its wire as
+     a simulated cable instead of geometry fused into the mesh. It tracks
+     wire_spool's mesh, so it inherits the x2 thickening (30 x 30 x 14 mm now,
+     footprint unchanged) that gives a parallel-jaw gripper room beside it. The
+     cable's anchor below is a rim radius, so the thickening left it alone.
+
+     Author / source: see the '### wire_spool' section of the repo's root
+     ATTRIBUTION.md — the spool mesh is that same CAD import.
+
+     Unlike every other asset in this root this is NOT a single rigid body. The
+     spool is body "object" as usual, and a <composite type="cable"> hangs off
+     it, adding ~20 bodies and 19 hinge joints at compile time.
+
+     That needs no changes to tool_sort_env, which was worth checking rather than
+     assuming, since boxing each capsule would turn a wire into a chain of
+     bricks. Both places that walk a tool's geometry already exclude the cable,
+     each for two independent reasons:
+
+       * _boxify_tool_colliders retypes only mjGEOM_MESH geoms whose body is the
+         tool's *root* body. The capsules are neither meshes nor in that body.
+       * compute_obb (behind grasp_from_obb) collects only geoms whose
+         geom_bodyid is the body being boxed, so it measures the spool alone and
+         a grasp still aims at the spool, not the wire.
+
+     The wire is a fixed length (60 mm) anchored at the spool's rim, not a coil
+     that pays out: pulling it drags and spins the spool, which is what happens
+     to an unheld spool on a bench. Modelling true payout means winding the cable
+     as a helix and unwrapping it through contact, which is a far heavier
+     contact problem than this. -->
+<mujoco model="wire_spool_cable">
+  <asset>
+    <texture name="wire_spool_cable_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="wire_spool_cable_mat" texture="wire_spool_cable_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="wire_spool_cable_mesh" file="meshes/wire_spool_cable.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <!-- 5.46 g: the spool alone. The rigid wire_spool masses 6.70 g for
+             spool *and* wire together; here the wire carries its own share
+             below, and the two still sum to the same 6.70 g. Both figures
+             doubled when the spool was thickened x2 for grasp clearance; the
+             cable below did not, since it models a real 60 mm wire whose size
+             the thickening never touched. -->
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="wire_spool_cable_mesh"
+              material="wire_spool_cable_mat" mass="0.005463" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+
+        <!-- The wire: 60 mm anchored at the rim (r = 15 mm), laid along +x.
+             62 mg per capsule x 20 = 1.24 g, which is the 0.19 cm3 of zirconium
+             the CAD models. Getting that mass right is not just bookkeeping —
+             at the 10 mg placeholder this first had, the mass ratio to the spool
+             was extreme enough to blow up the solver under a pull. The armature
+             is what keeps a chain of sub-gram bodies stable at a 2 ms step. -->
+        <composite type="cable" curve="s" count="20 1 1" size="0.06"
+                   offset="0.015 0 0" initial="none" prefix="wire">
+          <joint kind="main" damping="1e-4" armature="1e-5"/>
+          <geom type="capsule" size="0.0004" rgba="0.72 0.73 0.75 1" mass="6.2e-5"
+                group="0" condim="4" friction="1.0 0.005 0.0001"
+                solimp="0.95 0.99 0.001" solref="0.005 1"/>
+        </composite>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.007080" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.007080" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.015000 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

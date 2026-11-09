@@ -1,0 +1,21 @@
+<mujoco model="cyanoacrylate_glue">
+  <asset>
+    <texture name="cyanoacrylate_glue_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="cyanoacrylate_glue_mat" texture="cyanoacrylate_glue_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="cyanoacrylate_glue_mesh" file="meshes/cyanoacrylate_glue.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="cyanoacrylate_glue_mesh"
+              material="cyanoacrylate_glue_mat" mass="0.030438" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.015326" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.015326" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.047956 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

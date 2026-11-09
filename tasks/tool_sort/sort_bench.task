@@ -1,0 +1,151 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; RECONSTRUCTED -- not the upstream file.
+;
+; provenance.tier: reconstructed
+; source-of-record: robosimstudio/tasks/tool_sort/suite.py
+; upstream:         VAB-industrial/bddl_files/tool_sort/sort_bench_consumables_into_bins.bddl
+;
+; The upstream .bddl files are NOT vendored here -- assets/PROVENANCE.md is
+; explicit that the VAB-industrial BDDL content is transcribed into the suite
+; as region literals and goal pairs, not copied as files. This reverses that
+; transcription: every number below is read back out of the suite, which took
+; them from the original to the digit.
+;
+; READ THE CIRCULARITY BEFORE TRUSTING A ROUND TRIP. A parser checked against
+; this file is checked against our own transcription, not against upstream.
+;
+; The set a baseline is meant to fail. Three of its four types are out of
+; reach of a top-down parallel jaw by construction: the tape measure is
+; 0.161 m across its short axis against an 0.08 m span, the adjustable
+; wrench is longer than a compartment's interior diagonal, and the
+; insulating tape is 13 mm thick. That is the file's point, not a defect
+; in it -- a benchmark needs tasks its baseline scores poorly on.
+; -------------------------------------------------------------------------
+
+(define (problem SORT_BENCH_CONSUMABLES_INTO_BINS)
+
+  (:language sort the eight bench consumables out of bin1 into the
+             compartment of bin2 whose label names each one)
+
+  ; What BDDL cannot say: which cell, which robot, which export. The profile
+  ; supplies the first two for every VAB-industrial problem; the export is
+  ; this variant's own, and names the dumped scene its poses come from.
+  (:staging
+    (:profile vab_tool_sort@v2)
+    ; The workcell wearing the materials its MJCF states -- see assets/look.py.
+    (:export vab_tool_sort/sort_bench
+      (:entity tool_sort_workcell))
+    ; 2400 per goal x 8 goals.
+    ;
+    ; 2400 is sized for reference-parity motion, not for the plan-mode
+    ; lunge: the benchmark's own scripted pick is ~8 waypoints
+    ; held 45-80 control steps each at 20 Hz, about 24 s of simulated time,
+    ; which at this suite's 50 Hz is ~1200 steps before any margin. A ceiling
+    ; that punished moving the way the benchmark moves would be measuring the
+    ; ceiling. A container goal adds a flat 9000, measured rather than scaled:
+    ; posting a tool through a hole is a much longer sequence than releasing
+    ; it over an open compartment, and the goal is retried once before being
+    ; given up, so the budget has to cover two passes.
+    (:max-steps 19200)
+  )
+
+  ; Fixtures carry the regions; the tools are what moves.
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+
+  (:objects
+    adjustable_wrench_0 - adjustable_wrench
+    adjustable_wrench_1 - adjustable_wrench
+    slotted_screwdriver_0 - slotted_screwdriver
+    slotted_screwdriver_1 - slotted_screwdriver
+    tape_measure_0 - tape_measure
+    tape_measure_1 - tape_measure
+    insulating_tape_0 - insulating_tape
+    insulating_tape_1 - insulating_tape
+    distractor_phillips_screwdriver_0 - phillips_screwdriver
+    distractor_syringe_0 - syringe
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as
+  ; (x0 y0 x1 y1). bin2's compartments are the quadrants of its floor.
+  ;
+  ; The height window is BDDL's own _eval_in: from the frame origin up
+  ; 0.15 m. It starts at the origin rather than below it, which is what makes
+  ; an object held ABOVE a bin fail the test and one resting on its floor
+  ; pass -- and what lets a tool still between the fingers score, 15 cm up.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_adjustable_wrench_region
+        (:target bin2)
+        (:ranges ((-0.195 -0.245 0.0 0.0)))
+    )
+    (bin2_slotted_screwdriver_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (bin2_tape_measure_region
+        (:target bin2)
+        (:ranges ((-0.195 0.0 0.0 0.245)))
+    )
+    (bin2_insulating_tape_region
+        (:target bin2)
+        (:ranges ((0.0 0.0 0.195 0.245)))
+    )
+  )
+
+  ; Everything starts in the cluttered pile -- verified after settling,
+  ; not assumed: a tool placed in bin1 can bounce out of it while the
+  ; scene comes to rest, and a task that assumed otherwise would run an
+  ; episode whose starting state it has misdescribed.
+  (:init
+    (In adjustable_wrench_0 bin1_region)
+    (In adjustable_wrench_1 bin1_region)
+    (In slotted_screwdriver_0 bin1_region)
+    (In slotted_screwdriver_1 bin1_region)
+    (In tape_measure_0 bin1_region)
+    (In tape_measure_1 bin1_region)
+    (In insulating_tape_0 bin1_region)
+    (In insulating_tape_1 bin1_region)
+    (In distractor_phillips_screwdriver_0 bin1_region)
+    (In distractor_syringe_0 bin1_region)
+  )
+
+  ; NOTE ON SEMANTICS, for whoever binds these predicates: BDDL's In is a box
+  ; test that a CARRIED object satisfies. A reproduction-tier import must
+  ; bind it to the weak box test and not to the stronger contact-and-at-rest
+  ; predicate this stack also has, because comparability with the source
+  ; benchmark outranks rigor. Rebinding it is a re-labelling, not a bug fix.
+  (:goal
+    (And
+      (In adjustable_wrench_0 bin2_adjustable_wrench_region)
+      (In adjustable_wrench_1 bin2_adjustable_wrench_region)
+      (In slotted_screwdriver_0 bin2_slotted_screwdriver_region)
+      (In slotted_screwdriver_1 bin2_slotted_screwdriver_region)
+      (In tape_measure_0 bin2_tape_measure_region)
+      (In tape_measure_1 bin2_tape_measure_region)
+      (In insulating_tape_0 bin2_insulating_tape_region)
+      (In insulating_tape_1 bin2_insulating_tape_region)
+    )
+  )
+
+  ; A solution is a thing that RUNS, so it stays code and is referenced.
+  (:artifacts
+    (:routine "routine:RoutineToolSort")
+    (:tools   "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial ToolSortPickPlace,
+              robosuite 1.4.0, MuJoCo 3.3.3, seed 0")
+    (:upstream-file "sort_bench_consumables_into_bins.bddl")
+  )
+)

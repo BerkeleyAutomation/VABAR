@@ -1,0 +1,467 @@
+#usda 1.0
+(
+    defaultPrim = "i2rt_yam"
+)
+
+def Xform "i2rt_yam" (
+    prepend payload = @i2rt_yam_default.usda@
+)
+{
+    def Scope "__RenderPrototypes"
+    {
+        class "p_d4137940a806b1b5"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2>
+            )
+            {
+            }
+        }
+
+        class "p_08e078a156d9da32"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__2>
+            )
+            {
+            }
+        }
+
+        class "p_d753de43455b3871"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__3>
+            )
+            {
+            }
+        }
+
+        class "p_c82f66b7f5179e75"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__4>
+            )
+            {
+            }
+        }
+
+        class "p_ae71c4b6f204e5e2"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__5>
+            )
+            {
+            }
+        }
+
+        class "p_505be545273dd2b1"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__6>
+            )
+            {
+            }
+        }
+
+        class "p_3608cb3109f682ac"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__7>
+            )
+            {
+            }
+        }
+
+        class "p_248c7eb8b4d768d8"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__8>
+            )
+            {
+            }
+        }
+
+        class "p_c7aa39c5791940a3"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__9>
+            )
+            {
+            }
+        }
+
+        class "p_44f5fd741affaedd"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__10>
+            )
+            {
+            }
+        }
+
+        class "p_16b125954fd174f7"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__11>
+            )
+            {
+            }
+        }
+
+        class "p_0457a177dc364587"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__12>
+            )
+            {
+            }
+        }
+
+        class "p_c6109feeacfd9ae3"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__13>
+            )
+            {
+            }
+        }
+
+        class "p_0f18849c3f36d739"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__14>
+            )
+            {
+            }
+        }
+
+        class "p_c334daeb44f0c4ff"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__15>
+            )
+            {
+            }
+        }
+
+        class "p_622544c537eab347"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__16>
+            )
+            {
+            }
+        }
+
+        class "p_5ca4d09ed4e4530d"
+        {
+            def Mesh "mesh" (
+                prepend references = @i2rt_yam/Payload/GeometryLibrary.usdc@</Geometry/model2__17>
+            )
+            {
+            }
+        }
+    }
+
+    over "Geometry"
+    {
+        over "arm"
+        {
+            def Xform "model2__render_instance" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                instanceable = true
+                prepend references = </i2rt_yam/__RenderPrototypes/p_d4137940a806b1b5>
+            )
+            {
+                rel material:binding = </i2rt_yam/Materials/black>
+                matrix4d xformOp:transform = ( (-3.422854177870249e-8, 0.9999999999999993, 0, 0), (-0.9999999999999993, -3.422854177870249e-8, 0, 0), (0, 0, 1, 0), (0, 0, -0.0006, 1) )
+                uniform token[] xformOpOrder = ["xformOp:transform"]
+            }
+
+            over "model2"
+            {
+                token visibility = "invisible"
+            }
+
+            over "link_1"
+            {
+                def Xform "model2__2__render_instance" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                    instanceable = true
+                    prepend references = </i2rt_yam/__RenderPrototypes/p_08e078a156d9da32>
+                )
+                {
+                    rel material:binding = </i2rt_yam/Materials/black>
+                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, 1, 0, 0), (0, 0, 1, 0), (5.26159e-7, 2.34355e-7, -0.0632, 1) )
+                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                }
+
+                over "model2__2"
+                {
+                    token visibility = "invisible"
+                }
+
+                over "link_2"
+                {
+                    def Xform "model2__3__render_instance" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                        instanceable = true
+                        prepend references = </i2rt_yam/__RenderPrototypes/p_d753de43455b3871>
+                    )
+                    {
+                        rel material:binding = </i2rt_yam/Materials/black>
+                        matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.0199992, -0.1041, -0.0000244738, 1) )
+                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                    }
+
+                    over "model2__3"
+                    {
+                        token visibility = "invisible"
+                    }
+
+                    def Xform "model2__4__render_instance" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                        instanceable = true
+                        prepend references = </i2rt_yam/__RenderPrototypes/p_c82f66b7f5179e75>
+                    )
+                    {
+                        rel material:binding = </i2rt_yam/Materials/black>
+                        matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.0199992, -0.1041, -0.0000244738, 1) )
+                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                    }
+
+                    over "model2__4"
+                    {
+                        token visibility = "invisible"
+                    }
+
+                    def Xform "model2__5__render_instance" (
+                        prepend apiSchemas = ["MaterialBindingAPI"]
+                        instanceable = true
+                        prepend references = </i2rt_yam/__RenderPrototypes/p_ae71c4b6f204e5e2>
+                    )
+                    {
+                        rel material:binding = </i2rt_yam/Materials/white>
+                        matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.0199992, -0.1041, -0.0000244738, 1) )
+                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                    }
+
+                    over "model2__5"
+                    {
+                        token visibility = "invisible"
+                    }
+
+                    over "link_3"
+                    {
+                        def Xform "model2__6__render_instance" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            instanceable = true
+                            prepend references = </i2rt_yam/__RenderPrototypes/p_505be545273dd2b1>
+                        )
+                        {
+                            rel material:binding = </i2rt_yam/Materials/black>
+                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, -1.0000000000000002, 0), (1.0000000000000002, 0, 2.220446049250313e-16, 0), (2.220446049250313e-16, -1.0000000000000002, 0, 0), (-0.244001, 0.104101, 0.0000244738, 1) )
+                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                        }
+
+                        over "model2__6"
+                        {
+                            token visibility = "invisible"
+                        }
+
+                        def Xform "model2__7__render_instance" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            instanceable = true
+                            prepend references = </i2rt_yam/__RenderPrototypes/p_3608cb3109f682ac>
+                        )
+                        {
+                            rel material:binding = </i2rt_yam/Materials/black>
+                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, -1.0000000000000002, 0), (1.0000000000000002, 0, 2.220446049250313e-16, 0), (2.220446049250313e-16, -1.0000000000000002, 0, 0), (-0.244001, 0.104101, 0.0000244738, 1) )
+                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                        }
+
+                        over "model2__7"
+                        {
+                            token visibility = "invisible"
+                        }
+
+                        def Xform "model2__8__render_instance" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            instanceable = true
+                            prepend references = </i2rt_yam/__RenderPrototypes/p_248c7eb8b4d768d8>
+                        )
+                        {
+                            rel material:binding = </i2rt_yam/Materials/white>
+                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, -1.0000000000000002, 0), (1.0000000000000002, 0, 2.220446049250313e-16, 0), (2.220446049250313e-16, -1.0000000000000002, 0, 0), (-0.244001, 0.104101, 0.0000244738, 1) )
+                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                        }
+
+                        over "model2__8"
+                        {
+                            token visibility = "invisible"
+                        }
+
+                        def Xform "model2__9__render_instance" (
+                            prepend apiSchemas = ["MaterialBindingAPI"]
+                            instanceable = true
+                            prepend references = </i2rt_yam/__RenderPrototypes/p_c7aa39c5791940a3>
+                        )
+                        {
+                            rel material:binding = </i2rt_yam/Materials/black>
+                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, -1.0000000000000002, 0), (1.0000000000000002, 0, 2.220446049250313e-16, 0), (2.220446049250313e-16, -1.0000000000000002, 0, 0), (-0.244001, 0.104101, 0.0000244738, 1) )
+                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                        }
+
+                        over "model2__9"
+                        {
+                            token visibility = "invisible"
+                        }
+
+                        over "link_4"
+                        {
+                            def Xform "model2__10__render_instance" (
+                                prepend apiSchemas = ["MaterialBindingAPI"]
+                                instanceable = true
+                                prepend references = </i2rt_yam/__RenderPrototypes/p_44f5fd741affaedd>
+                            )
+                            {
+                                rel material:binding = </i2rt_yam/Materials/black>
+                                matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, -1.0000000000000002, 0), (1.0000000000000002, 0, 2.220446049250313e-16, 0), (2.220446049250313e-16, -1.0000000000000002, 0, 0), (0.00100023, 0.164101, 0.0000244738, 1) )
+                                uniform token[] xformOpOrder = ["xformOp:transform"]
+                            }
+
+                            over "model2__10"
+                            {
+                                token visibility = "invisible"
+                            }
+
+                            over "link_5"
+                            {
+                                def Xform "model2__11__render_instance" (
+                                    prepend apiSchemas = ["MaterialBindingAPI"]
+                                    instanceable = true
+                                    prepend references = </i2rt_yam/__RenderPrototypes/p_16b125954fd174f7>
+                                )
+                                {
+                                    rel material:binding = </i2rt_yam/Materials/black>
+                                    matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -0.9999999999964793, 0.000002653579940345431, 0), (0, -0.000002653579940345431, -0.9999999999964793, 0), (0, -0.0749971, 0.203601, 1) )
+                                    uniform token[] xformOpOrder = ["xformOp:transform"]
+                                }
+
+                                over "model2__11"
+                                {
+                                    token visibility = "invisible"
+                                }
+
+                                over "link_6"
+                                {
+                                    def Xform "model2__12__render_instance" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                        instanceable = true
+                                        prepend references = </i2rt_yam/__RenderPrototypes/p_0457a177dc364587>
+                                    )
+                                    {
+                                        rel material:binding = </i2rt_yam/Materials/black>
+                                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0, -0.164101, -0.110597, 1) )
+                                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                                    }
+
+                                    over "model2__12"
+                                    {
+                                        token visibility = "invisible"
+                                    }
+
+                                    def Xform "model2__13__render_instance" (
+                                        prepend apiSchemas = ["MaterialBindingAPI"]
+                                        instanceable = true
+                                        prepend references = </i2rt_yam/__RenderPrototypes/p_c6109feeacfd9ae3>
+                                    )
+                                    {
+                                        rel material:binding = </i2rt_yam/Materials/black>
+                                        matrix4d xformOp:transform = ( (1, 0, 0, 0), (0, -3.42285420007471e-8, -0.9999999999999993, 0), (0, 0.9999999999999993, -3.42285420007471e-8, 0), (0, -0.164101, -0.110597, 1) )
+                                        uniform token[] xformOpOrder = ["xformOp:transform"]
+                                    }
+
+                                    over "model2__13"
+                                    {
+                                        token visibility = "invisible"
+                                    }
+
+                                    over "link_left_finger"
+                                    {
+                                        def Xform "model2__14__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </i2rt_yam/__RenderPrototypes/p_0f18849c3f36d739>
+                                        )
+                                        {
+                                            rel material:binding = </i2rt_yam/Materials/black>
+                                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.171097, -0.203301, 0.037, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "model2__14"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "model2__15__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </i2rt_yam/__RenderPrototypes/p_c334daeb44f0c4ff>
+                                        )
+                                        {
+                                            rel material:binding = </i2rt_yam/Materials/black>
+                                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.171097, -0.203301, 0.037, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "model2__15"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+                                    }
+
+                                    over "link_right_finger"
+                                    {
+                                        def Xform "model2__16__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </i2rt_yam/__RenderPrototypes/p_622544c537eab347>
+                                        )
+                                        {
+                                            rel material:binding = </i2rt_yam/Materials/black>
+                                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.171097, -0.124901, -0.037, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "model2__16"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+
+                                        def Xform "model2__17__render_instance" (
+                                            prepend apiSchemas = ["MaterialBindingAPI"]
+                                            instanceable = true
+                                            prepend references = </i2rt_yam/__RenderPrototypes/p_5ca4d09ed4e4530d>
+                                        )
+                                        {
+                                            rel material:binding = </i2rt_yam/Materials/black>
+                                            matrix4d xformOp:transform = ( (0, -2.220446049250313e-16, 1.0000000000000002, 0), (1.0000000000000002, 0, -2.220446049250313e-16, 0), (-2.220446049250313e-16, 1.0000000000000002, 0, 0), (0.171097, -0.124901, -0.037, 1) )
+                                            uniform token[] xformOpOrder = ["xformOp:transform"]
+                                        }
+
+                                        over "model2__17"
+                                        {
+                                            token visibility = "invisible"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

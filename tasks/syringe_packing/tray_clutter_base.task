@@ -1,0 +1,105 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; A SUPERSET BASE. Not a problem anybody measures: a model for a wave to build.
+;
+; WHAT IT IS FOR. A wave is W worlds of ONE model, so the 30 documents of this
+; tier -- which differ in how many syringes are racked, where they start and
+; which slice of the sharps box counts as in -- were 30 models and 30
+; processes. Every one of their syringe names is a subset of the 8 below, and
+; nothing else they differ in is built into a model: a start layout is written
+; per world at reset, a region is geometry resolved per document, and a step
+; budget is per world. So they can all run as worlds of this, each activating
+; its own syringes and floating the rest six metres up.
+;
+; WHY A NEW DOCUMENT rather than pointing the tier at its richest instance. The
+; union needs bigger constraint buffers -- an eight-syringe model demands njmax
+; ~3209 against the 1024 the shipped arrangement gives, and MuJoCo-Warp answers
+; the overflow by printing and dropping rows. This states
+; (:physics vab_sharps_union@v1), which the suite's profile now gives the 30
+; instances as well, so a wave and a serial run solve on the same buffers.
+;
+; THE GOAL IS THE UNION'S, and it is masked per episode: an instance running
+; four syringes is scored on four clauses, not four of 8
+; (robosimstudio_bench.goals.goal.mask_condition). The start poses are one
+; instance's and are overwritten per world at reset, so which one is arbitrary
+; -- it is the pose a parked body is measured from and nothing else.
+; ---------------------------------------------------------------------------
+
+(define (problem TRAY_CLUTTER_BASE)
+  (:domain robosuite)
+
+  (:language pick up every syringe from the cluttered instrument tray, one at a
+             time, and drop it through the hole in the top of the yellow sharps
+             disposal box, until the tray is empty)
+
+  (:staging
+    (:profile sharps_vab_industrial@v1)
+    (:export vab_tool_sort/syringe (:strip-free-bodies true))
+    ; The union's buffers. See the header.
+    (:physics vab_sharps_union@v1)
+    (:start-poses poses/tray_clutter_t01.json)
+    (:max-steps 91200)
+  )
+
+  (:fixtures
+    bin1 - robosuite_bin
+    bin2 - robosuite_bin
+    syringe_box - sharps_box
+  )
+
+  (:objects
+    syringe_0 syringe_pack_0 syringe_pack_1 syringe_pack_2 syringe_pack_3 syringe_pack_4 syringe_pack_5 syringe_pack_6 - syringe
+  )
+
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_syringe_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (syringe_box_region
+        (:target syringe_box)
+        (:ranges ((-0.073628 -0.057007 0.015372 0.108993)))
+    )
+  )
+
+  (:init)
+
+  (:goal
+    (and
+      (In syringe_0 syringe_box_region)
+      (In syringe_pack_0 syringe_box_region)
+      (In syringe_pack_1 syringe_box_region)
+      (In syringe_pack_2 syringe_box_region)
+      (In syringe_pack_3 syringe_box_region)
+      (In syringe_pack_4 syringe_box_region)
+      (In syringe_pack_5 syringe_box_region)
+      (In syringe_pack_6 syringe_box_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineSharpsDisposal")
+    (:tools   "tools:register_syringe_packing_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus over the AUTOLab-GaP-NVIDIA-Collaboration/
+              VAB-industrial ToolSortPickPlace `syringe` export (robosuite 1.4.0,
+              MuJoCo 3.3.3, seed 0). The goal and regions restate
+              tray_pair's; the clutter restates the
+              scale of VAB-industrial's own put_ten_syringes_in_the_sharps_box
+              without its all-ten goal.")
+    (:note "Level 2 of the packing work: tray_pair was
+            level 0 (one spare), tray_pair_both level 1
+            (both asked for). This document keeps level 0's single-syringe
+            goal and instead widens the scene -- 5-8 syringes per trial,
+            vabar/scripts/make_tray_clutter_trials.py.")
+  )
+)

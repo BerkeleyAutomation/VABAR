@@ -1,0 +1,80 @@
+#usda 1.0
+(
+    "Geometry measured from AUTOLab 34c6f8d stored screwdriver_box.stl, not the older generator script. Eleven solid boxes; redundant coplanar floor triangles omitted. Source SHA256 e9995b11b0e4cc80737f2371d3160e7f70e49f3c7bfd7dcc5a83e42bd44598e6"
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @box.usda@</Asset>
+)
+{
+    over "part_00"
+    {
+        float3 xformOp:scale = (0.065, 0.099999994, 0.0056000003)
+        double3 xformOp:translate = (0.032499998807907104, 0.07319999672472477, 0.0028000001329928637)
+    }
+
+    over "part_01"
+    {
+        float3 xformOp:scale = (0.004, 0.099999994, 0.099400006)
+        double3 xformOp:translate = (0.0020000000949949026, 0.07319999672472477, 0.05530000221915543)
+    }
+
+    over "part_02"
+    {
+        float3 xformOp:scale = (0.003999997, 0.099999994, 0.0794)
+        double3 xformOp:translate = (0.06299999915063381, 0.07319999672472477, 0.0453000005800277)
+    }
+
+    over "part_03"
+    {
+        float3 xformOp:scale = (0.065, 0.003636362, 0.099400006)
+        double3 xformOp:translate = (0.032499998807907104, 0.025018182583153248, 0.05530000221915543)
+    }
+
+    over "part_04"
+    {
+        float3 xformOp:scale = (0.065, 0.0036363527, 0.099400006)
+        double3 xformOp:translate = (0.032499998807907104, 0.12138181552290916, 0.05530000221915543)
+    }
+
+    over "part_05"
+    {
+        float3 xformOp:scale = (0.008, 0.016363636, 0.041999996)
+        double3 xformOp:translate = (0, 0.04574545472860336, 0.11900000274181366)
+    }
+
+    over "part_06"
+    {
+        float3 xformOp:scale = (0.018000001, 0.016363636, 0.008000001)
+        double3 xformOp:translate = (-0.005000000121071935, 0.04574545472860336, 0.13700000196695328)
+    }
+
+    over "part_07"
+    {
+        float3 xformOp:scale = (0.006, 0.016363636, 0.018)
+        double3 xformOp:translate = (-0.011000000406056643, 0.04574545472860336, 0.13100000098347664)
+    }
+
+    over "part_08"
+    {
+        float3 xformOp:scale = (0.008, 0.016363636, 0.041999996)
+        double3 xformOp:translate = (0, 0.10065454989671707, 0.11900000274181366)
+    }
+
+    over "part_09"
+    {
+        float3 xformOp:scale = (0.018000001, 0.016363636, 0.008000001)
+        double3 xformOp:translate = (-0.005000000121071935, 0.10065454989671707, 0.13700000196695328)
+    }
+
+    over "part_10"
+    {
+        float3 xformOp:scale = (0.006, 0.016363636, 0.018)
+        double3 xformOp:translate = (-0.011000000406056643, 0.10065454989671707, 0.13100000098347664)
+    }
+}
+

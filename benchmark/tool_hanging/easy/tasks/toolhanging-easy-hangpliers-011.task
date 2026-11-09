@@ -1,0 +1,96 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; LEVEL 1 -- one support, one object. See pliers.task for the family's design
+; (why the geometry clause is a `containment` region rather than a threading,
+; and what the region's ranges mean). Does not touch pliers.task or any other
+; existing document.
+;
+; The single object is plier_combination (the larger of the task's two
+; pliers) rather than plier_cutter. The region's ranges are reused verbatim:
+; they are stated as world-axis offsets from the support's own origin, so
+; recentring the support does not change them.
+; Its start task pose is the table centre, world x=0.600 m, y=0. The level-1
+; routine and graph lift it 180 mm before rotation.
+;
+; The scripted policy is the original plier state machine with its job table
+; reduced to this one plier_1/left-arm/support-at-y=0 job.
+; ---------------------------------------------------------------------------
+
+(define (problem TOOLHANGING-EASY-HANGPLIERS-011)
+
+  (:domain tool_hanging)
+
+  (:language hang the pliers on the triangular support)
+
+  (:staging
+    (:scene tool_hanging_bench)
+    (:embodiment yam_tool_hanging (:work-arm left) (:support-arm right))
+    (:physics tool_hanging_480hz@v1)
+    (:cameras tool_hanging_views_level1@v2)
+    (:control-mode joint_position)
+    (:episodes (:count 1) (:seed 43) (:sampler fixed))
+    (:max-steps 6500)
+  )
+
+  (:objects
+    plier_1 - plier_combination
+  )
+
+  (:fixtures
+    plier_support_left - plier_support
+  )
+
+  (:regions
+    (hang_left (:target plier_support_left) (:ranges ((0.072 -0.203 0.143 -0.123))) (:z-range -0.02 0.10))
+  )
+
+  (:init)
+
+  (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (And
+      (hold-for 1.0
+        (And
+          (>= (containment plier_1 hang_left) 1.0)
+          (>= (contact-force plier_1 plier_support_left) 0.2)
+          (<= (speed plier_1) 0.15)
+          (> (hands-clear plier_1) 0.11)
+        )
+      )
+    )
+  )
+
+  (:reward (fraction))
+
+  (:observe
+    (contact-force plier_1 plier_support_left)
+  )
+
+  (:artifacts
+    (:routine "routine:HangPlierRoutineLevel1")
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_gt "graphs/gap_gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "A one-object, one-support reduction of pliers.task, authored for
+              future GaP graph work. Scene, goal shape and region are
+              pliers.task's own -- only the count and the centring differ.")
+    (:note "HangPlierRoutineLevel1 inherits the original plier procedure and
+            reduces its job table to plier_1 on the left arm. Both the plier
+            start and the support's functional target use world y=0. Its sole
+            motion override is a 180 mm lift for the x=0.600 m start. The GT
+            graph shares the same one-job document and centred support.")
+  )
+
+
+  (:instance-layout
+    (:source-task tool_hanging/pliers_level1)
+    (:source-episode 43)
+    (:seed 43)
+    (:object-xform plier_1 0.0060919705080364275 -0.018248987054440134 0.007000000000000006 0.7071067811865476 0.0 0.0 0.7071067811865476)
+  )
+)

@@ -1,0 +1,134 @@
+{
+  "variant": "tray_pair_both_t21",
+  "settled_from": "the export's syringe_0 pose (vab_syringe_packing/tray_pair/scene_meta.json), laid out by the loader's former _pack_staging and recorded by tools at 2026-09-09; validated by outputs/ten_syringes-rerun-20260909b (reward 1.0)",
+  "objects": {
+    "syringe_0": {
+      "pose": [
+        0.050887,
+        -0.279178,
+        0.789825
+      ],
+      "quat": [
+        -0.002273,
+        0.006294,
+        0.948349,
+        -0.317157
+      ],
+      "body_name": "syringe_0",
+      "joint_name": "",
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 2.0
+    },
+    "syringe_pack_0": {
+      "pose": [
+        0.12278,
+        -0.225036,
+        0.789825
+      ],
+      "quat": [
+        -0.002273,
+        0.006294,
+        0.948349,
+        -0.317157
+      ],
+      "body_name": "syringe_pack_0",
+      "joint_name": "",
+      "asset": {
+        "texture": ""
+      },
+      "world_xform": true,
+      "mass": 0.03,
+      "friction": 3.0,
+      "color": [
+        0.9,
+        0.91,
+        0.93
+      ]
+    },
+    "syringe_tray": {
+      "xform": [
+        0.086833,
+        -0.252107,
+        0.785025,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    },
+    "syringe_tray_floor": {
+      "xform": [
+        0.086833,
+        -0.252107,
+        0.772025,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    },
+    "syringe_tray_wall_xpos": {
+      "xform": [
+        0.027578,
+        -0.173424,
+        0.776525,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    },
+    "syringe_tray_wall_xneg": {
+      "xform": [
+        0.146088,
+        -0.33079,
+        0.776525,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    },
+    "syringe_tray_wall_ypos": {
+      "xform": [
+        -0.071732,
+        -0.37152,
+        0.776525,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    },
+    "syringe_tray_wall_yneg": {
+      "xform": [
+        0.245398,
+        -0.132694,
+        0.776525,
+        0.0,
+        0.0,
+        0.894868,
+        0.446331
+      ]
+    }
+  },
+  "box_shift": [
+    -0.025282,
+    0.009157
+  ],
+  "trial": {
+    "index": 21,
+    "of": 30,
+    "seed": 0,
+    "offset_m": [
+      -0.005959,
+      0.035559
+    ],
+    "yaw_deg": -13.381,
+    "box_shift_m": [
+      -0.025282,
+      0.009157
+    ]
+  }
+}

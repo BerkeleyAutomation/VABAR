@@ -1,0 +1,92 @@
+; -*- mode: lisp -*-
+; ---------------------------------------------------------------------------
+; AUTHORED, over a ported scene -- see wrenches.task, which is where the
+; family's design is written out: what the four clauses mean, why encloses
+; carries the geometry and hands-clear the release, and where the scaffold
+; this replaces came from.
+;
+; WHAT THIS ONE CHANGES: either loop in the tool's two handle bows may enclose
+; the hook, on the same hook mesh mounted on a wider row, and scissor 1
+; collides through whichever of its two hull sets the loader's A/B knob
+; selects (SCISSOR_1_COLLISION_METHOD -- CoACD by default, the hand-authored
+; 30-piece compound proxy as the alternative in an otherwise identical scene).
+; ---------------------------------------------------------------------------
+
+(define (problem HANG_THE_TWO_SCISSORS)
+
+  (:suite tool_hanging)
+
+  (:language hang scissor 1 on the left hook, then scissor 2 on the right hook)
+
+  (:staging
+    ; Cell, arms, arrangement and rig are tool_hanging.suite's; the budget is ours.
+    (:physics tool_hanging_480hz@v1)
+    (:max-steps 2400)
+  )
+
+  (:objects
+    scissors_1 - scissor_pair_1
+    scissors_2 - scissor_pair_2
+  )
+
+  (:fixtures
+    ; The same hook the wrenches hang on, typed by its station on the wider
+    ; row: hook 1 is the right hook, hook 2 the left.
+    scissor_hook_1 - pegboard_hook_scissor_right
+    scissor_hook_2 - pegboard_hook_scissor_left
+  )
+
+  (:init)
+
+  (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (And
+      (hold-for 1.0
+        (And
+          (Or
+            (encloses scissors_1.bow scissor_hook_2.shank)
+            (encloses scissors_1.bow_other scissor_hook_2.shank)
+          )
+          (>= (contact-force scissors_1 scissor_hook_2) 0.2)
+          (<= (speed scissors_1) 0.08)
+          (> (hands-clear scissors_1) 0.10)
+        )
+      )
+      (hold-for 1.0
+        (And
+          (Or
+            (encloses scissors_2.bow scissor_hook_1.shank)
+            (encloses scissors_2.bow_other scissor_hook_1.shank)
+          )
+          (>= (contact-force scissors_2 scissor_hook_1) 0.2)
+          (<= (speed scissors_2) 0.08)
+          (> (hands-clear scissors_2) 0.10)
+        )
+      )
+    )
+  )
+
+
+  (:observe
+    (encloses scissors_1.bow scissor_hook_2.shank)
+    (encloses scissors_1.bow_other scissor_hook_2.shank)
+    (encloses scissors_2.bow scissor_hook_1.shank)
+    (encloses scissors_2.bow_other scissor_hook_1.shank)
+  )
+
+  (:artifacts
+    (:routine "routine:HangScissorRoutine")
+    (:tools   "tools:register_tool_hanging_tools")
+    (:graph gt "graphs/gt")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. Scene, objects and routine ported from the
+              tool-hanging branch's Python suite at 3e20fc7. The goal is new, over
+              the bow loops measured in tasks/tool_hanging/assets/records.py.")
+    (:note "Scissor 2's 6.2 mm bow around the hook's 2.5 mm half-thickness is the
+            tightest loop-rod pair in the suite. Its CoACD manifest records the
+            handle-clearance validation that keeps the opening collidable.")
+  )
+)

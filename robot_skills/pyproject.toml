@@ -1,0 +1,28 @@
+[project]
+name = "robosimstudio-robot-skills"
+version = "0.1.0"
+description = "GaP strategy bundles exported from RoboSimStudio task graphs"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+perceiving-connector-pair = []
+reobserving-held-mate = []
+bracing-receptacles = []
+grasping-cabled-connectors = []
+inserting-cabled-connectors = []
+verifying-connector-insertion = []
+positioning-for-mouth-inspection = []
+inspecting-receptacle-mouth = []
+perceiving-routing-fixtures = []
+sequencing-crossings = []
+perceiving-deformable-linear-objects = []
+computing-routing-waypoints = []
+grasping-curve-point = []
+executing-held-object-motion = []
+seating-and-checking = []
+releasing-routed-cable = []
+verifying-routing-state = []
+supporting-cable-run = []
+terminating-the-run = []
+restoring-displaced-seats = []

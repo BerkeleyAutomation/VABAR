@@ -1,0 +1,136 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; AUTHORED HERE -- the control for sort_electrical_through_usd.bddl.
+;
+; provenance.tier: reproduction
+; source-of-record: assets/vab_tool_sort/sort_electrical/
+;
+; The same pile a third time, with USD carrying ONLY THE TRIANGLES. The stages
+; named here -- industrial/<asset>/<asset>_geom.usdc -- declare no physics
+; schema at all, so the objects are built the way an .obj is: the loader states
+; the collider (`bounding_box`, the MJCF variant's own) and the export's mass,
+; and the USD supplies points, faces, UVs and a bound UsdPreviewSurface.
+;
+; THAT IS THE POINT. Everything except the geometry's file format is held at the
+; MJCF variant's value, so a difference between this and sort_electrical is the
+; geometry round trip and nothing else -- and a difference that shows up in
+; sort_electrical_through_usd but *not* here is the physics description rather
+; than the mesh. Neither variant answers that alone; the pair does.
+;
+; The loader asks the file rather than trusting this line: a stage carrying
+; PhysicsRigidBodyAPI builds its own body whatever the staging says, and one
+; carrying none is treated as geometry. `(:objects-from usd_geom)` selects
+; *which file*, and the file states what it is. A document that could disagree
+; with its own asset about the physics would be a document whose error you could
+; only find by noticing the physics was wrong.
+;
+; Requires the [usd] extra. A checkout without pxr cannot build this variant.
+; -------------------------------------------------------------------------
+
+(define (problem SORT_ELECTRICAL_THROUGH_USD_GEOMETRY)
+
+  (:language sort the eight electrical kit items out of bin1 into the
+             compartment of bin2 whose label names each one)
+
+  (:staging
+    (:profile vab_tool_sort@v2)
+    ; The workcell wearing the materials its MJCF states -- see assets/look.py.
+    (:export vab_tool_sort/sort_electrical
+      (:entity tool_sort_workcell))
+    ; The geometry-only flavour of the same six stages. See
+    ; tasks/tool_sort/assets/records.py::USD_STAGES.
+    (:objects-from usd_geom)
+    ; The comparison triple's collider, overriding the suite's `drawn_hull`
+    ; (see sort_electrical.task) -- and on this flavour it has to be stated,
+    ; because a geometry-only stage has no opinion of its own: this becomes
+    ; the `approximate` the importer fits, the MJCF variant's box, so that
+    ; everything except the importer is held still. A variant left on a
+    ; different collider would be comparing a collider against a collider
+    ; and calling the difference USD's.
+    (:collider bounding_box)
+    (:max-steps 19200)
+  )
+
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+
+  (:objects
+    industrial_d_battery_0 - battery
+    industrial_d_battery_1 - battery
+    industrial_multimeter_0 - multimeter
+    industrial_multimeter_1 - multimeter
+    industrial_tactical_flashlight_0 - flashlight
+    industrial_tactical_flashlight_1 - flashlight
+    industrial_safety_glasses_0 - safety_glasses
+    industrial_safety_glasses_1 - safety_glasses
+    distractor_industrial_cutting_pliers_0 - cutting_pliers
+    distractor_industrial_screwdriver_0 - screwdriver
+  )
+
+  ; Identical to the MJCF variant's, deliberately: the regions are the bin's
+  ; geometry and this variant changes only where the objects come from.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_battery_region
+        (:target bin2)
+        (:ranges ((-0.195 -0.245 0.0 0.0)))
+    )
+    (bin2_multimeter_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (bin2_flashlight_region
+        (:target bin2)
+        (:ranges ((-0.195 0.0 0.0 0.245)))
+    )
+    (bin2_safety_glasses_region
+        (:target bin2)
+        (:ranges ((0.0 0.0 0.195 0.245)))
+    )
+  )
+
+  (:init
+    (In industrial_d_battery_0 bin1_region)
+    (In industrial_d_battery_1 bin1_region)
+    (In industrial_multimeter_0 bin1_region)
+    (In industrial_multimeter_1 bin1_region)
+    (In industrial_tactical_flashlight_0 bin1_region)
+    (In industrial_tactical_flashlight_1 bin1_region)
+    (In industrial_safety_glasses_0 bin1_region)
+    (In industrial_safety_glasses_1 bin1_region)
+    (In distractor_industrial_cutting_pliers_0 bin1_region)
+    (In distractor_industrial_screwdriver_0 bin1_region)
+  )
+
+  (:goal
+    (And
+      (In industrial_d_battery_0 bin2_battery_region)
+      (In industrial_d_battery_1 bin2_battery_region)
+      (In industrial_multimeter_0 bin2_multimeter_region)
+      (In industrial_multimeter_1 bin2_multimeter_region)
+      (In industrial_tactical_flashlight_0 bin2_flashlight_region)
+      (In industrial_tactical_flashlight_1 bin2_flashlight_region)
+      (In industrial_safety_glasses_0 bin2_safety_glasses_region)
+      (In industrial_safety_glasses_1 bin2_safety_glasses_region)
+    )
+  )
+
+  (:artifacts
+    (:routine "routine:RoutineToolSort")
+    (:tools   "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial ToolSortPickPlace,
+              robosuite 1.4.0, MuJoCo 3.3.3, seed 2, geometry restated through USD")
+    (:upstream-file "sort_electrical_kit_into_bins.bddl")
+  )
+)

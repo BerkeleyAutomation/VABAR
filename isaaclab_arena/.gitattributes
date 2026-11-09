@@ -1,0 +1,5 @@
+# The SimReady USD closures, their textures and the collision hulls are not tracked:
+# isaaclab_arena_gap/scripts/fetch_assets.sh fetches them from Hugging Face (see .gitignore).
+# Preserve delivered metadata and material libraries byte-for-byte, including CRLF endings.
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.json -diff -text
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.mdl -diff -text

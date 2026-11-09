@@ -1,0 +1,40 @@
+<mujoco model="instrument_tray">
+  <!-- Shallow stainless-style instrument tray: an open-topped rectangular pan
+       that syringes and small tools are laid out on. The geometry is generated
+       by assets/objects/_utils/make_tray.py. -->
+  <asset>
+    <mesh name="instrument_tray_mesh" file="meshes/instrument_tray.obj"/>
+    <!-- Plain brushed stainless steel, generated to match a real medical
+         instrument tray photograph (light neutral grey, directional brush
+         grain, soft mottle, no tint, no perforations). The OBJ carries planar
+         UVs projected over its own xy bounds. -->
+    <texture name="instrument_tray_tex" type="2d" file="tray_mat_steel.png"/>
+    <!-- Raised from the asset's original 0.2/0.25: a polished stainless tray
+    is reflective metal, not painted plastic. -->
+    <material name="instrument_tray_mat" texture="instrument_tray_tex" specular="0.75" shininess="0.7"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="instrument_tray_mesh"
+              material="instrument_tray_mat" mass="0.600000" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.006000" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.006000" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.223607 0 0" rgba="0 0 0 0" size="0.005"/>
+
+      <!-- The open interior, for an environment that builds this as a
+           container: a mesh collides as its convex hull, which would fill the
+           tray in solid, so the collider is assembled from primitives against
+           these instead. cavity_min/max are opposite corners of the empty
+           volume. There is no aperture site and no lid: cavity_max reaches the
+           top of the bounding box, which is what marks the tray open (see
+           _container_collision_boxes in mujoco/tool_sort_env.py). -->
+      <site name="cavity_min" pos="-0.097000 -0.197000 -0.003000" rgba="0 0 0 0" size="0.002"/>
+      <site name="cavity_max" pos="0.097000 0.197000 0.006000" rgba="0 0 0 0" size="0.002"/>
+    </body>
+  </worldbody>
+</mujoco>

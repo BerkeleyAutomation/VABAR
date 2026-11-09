@@ -1,0 +1,17 @@
+{
+    "SimReady_Metadata": {
+        "asset_location": "sm_bin2_power_01.usd",
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "bin2_power",
+    "asset_name": "bin2_power",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "bin2_power.blend",
+    "usd_date_generated": "2026-08-27 16:49:22",
+    "used_dsrs_exporter": true
+}

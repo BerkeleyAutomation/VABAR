@@ -1,0 +1,63 @@
+{
+  "skill": "seating-and-checking",
+  "inputs": {
+    "plan": "str",
+    "scene": "str",
+    "index": "int",
+    "arm_id": "int",
+    "grip_open_m": "float",
+    "grip_close_m": "float"
+  },
+  "outputs": {
+    "seated": {
+      "$ref": "press_to_seat.seated"
+    },
+    "fraction": {
+      "$ref": "press_to_seat.fraction"
+    }
+  },
+  "nodes": {
+    "press_to_seat": {
+      "type": "script",
+      "script": "scripts/seat_station.py",
+      "inputs": {
+        "plan": {
+          "$ref": "in.plan"
+        },
+        "scene": {
+          "$ref": "in.scene"
+        },
+        "index": {
+          "$ref": "in.index"
+        },
+        "arm_id": {
+          "$ref": "in.arm_id"
+        },
+        "grip_open_m": {
+          "$ref": "in.grip_open_m"
+        },
+        "grip_close_m": {
+          "$ref": "in.grip_close_m"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "press_to_seat"
+    ],
+    [
+      "press_to_seat",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "route",
+    "success_values": [
+      "done"
+    ]
+  },
+  "on_error": "blocked"
+}

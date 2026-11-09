@@ -1,0 +1,52 @@
+{
+  "skill": "terminating-the-run",
+  "inputs": {
+    "scene": "str",
+    "arm_id": "int",
+    "grip_open_m": "float",
+    "grip_close_m": "float"
+  },
+  "outputs": {
+    "port": {
+      "$ref": "carry_into_port.port"
+    }
+  },
+  "nodes": {
+    "carry_into_port": {
+      "type": "script",
+      "script": "scripts/plug_port.py",
+      "inputs": {
+        "scene": {
+          "$ref": "in.scene"
+        },
+        "arm_id": {
+          "$ref": "in.arm_id"
+        },
+        "grip_open_m": {
+          "$ref": "in.grip_open_m"
+        },
+        "grip_close_m": {
+          "$ref": "in.grip_close_m"
+        }
+      }
+    }
+  },
+  "edges": [
+    [
+      "START",
+      "carry_into_port"
+    ],
+    [
+      "carry_into_port",
+      "END"
+    ]
+  ],
+  "conditional_edges": {},
+  "exit": {
+    "router_field": "exit",
+    "success_values": [
+      "plugged"
+    ]
+  },
+  "on_error": "unplugged"
+}

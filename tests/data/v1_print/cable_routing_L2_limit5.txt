@@ -1,0 +1,1 @@
+ROBOSIMSTUDIO_SEGMENTATION_BACKEND=palette python -m vabar run --task cable_route/port_medium --episodes 10009,10037,10084,10052,10040 --solve graph --graph gt --no-privileged --perception vision --renderer rtx --bus-timeout 600 --settle-steps 60

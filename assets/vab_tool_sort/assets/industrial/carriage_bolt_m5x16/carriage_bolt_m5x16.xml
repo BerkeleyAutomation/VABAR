@@ -1,0 +1,21 @@
+<mujoco model="carriage_bolt_m5x16">
+  <asset>
+    <texture name="carriage_bolt_m5x16_tex" type="2d" file="textures/diffuse.png"/>
+    <material name="carriage_bolt_m5x16_mat" texture="carriage_bolt_m5x16_tex" specular="0.2" shininess="0.1"/>
+    <mesh name="carriage_bolt_m5x16_mesh" file="meshes/carriage_bolt_m5x16.obj"/>
+  </asset>
+
+  <worldbody>
+    <body>
+      <body name="object">
+        <geom pos="0.000000 0.000000 0.000000" type="mesh" mesh="carriage_bolt_m5x16_mesh"
+              material="carriage_bolt_m5x16_mat" mass="0.023387" group="0" condim="4"
+              friction="2.000 0.005 0.0001"
+              solimp="0.998 0.998 0.001" solref="0.001 1"/>
+      </body>
+      <site name="bottom_site" pos="0 0 -0.011327" rgba="0 0 0 0" size="0.005"/>
+      <site name="top_site" pos="0 0 0.011327" rgba="0 0 0 0" size="0.005"/>
+      <site name="horizontal_radius_site" pos="0.016506 0 0" rgba="0 0 0 0" size="0.005"/>
+    </body>
+  </worldbody>
+</mujoco>

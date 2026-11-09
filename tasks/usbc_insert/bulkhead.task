@@ -1,0 +1,284 @@
+; ---------------------------------------------------------------------------
+; AUTHORED -- there is no upstream .bddl for this task, and the `_bulkhead`
+; Python suite this began life as predates the bolted-port variant and never
+; shipped in this repository. What it inherits, it inherits from that variant:
+; every threshold, verbatim. It ships beside this document as `port`.
+;
+; WHAT MAKES THIS ONE INTERESTING. `port` mates a plug into a receptacle that
+; is BOLTED DOWN. This one mates it into a receptacle that is being HELD --
+; a free 90 g panel-mount bulkhead, taken off a parts-tray cradle
+; by the support arm and carried into the air. Both hands lift clear, the mate
+; happens with neither part touching anything else, and then both descend still
+; mated and let go.
+;
+; That is the arrangement the reference bulkhead sim ABANDONED: every lifted
+; carry it measured popped the grip. What makes it hold here is that the grip is
+; a flat pinch across the 42 mm barrel rather than a pad grip on the nose, and
+; that the receptacle's cradle has no side cheeks for the jaws to collide with.
+;
+; The mate line is the block port's own. `stage.load_bulkhead` returns the mesh
+; already placed so its slot axis lies on that line with the mouth faces
+; coplanar, which is why every threshold below is the one `port`
+; stated: same plug, same fit, same numbers. Only the thing on the other end has
+; changed, and whether it is holding still.
+; ---------------------------------------------------------------------------
+
+(define (problem INSERT_THE_PLUG_INTO_THE_HELD_BULKHEAD)
+
+
+  (:language insert the USB-C plug into the bulkhead the other hand is holding)
+
+  (:staging
+    (:scene bench_075)
+    ; The two arms are solid to each other. Each arm stays internally
+    ; filtered; see EmbodimentSpec.cross_arm_collisions.
+    ;
+    ; **This variant does not survive it as shipped, and the number is
+    ; 3/3 -> 0/3.** Measured three ways on one box, everything else
+    ; identical: HEAD 3/3, arms solid 0/3, arms solid switched back off with
+    ; every other change of this branch still in place 3/3. So it is this
+    ; field and nothing else.
+    ;
+    ; The mechanism is the graph's own sequence. `brace` puts the support
+    ; arm under the bulkhead and *holds it in the air*, then `insert` sends
+    ; the work arm to the plug -- through the space the support arm is now
+    ; standing in. With the arms filtered the work arm passed through it;
+    ; solid, it stalls short and `insert_sg.check_grasp` reports
+    ; `route="missed", held=false, jaw_gap 8.0 mm`: the jaws closed on
+    ; nothing. It is not a grasp fault and not a collision the plan knows
+    ; about, because nothing ever measured the two arms against each other.
+    ;
+    ; The repair is `cloth_fold`'s, which met the same wall: plan the hold
+    ; against a clearance target and pick the elbow branch that leaves the
+    ; corridor free (see FoldRoutine's HOLD_LINE_STEPS and
+    ; ARM_CLEARANCE_TARGET). Left on rather than quietly reverted, because
+    ; a pairing that cannot state where its two arms are is the thing being
+    ; fixed, and a green number bought by not looking is what it was worth.
+    ;
+    ; **Re-measured 2026-08-31 and the 0/3 did not reproduce: `gt` is 4/4
+    ; here with this field on.** So what it costs is not a fixed penalty, it
+    ; is a sensitivity -- and the way to see it is to add a station.
+    ; `graphs/mate` puts the work hand 120 mm above the bore line to take a
+    ; camera look, a pose `gt` never visits and nothing checks the support
+    ; elbow against, and this variant scores **2/6 there with the same
+    ; privileged ground truth `gt` scores 4/4 with**. The corridor is still
+    ; there; it is just wide enough for one choreography and not the other.
+    (:embodiment yam_i2rt (:work-arm right) (:support-arm left) (:arms-solid true))
+    ; As `port`, and for the same reason: a 0.15 mm clearance fit
+    ; is commanded in task space or not at all.
+    (:control-mode ee_pose_abs)
+    ; The reference's stiffened servos: the task carries them, not the
+    ; embodiment, because a 1600-gain arm is an insertion fact -- at the
+    ; MJCF's own 300 the TCP lags ~10 mm and the fit never lines up.
+    (:arm-actuation (:ke 1600) (:kd 70))
+    (:gripper-actuation (:ke 20000) (:kd 20))
+    ; NOT `usbc_960hz@v1`. Same rates, same contact settings, twice the
+    ; constraint ceilings -- three contacting bodies instead of two, and a
+    ; barrel whose contact count peaks on curved faces. See
+    ; tasks/usbc_insert/staging.py, which owns both.
+    (:physics usbc_bulkhead_960hz@v1)
+    ; The perception rig, not the reference multiview. The reference's three
+    ; views were aimed by somebody who already knew where the parts were --
+    ; `mating` frames 200 mm of the mate line and nothing else -- which is the
+    ; knowledge a perception body is not allowed to have. This adds a top-down
+    ; over the bench and an eye-in-hand on the work arm, and the second is the
+    ; one this variant cannot do without: the receptacle spends the middle of
+    ; the episode 120 mm off the table, where every placed eye in this cell is
+    ; looking at a bench that no longer has it on.
+    (:cameras usbc_perception@v1)
+    ; THIRTY DRAWS, NOT THIRTY REPEATS. `fixed` was right while this variant was
+    ; a reference reproduction and every number in the graph READMEs was a
+    ; measurement of one layout run again. It is wrong for a policy that claims
+    ; to find its parts: a fixed spawn cannot tell perception from memory.
+    ;
+    ; `staging:USBC_BENCH` puts the plug where a hand would have left it --
+    ; 18 mm of position and 14 degrees of heading -- and nudges this free
+    ; receptacle by the slop in its own cradle, 4 mm and 3 degrees. See
+    ; tasks/usbc_insert/staging.py for all four numbers and why they are the
+    ; sizes they are.
+    (:episodes (:count 30) (:seed 0) (:sampler staging:USBC_BENCH))
+    ; Longer than `port`'s 6000: this episode has to take the
+    ; receptacle off its cradle, lift both parts clear, mate, descend and
+    ; retract before the verdict can be read with nobody holding anything.
+    (:max-steps 9000)
+    ; Two arms: the graph lays out an action vector per arm and parks the one
+    ; it is not inserting with. It does not manipulate with it, but it does
+    ; need it to exist -- so a one-armed robot is refused here rather than
+    ; discovered mid-rollout.
+    (:arms 2)
+  )
+
+  (:objects
+    ; BOTH ARE FREE BODIES, and that is the whole task. In `port`
+    ; the receptacle was a fixture; here it is a thing with mass that has to be
+    ; picked up, held steady against the insertion push, and put back down.
+    ; Receptacle first: declaration order is body-handle order, and the cables
+    ; below root a chain on each of these by label.
+    bulkhead - usb_c_bulkhead
+    plug     - usb_c_plug
+    ; THE SUITE'S OWN ENTITIES, which no generic kind expresses and no clause
+    ; names: the probe rig (fingertip blades and the jaw calibration -- surgery
+    ; on the hand rather than a thing on the bench), a cable rooted on each
+    ; connector (the honest load an insertion carries, and why this document
+    ; stages doubled constraint ceilings), and the receptacle's detent (the
+    ; retention spring this contact stack cannot express, modeled as a
+    ; criterion-gated weld -- see assets/entity.py). Built after the bodies
+    ; they attach to, in this order.
+    rig      - usbc_rig
+    cables   - usbc_cables
+    detent   - usbc_detent
+  )
+
+  (:fixtures
+    ; The bench the plug starts on, and the parts-tray cradle the bulkhead rests
+    ; in -- two plain boxes computed off the asserted barrel and flange radii,
+    ; with deliberately no side cheeks and no axial stop (see assets/scenery.py).
+    ; Nothing here scores against any of them.
+    bench        - usbc_bench
+    cradle_front - usbc_cradle_front
+    cradle_rear  - usbc_cradle_rear
+  )
+
+  ; No regions: every quantity is measured against the bulkhead's own declared
+  ; bore, which travels with it. That is the point of stating a feature in the
+  ; body's frame rather than as a box in the world -- this receptacle spends the
+  ; middle of the episode 120 mm off the table, and a region would have had to
+  ; follow it there.
+
+  ; -------------------------------------------------------------------------
+  ; No init constraint. Both parts spawn where the reference assembly puts them:
+  ; the plug on the bench, the bulkhead resting in its cradle with its slot axis
+  ; already on the mate line. Nothing is latched, gripped or pre-posed.
+  (:init)
+
+  ; -------------------------------------------------------------------------
+  ; FIVE CLAUSES: `port`'s four, plus the one this variant
+  ; exists to add.
+  ;
+  ; (insertion plug bulkhead.bore) >= 0.0104
+  ;     Tab-tip depth past the mouth: 10.4 mm of the connector's 13 mm bore.
+  ;     The connector's number, not this scene's -- 0.8 x bore_depth, and
+  ;     parts.py's `gates()` is what keeps the literal here from drifting from
+  ;     it.
+  ;
+  ; (insertion:lat plug bulkhead.bore) <= 0.0087931792
+  ;     Depth only counts inside the mouth's half-diagonal. The geometric guard
+  ;     against scoring a plug that slid PAST the receptacle face -- which reads
+  ;     as deep as a seated one along the axis, and is the failure a
+  ;     depth-only goal cannot see. The block port's half-diagonal, because the
+  ;     mouths are coplanar and the plug is the same plug.
+  ;
+  ; (speed plug) <= 0.05
+  ;     Mated, not mid-flight. Sharper here than it is in `port`: the pair is
+  ;     in the air for most of this episode, so a depth reading taken while both
+  ;     arms are still moving is a reading of a mate that has not settled.
+  ;
+  ; (not (gripped plug.body)) and (tcp-distance plug) > 0.05
+  ;     LET GO, AND BACK AWAY. Two clauses because opening the jaws is not the
+  ;     same as letting go of the claim, and with the receptacle held in the air
+  ;     by the other arm the difference decides the task: a plug still between
+  ;     the fingers at depth is being held in position by two servos rather than
+  ;     retained by the socket, which is precisely what is under test.
+  ;
+  ;     The retract is the second half of it. A hand parked around a seated plug
+  ;     with its fingers open is one twitch from holding it, and -- the reason
+  ;     the threshold exists at all -- an episode that terminated the instant the
+  ;     jaws opened would end BEFORE the retract, so the recording would never
+  ;     show the plug standing on its own. 50 mm makes the verdict and the video
+  ;     agree.
+  ;
+  ;     Read against the TCP, which is where `tcp-distance` measures from: on
+  ;     this gripper the grasp site is 134.7 mm along the tool body's local -z,
+  ;     so a distance to the body ORIGIN reads ~137 mm with the pads still
+  ;     touching the part. A 50 mm gate on that is satisfied on frame one and
+  ;     gates nothing.
+  ;
+  ; NOTHING LATCHES. A mate that pops apart on the retract is scored where it
+  ; ends up -- and popping apart on the retract is the exact failure the
+  ; reference sim hit and gave up on, so a `once` here would hide the thing this
+  ; variant was built to measure.
+  ; (insertion:tilt plug bulkhead.bore) <= 0.0873
+  ;     SEATED, NOT HANGING. Five degrees, in radians. Depth is an axial
+  ;     PROJECTION, so a plug that pivots inside the bore instead of staying on
+  ;     its axis reports as a plug that stayed in -- and this receptacle's slot
+  ;     is 8.00 mm tall where a real USB-C jack is 5.20, which leaves 1.6 mm a
+  ;     side of rotation budget. Recorded through a release on the shipped `gt`
+  ;     graph: 0.99 degrees while the jaws hold it, 10.1 within eighteen frames
+  ;     of them opening, settling at 10.9 -- scored reward 1.00 the whole way,
+  ;     because depth and lat both still passed. Free of the arms entirely a
+  ;     seated plug reaches 17.6, the slot's own geometric stop.
+  ;
+  ;     Five degrees admits a genuinely seated mate (measured 0.99-1.44 while
+  ;     held) and refuses one hanging off its mouth. This clause is the whole
+  ;     difference between "the plug is in the socket" and "the plug is
+  ;     somewhere past the mouth plane", which is all the other four can say.
+  (:goal
+    (And
+      (>= (insertion plug bulkhead.bore) 0.0104)
+      (<= (insertion:lat plug bulkhead.bore) 0.0087931792)
+      (<= (insertion:tilt plug bulkhead.bore) 0.0873)
+      (<= (speed plug) 0.05)
+      (not (gripped plug.body))
+      (> (tcp-distance plug) 0.05)
+    )
+  )
+
+  ; -------------------------------------------------------------------------
+  ; Depth over the gate, masked by the lateral guard -- `port`'s
+  ; reward exactly, and deliberately NOT extended to cover the release.
+  ;
+  ; The two are different questions. Reward measures how far in the plug got;
+  ; release and retract are conditions on WHEN that reading counts, and folding
+  ; them into the quantity would pay a policy for backing away from a plug it
+  ; never seated.
+  ; The mask carries the tilt guard as well as the lateral one, for the reason
+  ; the goal states it: without it the term pays a policy for a plug lying
+  ; across the mouth at ten degrees exactly as much as for a seated one, and
+  ; the scalar goes on reporting 1.00 while the mate visibly hangs.
+  (:reward
+    (progress (insertion plug bulkhead.bore)
+              (:gate 0.0104)
+              (:gated-by (And (<= (insertion:lat plug bulkhead.bore) 0.0087931792)
+                              (<= (insertion:tilt plug bulkhead.bore) 0.0873)))))
+
+  ; -------------------------------------------------------------------------
+  ; Recorded every step, gating nothing. `mate_gap` is the one to watch on this
+  ; variant: it is the measure that shows a carry losing the fit gradually
+  ; rather than at once.
+  (:observe
+    (gripped plug.body)
+    (insertion:mate_gap plug bulkhead.bore)
+    (speed bulkhead)
+  )
+
+  ; -------------------------------------------------------------------------
+  ; A graph, and no routine. The reference's bimanual *script* is not ported --
+  ; it was written against a policy base this stack has since rewritten, and a
+  ; scripted solution transcribed against the wrong base is a solution that runs
+  ; and is not the one that was measured. What ships instead is the graph, which
+  ; is a better fit for this variant anyway: the correction it makes after
+  ; grasping is exactly what an open-loop stroke cannot do.
+  (:artifacts
+    (:tools "tools:register_usbc_tools")
+    (:graph gt "graphs/gt")
+    ; `mate` is `gt`'s choreography behind a perception slot, and it serves the
+    ; bolted `port` variant from the same workflow. It is NOT a replacement:
+    ; `gt` is the measured baseline and its README carries the numbers.
+    (:graph mate "graphs/mate")
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus, from a pre-port _bulkhead Python suite that never
+              shipped in this repository; thresholds are the usbc_insert/port document's,
+              verbatim, and the mate line is the reference block port's.")
+    (:note "Bulkhead.stl at scale 2, pre-placed so its slot axis spawns on the block port's
+            bore line, carrying the reference sim's 90 g ground-truth mass, resting in a
+            two-step cradle that is a rest and nothing more. The cradle has deliberately no
+            side cheeks and no axial stop: cheeks stand exactly where the support jaws close
+            across the 42 mm barrel, and reacting the insertion push is the support arm's job,
+            which is what makes this bimanual rather than scenery. The part measures 0.05
+            degrees of tilt over a settle without them. Thresholds are the block variant's
+            throughout -- same plug, coplanar mouths, one mate line.")
+  )
+)

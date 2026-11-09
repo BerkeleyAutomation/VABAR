@@ -1,0 +1,17 @@
+{
+    "SimReady_Metadata": {
+        "asset_location": "sm_vabar__screwdriver_01.usd",
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "vabar__screwdriver",
+    "asset_name": "vabar__screwdriver",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "vabar__screwdriver.blend",
+    "usd_date_generated": "2026-08-27 12:36:42",
+    "used_dsrs_exporter": true
+}

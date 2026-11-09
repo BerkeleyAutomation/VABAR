@@ -1,0 +1,203 @@
+; ---------------------------------------------------------------------------
+; AUTHORED for this corpus, after nvidia-isaac/Isaac-cap's `gear_insertion` --
+; three NVIDIA Factory gears placed on a plate and scored SEATED AND STILL, at
+; three post offsets stated as constants. The medium tier here is the same three
+; stations, and two things about it are different.
+;
+; THE BOARD IS ASSEMBLABLE BY CONSTRUCTION. Two external involute gears of one
+; module mesh when, and only when, their centres are module * (z_a + z_b) / 2
+; apart. So the pegs are placed BY that rule rather than at measured offsets:
+; `gearing.chain_centres` computes them from the tooth counts, and there is no
+; way to author a board whose gears do not mesh. The check is live, not a
+; comment -- `mesh_phase` sweeps a pitch looking for a clocking that clears, and
+; refuses a pair whose centre distance is not theirs. Moved 2 mm together, a
+; 16- and a 20-tooth gear have no clocking that clears at all.
+;
+; AND THE SCORE IS WHETHER IT WORKS. A motor pinion the policy never touches
+; drives the first station; the button starts it; success is every gear turning
+; at its own ratio. That is not a restatement of "seated". A gear on the wrong
+; peg, or a gear seated and then knocked, breaks the chain AT that station and
+; everything downstream of it stops -- which is exactly the property that makes
+; the whole train worth measuring instead of three placements counted up.
+;
+; WHAT MAKES IT HARD. The bore has 0.3 mm of radial clearance on its peg, and
+; the peg stands 8 mm proud of a seated gear so the bore is captured before the
+; teeth are anywhere near their neighbour's. That ordering is the task's own
+; lead-in: a gear that is on its peg is free to turn, and turning is how it
+; finds the tooth space. Meeting a neighbour tooth-corner to tooth-corner
+; instead is a jam, which is why every tooth carries a 0.6 mm chamfer on both
+; faces.
+;
+; WHAT THE NUMBERS BELOW ARE. Measured on the assembled board by
+; tasks/gear_mesh/rigs/gear_bench.py, three gears at a commanded 4 rad/s: every gear holds
+; 0.972 of its ideal ratio, and 0.972 is exactly the pinion's own servo droop
+; of 3.89/4.00 -- the mesh loses nothing at all. The 5th percentile of that
+; reading is 0.94. A gear whose chain is broken upstream is driven by nothing
+; and reads 0. Nothing lands in between, which is why the gate sits at 0.3.
+;
+; A RATE HERE IS NET ANGLE OVER HALF A SECOND, not a sampled angular velocity,
+; and that is not a smoothing convenience. A driven gear rattles through its own
+; backlash: sampled instantaneously, the same healthy chain's 5th percentile is
+; 0.35, 0.14 and 0.05 of ideal going down the stations, so a gate placed
+; anywhere useful is crossed downward several times a second and every hold-for
+; behind it restarts forever. The board keeps the window because a measure that
+; remembers cannot be an atom -- the mint gate requires purity -- which is the
+; same reason polish's spindle publishes `disc_speed` rather than minting one.
+; ---------------------------------------------------------------------------
+
+(define (problem MESH_THE_GEAR_TRAIN)
+
+  (:suite gear_mesh)
+
+  (:language put each gear on its own peg so they mesh, then press the red
+             button at the near end of the board to start the train)
+
+  ; The cell, the arm, the physics, the cameras and the episode count are the
+  ; suite's -- gear_mesh.suite, beside this file. What is this tier's alone is
+  ; its step budget and where its gears start.
+  (:staging
+    ; Three picks, three insertions and a press, with the settle and the hold.
+    ; Generous on purpose: the budget is sized for the retries a gear that lands
+    ; tooth-on-tooth needs, not for a run that never does.
+    (:max-steps 9000)
+    ; Where each named gear starts: all three gears flat on the mat.
+    ; DERIVED, not measured -- written from assets/layout.py's arithmetic
+    ; (`write_start_poses`) and pinned to it by tests/test_gear_mesh.py. A
+    ; disc lying flat has its centre exactly half a face above what it lies
+    ; on, so a spawn pose is a settled pose by construction. Recorded per
+    ; gear because the gear records cannot carry it: a gear_wheel_20t is one
+    ; thing wherever it lies, and which spot -- or which peg -- is this
+    ; tier's.
+    (:start-poses poses/train.json)
+  )
+
+  (:objects
+    gear_a - gear_wheel_16t
+    gear_b - gear_wheel_20t
+    gear_c - gear_wheel_24t
+  )
+
+  (:fixtures
+    mat   - gear_mat
+    board - gear_board_train
+  )
+
+  ; -------------------------------------------------------------------------
+  ; The world an episode starts in, re-verified after settling at every reset.
+  ;
+  ; Both clauses are geometric and read off body poses, which are settled and
+  ; correct at the reset instant. Two candidate clauses were NOT written for
+  ; polish's recorded reason: a spin reads zero at t=0 whatever the scene is,
+  ; because the environment zeroes joint velocities after entity resets, and a
+  ; contact force reads zero because the force atom's window is empty at
+  ; verification. An init that warns on every clean episode teaches people to
+  ; ignore the warning.
+  (:init
+    (loose board)
+    (unstarted board)
+  )
+
+  ; -------------------------------------------------------------------------
+  ; ASSEMBLE, THEN START, THEN TURN -- and in that order, which is what the
+  ; nested `after`s say. `after` is binary, so a three-stage sequence nests;
+  ; each event latches on its rising edge, so a gear briefly lifted after the
+  ; train is running does not un-start it.
+  ;
+  ; The order matters and is not decoration. Pressing the button first and
+  ; assembling into a running train is a different task -- harder, and one this
+  ; board's torque ceiling would stall rather than reward.
+  ;
+  ; `worst_of`, not a flat `and`: success is still every child, but the reward
+  ; becomes the WEAKEST station's rather than the fraction of stations passing,
+  ; and `metrics["worst"]` names which gear stalled. A flat conjunction would
+  ; also pay a do-nothing policy for whichever clauses a settled scene already
+  ; satisfies.
+  ;
+  ; Per-station TRIPLES rather than loose clauses, for the grocery lesson the
+  ; goal lint records: clauses grouped by the thing they are about read as "this
+  ; gear is on its peg, turning, and let go of", and ungrouped they read as a
+  ; score. The third one is not ceremony -- a gear still in the jaws while the
+  ; train runs is being held in mesh by the robot, and polish and box_decant both
+  ; end on the same requirement for the same reason. It is also what makes the
+  ; goal name the gears at all: everything else here is said about the board,
+  ; because a published state is the board's to publish and an ObjectSpec cannot
+  ; publish one.
+  (:goal
+    (once
+      (after (>= (gears-seated board) 3)
+        (after (started board)
+          (hold-for 1.0
+            (worst_of
+              (And (gear0-on-peg board) (gear0-turning board) (not (gripped gear_a.body)))
+              (And (gear1-on-peg board) (gear1-turning board) (not (gripped gear_b.body)))
+              (And (gear2-on-peg board) (gear2-turning board) (not (gripped gear_c.body)))
+            )
+          )
+        )
+      )
+    )
+  )
+
+  ; -------------------------------------------------------------------------
+  ; The share of stations both seated and turning, gated at all of them.
+  ; Deliberately not `(fraction)`, which would pay for the settled conjuncts a
+  ; scene satisfies before the policy moves. Read the do-nothing floor before
+  ; believing any of it.
+  ;
+  ; The goal lint notes that no goal clause measures `turning-fraction`, and the
+  ; note is right and the choice is deliberate. The two say the same thing in the
+  ; two shapes each is good at: the goal is `worst_of` over stations because a
+  ; verdict should name the station that stalled, and a reward is a scalar that
+  ; has to rise smoothly as stations come good, which the worst of them does not.
+  ; A chain that gains its third working gear moves the fraction and not the
+  ; worst.
+  (:reward (progress (turning-fraction board) (:gate 1.0)))
+
+  ; -------------------------------------------------------------------------
+  ; Recorded every step, gating nothing. `gear*-ratio` is what makes a trace
+  ; legible -- "station 2 at 0.97 and station 3 at 0.00" is a chain with a hole
+  ; in it, and reads nothing like a train that never started. `gear*-signed`
+  ; carries the alternation: external gears counter-rotate, so a chain whose
+  ; signs do not alternate is not a chain.
+  (:observe
+    (turning-fraction board)
+    (gears-seated board)
+    (press-travel board)
+    (pinion-speed board)
+    (gear0-ratio board)
+    (gear1-ratio board)
+    (gear2-ratio board)
+    (gear0-signed board)
+    (gear1-signed board)
+    (gear2-signed board)
+    (speed gear_a)
+    (speed gear_b)
+    (speed gear_c)
+  )
+
+  (:provenance
+    (:tier original)
+    (:source "Authored for this corpus. The task shape -- gears onto an assembly
+              board -- is nvidia-isaac/Isaac-cap's `gear_insertion`, which is
+              itself the NIST Assembly Task Board's gear station by way of Isaac
+              Lab's Factory assets. Nothing is vendored: the profiles are
+              generated involutes at module 2.5 mm, 20 degree pressure angle,
+              1.25 dedendum, 0.15 mm backlash. The two spur gears already in
+              this repository under assets/vab_tool_sort are a module-5 pair at
+              110 and 160 mm outside diameter, wider than any gripper here and
+              of unestablished licence; they are a cross-check on the generator,
+              not its source.")
+    (:note "Each gear is one rigid body carrying one convex prism per tooth plus
+            a ring of hub sectors -- 40 parts for a 16-tooth gear -- because
+            MuJoCo collides a mesh as its convex hull and a gear imported whole
+            is a disc with neither teeth nor bore. Every part is convex BY
+            CONSTRUCTION rather than by decomposition: an external involute
+            flank is convex, and gear_parts asserts that against the profile it
+            just built rather than taking it from a textbook. The pinion is a
+            velocity-driven revolute on polish's rotary-spindle pattern, gated
+            from inside the captured graph by a latch the button sets; the
+            button is this repository's first prismatic joint. CAL-tagged
+            thresholds are re-measured against the shipped graph before
+            sign-off.")
+  )
+)

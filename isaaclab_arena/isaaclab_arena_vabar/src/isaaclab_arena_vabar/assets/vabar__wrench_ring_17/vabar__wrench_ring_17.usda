@@ -1,0 +1,129 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__wrench_ring_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "base_01_obj_01" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            point3f physics:centerOfMass = (0.15414155, 0.17876531, 0.003169366)
+            float3 physics:diagonalInertia = (0.000008571562, 0.0005837007, 0.00058964366)
+            float physics:mass = 0.14877862
+            quatf physics:principalAxes = (0.9999946, -0.0004323538, -0.0012588857, 0.0030162032)
+
+            over "base_01_mesh_01" (
+                delete apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxSDFMeshCollisionAPI", "PhysicsMassAPI"]
+            ) {}
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_hulls.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+
+                over "ConvexHull_00" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_01" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_02" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_03" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_04" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_05" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_06" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_07" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_08" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_09" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_10" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_11" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_12" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "ConvexHull_13" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__chrome_a01>
+                }
+
+                over "Visual" (
+                    active = false
+                ) {}
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__chrome_a01" {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+    }
+}

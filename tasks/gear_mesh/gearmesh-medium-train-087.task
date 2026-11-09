@@ -1,0 +1,127 @@
+; -----------------------------------------------------------------------
+; MACHINE-DRAFTED by tools/build_gear_scenes.py, which IS in this tree. The
+; structure below is generated and the argument is not: what a 3-station
+; board asks of a policy is stated once, in tasks/gear_mesh/difficulty.py,
+; rather than restated in 200 headers.
+;
+; provenance.tier: derived
+; source-of-record: assets/variants.json (row 'gearmesh-medium-train-087')
+; regenerate with: uv run python tools/build_gear_scenes.py --single 40 --pair 60 --train 100 --seed 0 --write
+;
+; LEVEL MEDIUM BY MEASURE, NOT BY NAME: difficulty.level((16, 20, 24)) --
+; 3 stations, 0 repeated tooth counts.
+;
+; DRAWN AT SEED 1169715412 (assets/layout.py draw_layout; 1 layout tried):
+;   stations, pinion outward: 16t, 20t, 24t
+;   plate centre  surface (+0.0246, +0.0160)  world (0.6246, +0.0160)
+;                 = the tiers' spot +4.6 mm in x, +16.0 mm in y
+;   chain turned  +1.8 deg off the tiers' (along world +y, across the arm)
+;   link lengths  37.5 mm, 45.0 mm, 55.0 mm
+;   gear_a  16t  surface (-0.1316, -0.0657)  world (0.4684, -0.0657)  clock  232.4 deg
+;   gear_b  20t  surface (-0.0960, +0.0924)  world (0.5040, +0.0924)  clock  274.5 deg
+;   gear_c  24t  surface (-0.1430, +0.0150)  world (0.4570, +0.0150)  clock  189.7 deg
+;
+; KEPT BECAUSE A HAND CAN WORK IT. Each gear was dropped uniformly on the mat
+; with its tip circle 8.0 mm inside the edge and rejected against what was
+; already down: least free bench between a gear and the plate 44.7 mm
+; (rule >= 15.0 mm),
+; least free mat between two gears' tip circles 26.4 mm (rule >= 25.0 mm),
+; least free mat to the edge 13.5 mm. The board itself was drawn first;
+; a gear that found no spot restarted the whole layout with a fresh board.
+;
+; A SPAWN POSE IS A SETTLED POSE: a disc lying flat has its centre exactly half
+; a face above the mat, so the poses file is arithmetic (layout.start_poses_for)
+; and tests/test_gear_mesh.py holds it to that.
+;
+; THE CHAIN IS NOT A LINE. It turns at each station after the first: +19 deg, -20 deg.
+; Two external gears mesh at a centre distance, which fixes how LONG a link is
+; and says nothing about which way it points, so a board may bend at every
+; station and still be assemblable by construction -- the link lengths below
+; are the same numbers a straight board of these teeth would have. What it
+; costs a policy is the third peg: on a straight board that peg lies on the
+; line through the first two, and here it does not, so the board has to be
+; seen rather than extrapolated. The gears also sit around a bend, so the
+; hand must come at each square to its OWN link rather than to the board.
+; -----------------------------------------------------------------------
+
+(define (problem GEARMESH_MEDIUM_TRAIN_087)
+
+  (:suite gear_mesh)
+
+  (:language put each gear on its own peg so they mesh, then press the red
+             button at the near end of the board to start the train)
+
+  ; The cell, the arm, the physics and the cameras are the suite's. What is this
+  ; draw's alone: its step budget, where its gears and its board start, and that
+  ; the recorded draw IS the scene -- one episode, no sampler moving it, so a
+  ; score on this document is a score on this layout.
+  (:staging
+    (:max-steps 18000)
+    (:start-poses poses/gearmesh-medium-train-087.json)
+    (:episodes (:count 1) (:seed 1169715412) (:sampler fixed))
+  )
+
+  (:objects
+    gear_a - gear_wheel_16t
+    gear_b - gear_wheel_20t
+    gear_c - gear_wheel_24t
+  )
+
+  (:fixtures
+    mat   - gear_mat
+    board - gear_board_train
+  )
+
+  (:init
+    (loose board)
+    (unstarted board)
+  )
+
+  ; Assemble, then start, then turn -- pair.task says why the `after`s nest and
+  ; why `worst_of` rather than a flat `and`.
+  (:goal
+    (once
+      (after (>= (gears-seated board) 3)
+        (after (started board)
+          (hold-for 1.0
+            (worst_of
+              (And (gear0-on-peg board) (gear0-turning board) (not (gripped gear_a.body)))
+              (And (gear1-on-peg board) (gear1-turning board) (not (gripped gear_b.body)))
+              (And (gear2-on-peg board) (gear2-turning board) (not (gripped gear_c.body)))
+            )
+          )
+        )
+      )
+    )
+  )
+
+  (:reward (progress (turning-fraction board) (:gate 1.0)))
+
+  (:observe
+    (turning-fraction board)
+    (gears-seated board)
+    (press-travel board)
+    (pinion-speed board)
+    (gear0-ratio board)
+    (gear1-ratio board)
+    (gear2-ratio board)
+    (gear0-signed board)
+    (gear1-signed board)
+    (gear2-signed board)
+    (speed gear_a)
+    (speed gear_b)
+    (speed gear_c)
+  )
+
+  (:provenance
+    (:tier derived)
+    (:source "Drawn by tools/build_gear_scenes.py at seed 1169715412 from the
+              gear_mesh suite's own arithmetic (assets/layout.py draw_layout):
+              the board pair.task and train.task describe, cut for 16t, 20t, 24t,
+              its plate centre and chain turn drawn within the suite's stated
+              bands, its gears dropped on the mat where a hand can work them.
+              The row of record is assets/variants.json.")
+    (:note "One of the medium level's 100 train draws; tasks/gear_mesh/difficulty.py
+            says what makes 3 stations that level.")
+  )
+)

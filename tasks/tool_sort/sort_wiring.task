@@ -1,0 +1,178 @@
+; -*- mode: lisp -*-
+; -------------------------------------------------------------------------
+; AUTHORED HERE -- not a reconstruction, and not an upstream file.
+;
+; provenance.tier: reproduction
+; source-of-record: assets/vab_tool_sort/sort_wiring/
+;
+; Written against the export rather than back out of deleted Python; see
+; sort_electrical_kit_into_bins.bddl's header for what that distinction means
+; and why the six older documents carry a circularity warning this one does not.
+;
+; THE FIRST SET YOU HAVE TO TELL APART. Every other variant separates its types
+; by shape -- a hammer is not a drill, a battery is not a pair of safety
+; glasses -- so a policy that never reads a plate can still sort by putting the
+; right-shaped thing in each compartment. Two of these four are the same tool
+; twice: cutting_pliers is 0.161 x 0.059 x 0.034 m and combination_pliers is
+; 0.160 x 0.053 x 0.031, which is 0.9 mm apart in length. No OBB distinguishes
+; them and neither does a grasp width. What distinguishes them is what they look
+; like, so this variant is the suite's test of *identification* rather than of
+; geometry.
+;
+; THE TWO PLIERS SIT DIAGONALLY OPPOSITE, in compartments 0 and 3. That is the
+; file's design and not an ordering accident. Adjacent compartments share a
+; divider, so a tool that lands just over one is ambiguous between a
+; misidentification and a release 20 mm off -- and those are exactly the two
+; things this variant exists to separate. Across the diagonal there is no
+; near-miss. Re-laying this out so the two are neighbours would quietly change
+; what the variant measures.
+;
+; The breadboard is the deliberate failure, and it is sort_new_tools_into_bins'
+; utility-knife case at a wider margin: 8.0 mm thick against the 10.8 mm where
+; that file measured the fingertips reaching the bin floor before they are under
+; the object's mid-height. A top-down parallel jaw cannot close on it, so the
+; scripted baseline scores 6 of 8 here and the missing two are there to be taken
+; by anything that can work an edge.
+;
+; The wire spool is the smallest sort target in the suite -- 0.039 m across and
+; 6.7 g, against 200 g for either pair of pliers -- and a near-perfect cylinder,
+; so the yaw of its fitted box is arbitrary. That costs nothing here: sqrt(2) on
+; 0.039 m is 0.055 m, still inside the 0.080 m span.
+;
+; Both distractors are chosen to be confusable rather than merely present: the
+; screwdriver is a long-handled hand tool in a bin whose targets include two of
+; those, and the measuring tape is a compact round case that reads much like the
+; wire spool. Ruling them out is the same skill the two pliers ask for.
+;
+; Seed 0, the default -- unlike sort_electrical, which needed seed 2. All ten
+; settle inside bin1, moving at most 7.4 mm over the export's 3000-step
+; re-settle, with the deepest object contact at 0.77 mm.
+; -------------------------------------------------------------------------
+
+(define (problem SORT_WIRING_KIT_INTO_BINS)
+
+  (:language sort the eight wiring bench items out of bin1 into the
+             compartment of bin2 whose label names each one)
+
+  ; What BDDL cannot say: which cell, which robot, which export. The profile
+  ; supplies the first two for every VAB-industrial problem; the export is
+  ; this variant's own, and names the dumped scene its poses come from.
+  (:staging
+    (:profile vab_tool_sort@v2)
+    ; The workcell wearing the materials its MJCF states -- see assets/look.py.
+    (:export vab_tool_sort/sort_wiring
+      (:entity tool_sort_workcell))
+    ; 2400 per goal x 8 goals; no container goal, so no flat addition. See
+    ; sort_new_tools_into_bins.bddl for where 2400 comes from.
+    (:max-steps 19200)
+  )
+
+  ; Fixtures carry the regions; the tools are what moves.
+  (:fixtures
+    bin1 - bin
+    bin2 - bin
+  )
+
+  ; Label and mesh share a name for all four here, unlike sort_electrical --
+  ; but the instance names still carry the export's `industrial_` prefix,
+  ; which is the asset pool rather than part of the type.
+  (:objects
+    industrial_cutting_pliers_0 - cutting_pliers
+    industrial_cutting_pliers_1 - cutting_pliers
+    industrial_breadboard_0 - breadboard
+    industrial_breadboard_1 - breadboard
+    industrial_wire_spool_0 - wire_spool
+    industrial_wire_spool_1 - wire_spool
+    industrial_combination_pliers_0 - combination_pliers
+    industrial_combination_pliers_1 - combination_pliers
+    distractor_industrial_screwdriver_0 - screwdriver
+    distractor_industrial_measuring_tape_0 - measuring_tape
+  )
+
+  ; Regions are stated in their target's OWN frame, in metres, as
+  ; (x0 y0 x1 y1). bin2's compartments are the quadrants of its floor, and
+  ; these four literals are every other variant's unchanged. Checked against
+  ; the export: each range's centre is `compartment_centers[i]` to the digit.
+  ;
+  ; Note which name sits on which quadrant. 0 and 3 are the two pliers, and
+  ; in BDDL's quadrant convention those are diagonally opposite -- 0 is low x
+  ; low y and 3 is high x high y. See the header.
+  ;
+  ; The height window is BDDL's own _eval_in: from the frame origin up
+  ; 0.15 m. It starts at the origin rather than below it, which is what makes
+  ; an object held ABOVE a bin fail the test and one resting on its floor
+  ; pass -- and what lets a tool still between the fingers score, 15 cm up.
+  (:regions
+    (bin1_region
+        (:target bin1)
+        (:ranges ((-0.18 -0.23 0.18 0.23)))
+    )
+    (bin2_cutting_pliers_region
+        (:target bin2)
+        (:ranges ((-0.195 -0.245 0.0 0.0)))
+    )
+    (bin2_breadboard_region
+        (:target bin2)
+        (:ranges ((0.0 -0.245 0.195 0.0)))
+    )
+    (bin2_wire_spool_region
+        (:target bin2)
+        (:ranges ((-0.195 0.0 0.0 0.245)))
+    )
+    (bin2_combination_pliers_region
+        (:target bin2)
+        (:ranges ((0.0 0.0 0.195 0.245)))
+    )
+  )
+
+  ; Everything starts in the cluttered pile -- verified after settling,
+  ; not assumed: a tool placed in bin1 can bounce out of it while the
+  ; scene comes to rest, and a task that assumed otherwise would run an
+  ; episode whose starting state it has misdescribed. Ten objects is the
+  ; density ceiling bin1's clutter sampler holds.
+  (:init
+    (In industrial_cutting_pliers_0 bin1_region)
+    (In industrial_cutting_pliers_1 bin1_region)
+    (In industrial_breadboard_0 bin1_region)
+    (In industrial_breadboard_1 bin1_region)
+    (In industrial_wire_spool_0 bin1_region)
+    (In industrial_wire_spool_1 bin1_region)
+    (In industrial_combination_pliers_0 bin1_region)
+    (In industrial_combination_pliers_1 bin1_region)
+    (In distractor_industrial_screwdriver_0 bin1_region)
+    (In distractor_industrial_measuring_tape_0 bin1_region)
+  )
+
+  ; NOTE ON SEMANTICS, for whoever binds these predicates: BDDL's In is a box
+  ; test that a CARRIED object satisfies. A reproduction-tier import must
+  ; bind it to the weak box test and not to the stronger contact-and-at-rest
+  ; predicate this stack also has, because comparability with the source
+  ; benchmark outranks rigor. Rebinding it is a re-labelling, not a bug fix.
+  (:goal
+    (And
+      (In industrial_cutting_pliers_0 bin2_cutting_pliers_region)
+      (In industrial_cutting_pliers_1 bin2_cutting_pliers_region)
+      (In industrial_breadboard_0 bin2_breadboard_region)
+      (In industrial_breadboard_1 bin2_breadboard_region)
+      (In industrial_wire_spool_0 bin2_wire_spool_region)
+      (In industrial_wire_spool_1 bin2_wire_spool_region)
+      (In industrial_combination_pliers_0 bin2_combination_pliers_region)
+      (In industrial_combination_pliers_1 bin2_combination_pliers_region)
+    )
+  )
+
+  ; A solution is a thing that RUNS, so it stays code and is referenced.
+  (:artifacts
+    (:routine "routine:RoutineToolSort")
+    (:tools   "tools:register_tool_sort_tools")
+    (:graph gt "graphs/gt")
+    (:graph gap_perception "graphs/gap_perception")
+  )
+
+  (:provenance
+    (:tier reproduction)
+    (:source "VAB-industrial ToolSortPickPlace,
+              robosuite 1.4.0, MuJoCo 3.3.3, seed 0")
+    (:upstream-file "sort_wiring_kit_into_bins.bddl")
+  )
+)

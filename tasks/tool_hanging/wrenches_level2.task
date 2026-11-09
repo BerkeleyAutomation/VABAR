@@ -1,0 +1,54 @@
+; -*- mode: lisp -*-
+(define (problem HANG_TWO_WRENCHES_LEVEL2)
+  (:suite tool_hanging)
+  (:language hang both wrenches on the two hooks)
+  (:staging
+    (:physics tool_hanging_480hz@v1)
+    (:cameras yam_station_tool_hanging@v1)
+    (:episodes (:count 5) (:seed 0) (:sampler layouts:sample_level2_layout))
+    (:max-steps 22000)
+    (:start-poses poses/wrenches_level2_start.json)
+  )
+  (:objects
+    wrench_1 - wrench_adjustable_260
+    wrench_2 - wrench_adjustable_260
+    distractor_scissors_1 - scissor_pair_1
+    distractor_pliers_2 - plier_combination
+    distractor_screwdriver_3 - screwdriver_slim
+  )
+  (:fixtures
+    wrench_hook_1 - pegboard_hook_level2_left
+    wrench_hook_2 - pegboard_hook_level2_right
+  )
+  (:init)
+  (:goal
+    ; Each tool hung and let go, for a second: see tool_hanging.suite for the release clause.
+    (And
+      (hold-for 1.0
+        (And
+          (encloses wrench_1.ring wrench_hook_1.shank)
+          (>= (contact-force wrench_1 wrench_hook_1) 0.2)
+          (<= (speed wrench_1) 0.15)
+          (> (hands-clear wrench_1) 0.21)
+        )
+      )
+      (hold-for 1.0
+        (And
+          (encloses wrench_2.ring wrench_hook_2.shank)
+          (>= (contact-force wrench_2 wrench_hook_2) 0.2)
+          (<= (speed wrench_2) 0.15)
+          (> (hands-clear wrench_2) 0.21)
+        )
+      )
+    )
+  )
+  (:reward (fraction))
+  (:observe
+    (encloses wrench_1.ring wrench_hook_1.shank)
+    (encloses wrench_2.ring wrench_hook_2.shank)
+  )
+  (:artifacts
+    (:tools "tools:register_tool_hanging_tools")
+    (:graph gap_perception "graphs/gap_perception_level2")
+  )
+)
