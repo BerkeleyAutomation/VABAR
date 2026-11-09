@@ -25,3 +25,6 @@ external/gap/autolab-vabar
 external/IsaacLab-Arena/submodules/Isaac-GR00T
 external/gap/graph-as-policy/third_party/LIBERO-PRO
 external/gap/graph-as-policy/third_party/robots_realtime
+
+# The Hugging Face download's own bookkeeping beside the fetched scene assets.
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/.cache

@@ -7,3 +7,9 @@ artifacts/
 *.egg-info/
 .llm_cache/
 .worktrees/
+
+# Scene assets fetched from Hugging Face by isaaclab_arena_gap/scripts/fetch_assets.sh.
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.usd
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.png
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/collision_hulls.usdc
+isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/.cache/

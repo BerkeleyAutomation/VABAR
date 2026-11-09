@@ -72,8 +72,7 @@ The same tasks and graphs also run in [Isaac Lab Arena](https://github.com/isaac
 Isaac Sim, from [`isaaclab_arena/`](isaaclab_arena/README.md), which has its own setup:
 
 ```bash
-git lfs pull --include="isaaclab_arena/**" --exclude=""   # its scene assets, ~2.3 GB; a plain clone skips them
-cd isaaclab_arena && ./setup.sh
+cd isaaclab_arena && ./setup.sh   # also downloads its scene assets (about 5 GB) from Hugging Face
 uv run vabar-arena run isaaclab_arena_gap/experiment_configs/gear_insertion/vabar_gear_insertion_easy_gap_baseline.yaml
 ```
 

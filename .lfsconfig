@@ -1,6 +1,0 @@
-# Isaac Lab Arena's scene assets (about 2.3 GB) are opt-in: VABAR does not need them, so a
-# plain clone leaves them as pointer files. To run isaaclab_arena/, fetch them from the
-# repository root with:
-#   git lfs pull --include="isaaclab_arena/**" --exclude=""
-[lfs]
-	fetchexclude = isaaclab_arena/**

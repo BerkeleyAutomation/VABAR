@@ -80,7 +80,10 @@ bench (`vabar/backdrop.py`). Only the RTX renderer reads them.
 
 ## Isaac Lab Arena integration (`isaaclab_arena/`)
 
-Paths below are under `isaaclab_arena/isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/`.
+Paths below are under `isaaclab_arena/isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/`. Their USD
+closures, textures and collision hulls are hosted at
+[huggingface.co/keplerccc/VABAR-arena-assets](https://huggingface.co/keplerccc/VABAR-arena-assets),
+pinned in `isaaclab_arena_gap/scripts/fetch_assets.sh`, which `setup.sh` runs.
 Code is Apache-2.0 ([LICENSE](LICENSE)); the robot models keep
 their own licences ([NOTICE](NOTICE)). Assets converted from this repository's
 files inherit the rows above.
