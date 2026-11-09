@@ -19,7 +19,8 @@ is the score: a graph that finishes is not a success unless Arena's task check p
 - **Linux**, validated on Ubuntu 24.04.
 - **An NVIDIA GPU with 24 GB of memory**, validated on an RTX 4090. Driver and CUDA versions are in
   [docs/SETUP.md section 2](docs/SETUP.md#2-validated-reference-machine).
-- **`git` and Git LFS** (`git lfs install` run once). Some scene assets are stored in LFS.
+- **`git`**. The scene assets (about 5 GB) are not in git: `./setup.sh` downloads them from
+  [Hugging Face](https://huggingface.co/keplerccc/VABAR-arena-assets).
 - **`uv` 0.9.x**, first on `PATH`. `./setup.sh` refuses other series; `uv self update 0.9.25`
   pins a standalone install.
 - **CMake older than 4 and a C++ compiler** (`build-essential`). Setup builds `egl-probe` from
@@ -56,13 +57,9 @@ is the score: a graph that finishes is not a success unless Arena's task check p
 From the root of the VABAR repository:
 
 ```bash
-git lfs pull --include="isaaclab_arena/**" --exclude=""  # this folder's scene assets (~2.3 GB)
 cd isaaclab_arena
-./setup.sh
+./setup.sh   # also downloads the scene assets (about 5 GB) from Hugging Face
 ```
-
-The repository's `.lfsconfig` leaves this folder's LFS files out of a plain clone, so VABAR users
-do not download them; the `git lfs pull` above fetches them.
 
 `./setup.sh` checks out the pinned sources and builds the Isaac Sim environment (`.venv`), the RSS
 version's environment (`.venv-autolab`), and the GaP skill environments. It ends with a preflight

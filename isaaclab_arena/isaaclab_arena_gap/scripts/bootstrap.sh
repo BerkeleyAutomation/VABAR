@@ -73,7 +73,7 @@ done
 
 required_commands=(uv)
 if ((!materialized_source)); then
-  required_commands+=(git git-lfs)
+  required_commands+=(git)
 fi
 for command in "${required_commands[@]}"; do
   if ! command -v "$command" >/dev/null 2>&1; then
@@ -192,6 +192,8 @@ else
   init_pinned_submodule "$GAP_ROOT" \
     "third_party/Variational-Automation-Benchmark" "GaP VAB"
   init_pinned_submodule "$GAP_ROOT" "third_party/robosuite" "GaP robosuite"
+  # The scene assets are not in git; a materialized source tree already carries them.
+  "$ARENA_GAP_ROOT/scripts/fetch_assets.sh"
 fi
 
 if ((source_only)); then

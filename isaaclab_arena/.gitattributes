@@ -1,7 +1,5 @@
-# Self-contained SimReady runtime closures are large binary artifacts.
-isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.usd filter=lfs diff=lfs merge=lfs -text
-isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.png filter=lfs diff=lfs merge=lfs -text
-isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/collision_hulls.usdc filter=lfs diff=lfs merge=lfs -text
+# The SimReady USD closures, their textures and the collision hulls are not tracked:
+# isaaclab_arena_gap/scripts/fetch_assets.sh fetches them from Hugging Face (see .gitignore).
 # Preserve delivered metadata and material libraries byte-for-byte, including CRLF endings.
 isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.json -diff -text
 isaaclab_arena_vabar/src/isaaclab_arena_vabar/assets/**/simready_*/**/*.mdl -diff -text

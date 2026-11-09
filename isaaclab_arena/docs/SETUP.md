@@ -9,7 +9,7 @@ JSONL (section 9).
 
 You will need, before running `./setup.sh`:
 
-- an NVIDIA GPU with 24 GB of memory and the host tools in section 2 (`git` with Git LFS, `uv`
+- an NVIDIA GPU with 24 GB of memory and the host tools in section 2 (`git`, `uv`
   0.9.x, CMake older than 4, a C++ compiler);
 - read access to the VABAR repository;
 - a VLM API key (`GAP_VLM_API_KEY`) and a Hugging Face token (`HF_TOKEN`) with access to the gated
@@ -45,7 +45,9 @@ This is the configuration used for acceptance, not a requirement that every fiel
 - NVIDIA RTX 4090, 24 GB VRAM
 - NVIDIA driver 580.159.04
 - CUDA toolkit 12.8 at `/usr/local/cuda`
-- `git` and Git LFS (`git lfs install` run once)
+- `git`
+- network access to Hugging Face: setup downloads the scene assets (about 5 GB) from
+  `huggingface.co/keplerccc/VABAR-arena-assets`
 - read access to the VABAR repository; the Arena, GaP runtime and skills sources are public
 - network access to Isaac Lab's asset root: every graph scene's warehouse HDR dome light is resolved
   from Isaac Lab's asset URL (`ISAACLAB_NUCLEUS_DIR`) rather than copied into this repository
@@ -112,11 +114,8 @@ registers them with Arena at startup.
 ## 4. Clone the Exact Sources
 
 ```bash
-git clone --branch vabar-robosimstudio \
-  https://github.com/BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration.git
-cd AUTOLab-GaP-NVIDIA-Collaboration
-git lfs pull --include="isaaclab_arena/**" --exclude=""  # opt-in: .lfsconfig skips these ~2.3 GB on clone
-cd isaaclab_arena
+git clone https://github.com/BerkeleyAutomation/VABAR.git
+cd VABAR/isaaclab_arena
 ```
 
 All later commands run from that `isaaclab_arena/` directory. To reproduce a recorded evaluation,
