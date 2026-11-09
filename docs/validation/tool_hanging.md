@@ -147,7 +147,7 @@ all 30 instances), before and after, on the same machine at the same time:
 | tool hanging L1 | 28/30, 95.6% | 30/30, 100.0% | success 30 |
 | tool hanging L2 | 23/30, 86.7% | 26/30, 91.7% | success 26, graph stopped 4 |
 
-Both are inside the spread the README records for repeated runs (29-30/30 and 21-26/30). In each of
+Both are inside the spread [`docs/benchmark.md`](../benchmark.md) records for repeated runs (29-30/30 and 21-26/30). In each of
 the four Level-2 failures after the change every hand was 15-42 cm clear of every tool; the tool that
 failed was not on its holder (no second of hold), so the release clause decided none of them.
 
