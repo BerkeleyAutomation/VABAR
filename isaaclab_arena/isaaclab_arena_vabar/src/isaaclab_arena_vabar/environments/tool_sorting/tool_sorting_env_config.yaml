@@ -1,0 +1,35 @@
+default_physics_backend: newton
+benchmark_physics:
+  solver_cfg:
+    enable_multiccd: true
+env_cfg_override:
+  decimation: 1
+  num_rerenders_on_reset: 5
+  sim:
+    dt: 0.02
+    render_interval: 1
+    gravity: [0.0, 0.0, -9.81]
+    use_newton_actuators: true
+    physics:
+      num_substeps: 10
+      use_cuda_graph: true
+      debug_mode: false
+      default_shape_cfg:
+        ke: 60000.0
+        kd: 500.0
+        gap: 0.002
+      solver_cfg:
+        solver: newton
+        disable_sensors: true
+        integrator: implicitfast
+        nconmax: 1024
+        njmax: 1024
+        iterations: 20
+        ls_iterations: 20
+        impratio: 10.0
+        cone: elliptic
+        use_mujoco_contacts: true
+        # MuJoCo's default, as AUTOLab's tool_sort runs it. Arena's Newton preset sets
+        # 15000 for dexterous hands; there a resting tool pair whose GJK never
+        # converges costs ~50 ms per call, every substep (up to 0.6 s per step).
+        ccd_iterations: 35

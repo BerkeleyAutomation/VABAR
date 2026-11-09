@@ -1,0 +1,54 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.5.0"
+    }
+    defaultPrim = "linear_4310"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+over "linear_4310" (
+    prepend apiSchemas = ["IsaacRobotAPI"]
+)
+{
+    custom rel isaac:physics:robotJoints
+    custom rel isaac:physics:robotLinks
+
+    over "Geometry"
+    {
+        over "gripper" (
+            prepend apiSchemas = ["IsaacLinkAPI"]
+        )
+        {
+            over "tip_left" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+                over "joint7" (
+                    prepend apiSchemas = ["IsaacJointAPI"]
+                )
+                {
+                }
+            }
+
+            over "tip_right" (
+                prepend apiSchemas = ["IsaacLinkAPI"]
+            )
+            {
+                over "joint8" (
+                    prepend apiSchemas = ["IsaacJointAPI"]
+                )
+                {
+                }
+            }
+
+            over "PhysicsFixedJoint" (
+                prepend apiSchemas = ["IsaacJointAPI"]
+            )
+            {
+            }
+        }
+    }
+}

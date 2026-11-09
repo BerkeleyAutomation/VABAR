@@ -1,0 +1,55 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__battery_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "industrial_d_battery_0_g0_visual_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Inertia of the voxelised visual mesh at uniform density and the delivered mass.
+            # Taken about the delivered centre of mass, 1.6 mm from this model's. The delivered
+            # inertia was 3.9/2.6/2.6x this on its principal axes (97% of the physical limit for
+            # this shape). Mass unchanged.
+            point3f physics:centerOfMass = (-0.0030052743, -1.8054064e-10, -1.9187539e-05)
+            float3 physics:diagonalInertia = (1.7665802e-05, 4.6157648e-05, 4.6167357e-05)
+            float physics:mass = 0.13500001
+            quatf physics:principalAxes = (0.92387952, 0.38268345, 4.3274902e-08, -6.6615981e-08)
+
+            over "industrial_d_battery_0_g0_visual_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            # AUTOLab's sort_electrical, the scene tool sorting easy_1 replicates, collides this cell
+            # as its mesh's bounding box ((:collider bounding_box), condim 4 in scene.xml); the
+            # drawn mesh is visual only. As a convex hull, a 64-sided prism, the cell at its
+            # physical inertia rolled in bursts on its side.
+            def Cube "BoundingBoxCollider" (
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__painted_red_a01>
+                uniform token purpose = "guide"
+                double size = 2
+                float3 xformOp:scale = (0.03032145, 0.0162249, 0.0162249)
+                double3 xformOp:translate = (-0.0001855, 0, -0.0000192)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__painted_red_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

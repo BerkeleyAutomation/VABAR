@@ -1,0 +1,923 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+        string source = "AUTOLab-GaP-NVIDIA-Collaboration@b7acf47f6df779eff8b911d631d6391f83e8bb37"
+    }
+    defaultPrim = "i2rt_yam"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "i2rt_yam" (
+    prepend apiSchemas = ["GeomModelAPI", "MjcSceneAPI"]
+    assetInfo = {
+        string name = "i2rt_yam"
+    }
+    kind = "component"
+    prepend payload = @i2rt_yam/Payload/Contents.usda@
+    variants = {
+        string gripper = "crank_4310"
+    }
+    prepend variantSets = ["gripper", "kinematics"]
+)
+{
+    float3[] extentsHint = [(-0.27549183, -0.1, -0.01), (0.25714266, 0.1, 0.2564998), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.278, -0.05797501, -0.017), (0.2568, 0.05802499, 0.269)]
+    uniform token mjc:option:integrator = "implicitfast"
+
+    over "Physics"
+    {
+        over "PhysicsMaterial"
+        {
+            float newton:contactDamping = 500
+            float newton:contactStiffness = 62500
+            float newton:rollingFriction = 0.01
+            float newton:torsionalFriction = 0.1
+            float physics:dynamicFriction = 2
+            float physics:restitution = 0
+            float physics:staticFriction = 2
+        }
+
+        def Material "FingertipPhysicsMaterial" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI", "MjcMaterialAPI"]
+        )
+        {
+            float newton:contactDamping = 500
+            float newton:contactStiffness = 62500
+            float newton:rollingFriction = 0.01
+            float newton:torsionalFriction = 0.1
+            float physics:dynamicFriction = 4
+            float physics:restitution = 0
+            float physics:staticFriction = 4
+        }
+    }
+
+    over "Geometry"
+    {
+        over "arm" (
+            prepend apiSchemas = ["PhysxArticulationAPI", "PhysxRigidBodyAPI", "PhysicsMassAPI"]
+        )
+        {
+            # The centre of mass is the `kinematics` variant's: base_frame.usda moves it.
+            float3 physics:diagonalInertia = (0.00013879125, 0.00013879125, 0.00010282879)
+            float physics:mass = 0.21895644
+            quatf physics:principalAxes = (1, 0, 0, 0)
+            custom bool physxArticulation:enabledSelfCollisions = 0
+            custom int physxArticulation:solverPositionIterationCount = 32
+            custom int physxArticulation:solverVelocityIterationCount = 1
+            custom float physxRigidBody:angularDamping = 0.05
+            custom float physxRigidBody:linearDamping = 0
+            custom int physxRigidBody:solverPositionIterationCount = 16
+            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+            over "Capsule"
+            {
+                custom int mjc:condim = 6
+                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                custom double[] mjc:solref = [0.004, 1]
+                float newton:contactGap = 0
+            }
+
+            over "link_1" (
+                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+            )
+            {
+                point3f physics:centerOfMass = (-0.00192861, -0.00795735, 0.0208176)
+                float3 physics:diagonalInertia = (0.000180751, 0.000145532, 0.0000589179)
+                float physics:mass = 0.12415
+                quatf physics:principalAxes = (0.29785106, 0.6426341, 0.36004505, 0.6071851)
+                custom float physxRigidBody:angularDamping = 0.05
+                custom float physxRigidBody:linearDamping = 0
+                custom int physxRigidBody:solverPositionIterationCount = 16
+                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                over "link_2" (
+                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                )
+                {
+                    point3f physics:centerOfMass = (0.132008, 0.00000210599, 0.000293073)
+                    float3 physics:diagonalInertia = (0.0121902, 0.0121318, 0.000683304)
+                    float physics:mass = 1.24434
+                    quatf physics:principalAxes = (0.5, 0.5, 0.5, 0.5)
+                    custom float physxRigidBody:angularDamping = 0.05
+                    custom float physxRigidBody:linearDamping = 0
+                    custom int physxRigidBody:solverPositionIterationCount = 16
+                    custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                    over "Capsule"
+                    {
+                        custom int mjc:condim = 6
+                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                        custom double[] mjc:solref = [0.004, 1]
+                        float newton:contactGap = 0
+                    }
+
+                    over "Capsule_1"
+                    {
+                        custom int mjc:condim = 6
+                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                        custom double[] mjc:solref = [0.004, 1]
+                        float newton:contactGap = 0
+                    }
+
+                    over "Capsule_2"
+                    {
+                        custom int mjc:condim = 6
+                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                        custom double[] mjc:solref = [0.004, 1]
+                        float newton:contactGap = 0
+                    }
+
+                    over "link_3" (
+                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                    )
+                    {
+                        point3f physics:centerOfMass = (-0.121816, -0.054846, -0.000111108)
+                        float3 physics:diagonalInertia = (0.00699732, 0.00696112, 0.000788244)
+                        float physics:mass = 0.853698
+                        quatf physics:principalAxes = (0.5, 0.5, 0.5, 0.5)
+                        custom float physxRigidBody:angularDamping = 0.05
+                        custom float physxRigidBody:linearDamping = 0
+                        custom int physxRigidBody:solverPositionIterationCount = 16
+                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                        over "Capsule"
+                        {
+                            custom int mjc:condim = 6
+                            custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                            custom double[] mjc:solref = [0.004, 1]
+                            float newton:contactGap = 0
+                        }
+
+                        over "Capsule_1"
+                        {
+                            custom int mjc:condim = 6
+                            custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                            custom double[] mjc:solref = [0.004, 1]
+                            float newton:contactGap = 0
+                        }
+
+                        over "link_4" (
+                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                        )
+                        {
+                            point3f physics:centerOfMass = (-0.0769778, -0.0527104, 0.000154878)
+                            float3 physics:diagonalInertia = (0.000791532, 0.000744733, 0.000282116)
+                            float physics:mass = 0.463511
+                            quatf physics:principalAxes = (0.6666101, 0.6666101, -0.23586208, -0.23586208)
+                            custom float physxRigidBody:angularDamping = 0.05
+                            custom float physxRigidBody:linearDamping = 0
+                            custom int physxRigidBody:solverPositionIterationCount = 16
+                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                            over "Capsule"
+                            {
+                                custom int mjc:condim = 6
+                                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                custom double[] mjc:solref = [0.004, 1]
+                                float newton:contactGap = 0
+                            }
+
+                            over "link_5" (
+                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                            )
+                            {
+                                point3f physics:centerOfMass = (0.0000364861, 0.00025665, 0.0353526)
+                                float3 physics:diagonalInertia = (0.000197802, 0.0001775, 0.000147402)
+                                float physics:mass = 0.350962
+                                quatf physics:principalAxes = (1, 0, 0, 0)
+                                custom float physxRigidBody:angularDamping = 0.05
+                                custom float physxRigidBody:linearDamping = 0
+                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                over "Capsule"
+                                {
+                                    custom int mjc:condim = 6
+                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                    custom double[] mjc:solref = [0.004, 1]
+                                    float newton:contactGap = 0
+                                }
+
+                                over "link_6" (
+                                    prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                )
+                                {
+                                    custom float physxRigidBody:angularDamping = 0.05
+                                    custom float physxRigidBody:linearDamping = 0
+                                    custom int physxRigidBody:solverPositionIterationCount = 16
+                                    custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                    over "Capsule"
+                                    {
+                                        custom int mjc:condim = 6
+                                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                        custom double[] mjc:solref = [0.004, 1]
+                                        float newton:contactGap = 0
+                                    }
+
+                                    over "Capsule_1"
+                                    {
+                                        custom int mjc:condim = 6
+                                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                        custom double[] mjc:solref = [0.004, 1]
+                                        float newton:contactGap = 0
+                                    }
+
+                                    over "Capsule_2"
+                                    {
+                                        custom int mjc:condim = 6
+                                        custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                        custom double[] mjc:solref = [0.004, 1]
+                                        float newton:contactGap = 0
+                                    }
+
+                                    over "link_left_finger" (
+                                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                    )
+                                    {
+                                        point3f physics:centerOfMass = (-0.0192995, -0.0365902, 0.039774)
+                                        float3 physics:diagonalInertia = (0.000159084, 0.000154909, 0.0000463655)
+                                        float physics:mass = 0.118
+                                        quatf physics:principalAxes = (0.7575171, 0.5690228, -0.31997016, 0)
+                                        custom float physxRigidBody:angularDamping = 0.05
+                                        custom float physxRigidBody:linearDamping = 0
+                                        custom int physxRigidBody:solverPositionIterationCount = 16
+                                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                        over "lf_rot" (
+                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                        )
+                                        {
+                                            point3f physics:centerOfMass = (-0.008421052, -0.015789473, 0.020421052)
+                                            float3 physics:diagonalInertia = (0.000023910377, 0.000020730204, 0.000005660176)
+                                            float physics:mass = 0.039793506
+                                            quatf physics:principalAxes = (0.46778637, 0.52697545, 0.6586981, 0.2637985)
+                                            custom float physxRigidBody:angularDamping = 0.05
+                                            custom float physxRigidBody:linearDamping = 0
+                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                            over "Capsule"
+                                            {
+                                                custom int mjc:condim = 6
+                                                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                custom double[] mjc:solref = [0.004, 1]
+                                                float newton:contactGap = 0
+                                            }
+
+                                            over "Capsule_1"
+                                            {
+                                                custom int mjc:condim = 6
+                                                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                custom double[] mjc:solref = [0.004, 1]
+                                                float newton:contactGap = 0
+                                            }
+
+                                            over "lf_down" (
+                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                            )
+                                            {
+                                                point3f physics:centerOfMass = (0.0048656752, -0.012786258, 0.029346032)
+                                                float3 physics:diagonalInertia = (0.000015767067, 0.000013071055, 0.000003943675)
+                                                float physics:mass = 0.020775741
+                                                quatf physics:principalAxes = (0.6275994, -0.022664897, 0.1777366, 0.75763774)
+                                                custom float physxRigidBody:angularDamping = 0.05
+                                                custom float physxRigidBody:linearDamping = 0
+                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                over "Capsule"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Capsule_1"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Capsule_2"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Box"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Box_1"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_1"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_2"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_3"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_4"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_5"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+                                            }
+                                        }
+
+                                        over "left_finger" (
+                                            prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:linear"]
+                                        )
+                                        {
+                                            float drive:linear:physics:stiffness = 0.001
+                                            custom double newton:limitDamping = 100
+                                            custom double newton:limitStiffness = 2500
+                                            custom float physxJoint:armature = 0.1
+                                        }
+                                    }
+
+                                    over "link_right_finger" (
+                                        prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                    )
+                                    {
+                                        point3f physics:centerOfMass = (-0.0192995, 0.0365902, -0.039774)
+                                        float3 physics:diagonalInertia = (0.000159084, 0.000154909, 0.0000463655)
+                                        float physics:mass = 0.118
+                                        quatf physics:principalAxes = (-0.7575171, 0.5690228, -0.31997016, 0)
+                                        custom float physxRigidBody:angularDamping = 0.05
+                                        custom float physxRigidBody:linearDamping = 0
+                                        custom int physxRigidBody:solverPositionIterationCount = 16
+                                        custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                        over "rf_rot" (
+                                            prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                        )
+                                        {
+                                            point3f physics:centerOfMass = (0.008421052, -0.015789473, 0.020421052)
+                                            float3 physics:diagonalInertia = (0.000023910377, 0.000020730204, 0.0000056601766)
+                                            float physics:mass = 0.039793506
+                                            quatf physics:principalAxes = (0.658698, 0.26379853, 0.46778637, 0.52697545)
+                                            custom float physxRigidBody:angularDamping = 0.05
+                                            custom float physxRigidBody:linearDamping = 0
+                                            custom int physxRigidBody:solverPositionIterationCount = 16
+                                            custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                            over "Capsule"
+                                            {
+                                                custom int mjc:condim = 6
+                                                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                custom double[] mjc:solref = [0.004, 1]
+                                                float newton:contactGap = 0
+                                            }
+
+                                            over "Capsule_1"
+                                            {
+                                                custom int mjc:condim = 6
+                                                custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                custom double[] mjc:solref = [0.004, 1]
+                                                float newton:contactGap = 0
+                                            }
+
+                                            over "rf_down" (
+                                                prepend apiSchemas = ["PhysxRigidBodyAPI", "PhysicsMassAPI"]
+                                            )
+                                            {
+                                                point3f physics:centerOfMass = (-0.0048656752, -0.012786258, 0.029346032)
+                                                float3 physics:diagonalInertia = (0.000015767067, 0.000013071055, 0.000003943675)
+                                                float physics:mass = 0.020775741
+                                                quatf physics:principalAxes = (0.75763774, -0.1777366, 0.022664897, 0.6275994)
+                                                custom float physxRigidBody:angularDamping = 0.05
+                                                custom float physxRigidBody:linearDamping = 0
+                                                custom int physxRigidBody:solverPositionIterationCount = 16
+                                                custom int physxRigidBody:solverVelocityIterationCount = 1
+
+                                                over "Capsule"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Capsule_1"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Capsule_2"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Box"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Box_1"
+                                                {
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_1"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_2"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_3"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_4"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+
+                                                over "Sphere_5"
+                                                {
+                                                    rel material:binding:physics = </i2rt_yam/Physics/FingertipPhysicsMaterial>
+                                                    custom int mjc:condim = 6
+                                                    custom double[] mjc:solimp = [0.998, 0.998, 0.001, 0.5, 2]
+                                                    custom double[] mjc:solref = [0.004, 1]
+                                                    float newton:contactGap = 0
+                                                }
+                                            }
+                                        }
+
+                                        over "right_finger" (
+                                            prepend apiSchemas = ["PhysxJointAPI"]
+                                        )
+                                        {
+                                            custom double newton:limitDamping = 100
+                                            custom double newton:limitStiffness = 2500
+                                            custom float physxJoint:armature = 0.1
+                                        }
+                                    }
+
+                                    over "joint6" (
+                                        prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                                    )
+                                    {
+                                        float drive:angular:physics:stiffness = 0.000017453292
+                                        custom double newton:limitDamping = 1.7453292519943295
+                                        custom double newton:limitStiffness = 43.63323129985824
+                                        custom float physxJoint:armature = 0.0018
+                                    }
+                                }
+
+                                over "joint5" (
+                                    prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                                )
+                                {
+                                    float drive:angular:physics:stiffness = 0.000017453292
+                                    custom double newton:limitDamping = 1.7453292519943295
+                                    custom double newton:limitStiffness = 43.63323129985824
+                                    custom float physxJoint:armature = 0.0018
+                                }
+                            }
+
+                            over "joint4" (
+                                prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                            )
+                            {
+                                float drive:angular:physics:stiffness = 0.000017453292
+                                custom double newton:limitDamping = 1.7453292519943295
+                                custom double newton:limitStiffness = 43.63323129985824
+                                custom float physxJoint:armature = 0.0018
+                            }
+                        }
+
+                        over "joint3" (
+                            prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                        )
+                        {
+                            float drive:angular:physics:stiffness = 0.000017453292
+                            custom double newton:limitDamping = 1.7453292519943295
+                            custom double newton:limitStiffness = 43.63323129985824
+                            custom float physxJoint:armature = 0.032
+                        }
+                    }
+
+                    over "joint2" (
+                        prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                    )
+                    {
+                        float drive:angular:physics:stiffness = 0.000017453292
+                        custom double newton:limitDamping = 1.7453292519943295
+                        custom double newton:limitStiffness = 43.63323129985824
+                        custom float physxJoint:armature = 0.032
+                    }
+                }
+
+                over "joint1" (
+                    prepend apiSchemas = ["PhysxJointAPI", "PhysicsDriveAPI:angular"]
+                )
+                {
+                    float drive:angular:physics:stiffness = 0.000017453292
+                    custom double newton:limitDamping = 1.7453292519943295
+                    custom double newton:limitStiffness = 43.63323129985824
+                    custom float physxJoint:armature = 0.032
+                }
+            }
+        }
+    }
+
+    variantSet "gripper" = {
+        # AUTOLab's tool-hanging YAM.
+        "crank_4310" (
+            variants = {
+                string kinematics = "menagerie"
+            }
+        ) {
+
+        }
+        # The crank hand with AUTOLab's tool-hanging finger travel: its yam_tool_hanging
+        # MJCF is this MuJoCo Menagerie hand with each finger opening to 47.5 mm, not 37.5 mm.
+        "crank_4310_wide" (
+            variants = {
+                string kinematics = "menagerie"
+            }
+        ) {
+            over "Geometry"
+            {
+                over "arm"
+                {
+                    over "link_1"
+                    {
+                        over "link_2"
+                        {
+                            over "link_3"
+                            {
+                                over "link_4"
+                                {
+                                    over "link_5"
+                                    {
+                                        over "link_6"
+                                        {
+                                            over "link_left_finger"
+                                            {
+                                                over "left_finger"
+                                                {
+                                                    float physics:upperLimit = 0.0475
+                                                }
+                                            }
+                                            over "link_right_finger"
+                                            {
+                                                over "right_finger"
+                                                {
+                                                    float physics:lowerLimit = -0.0475
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        # AUTOLab plans this hand's cells (cable routing, USB-C) on its yam_i2rt chain.
+        "linear_4310" (
+            variants = {
+                string kinematics = "autolab_v1"
+            }
+        ) {
+            over "Geometry"
+            {
+                over "arm"
+                {
+                    over "link_1"
+                    {
+                        over "link_2"
+                        {
+                            over "link_3"
+                            {
+                                over "link_4"
+                                {
+                                    over "link_5"
+                                    {
+                                        over "link_6" (
+                                            prepend apiSchemas = ["PhysicsMassAPI"]
+                                        )
+                                        {
+                                            point3f physics:centerOfMass = (0, 0, 0)
+                                            float3 physics:diagonalInertia = (1e-7, 1e-7, 1e-7)
+                                            float physics:mass = 0.0001
+                                            quatf physics:principalAxes = (1, 0, 0, 0)
+
+                                            over "model2__12" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "model2__13" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "Capsule" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "Capsule_1" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "Capsule_2" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "model2__12__render_instance" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "model2__13__render_instance" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "tcp_site" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "grasp_site" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "link_left_finger" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            over "link_right_finger" (
+                                                active = false
+                                            )
+                                            {
+                                            }
+
+                                            def Xform "linear_4310_attach" (
+                                                prepend references = [@linear_4310/fingertip_colliders.usda@</linear_4310>, @linear_4310/linear_4310.usda@</linear_4310>]
+                                                variants = {
+                                                    string Physics = "physics"
+                                                }
+                                            )
+                                            {
+                                                quatf xformOp:orient = (0, 0, 0, 1)
+                                                double3 xformOp:translate = (0, 0, 0)
+                                                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient"]
+
+                                                over "Geometry"
+                                                {
+                                                    over "gripper" (
+                                                        delete apiSchemas = ["PhysicsArticulationRootAPI", "NewtonArticulationRootAPI"]
+                                                    )
+                                                    {
+                                                        custom float mjc:body:gravcomp = 1
+                                                        custom float mjc:gravcomp = 1
+
+                                                        over "PhysicsFixedJoint" (
+                                                            active = false
+                                                        )
+                                                        {
+                                                        }
+
+                                                        over "tip_left"
+                                                        {
+                                                            custom float mjc:body:gravcomp = 1
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "joint7"
+                                                            {
+                                                                float drive:linear:physics:damping = 10
+                                                                float drive:linear:physics:stiffness = 100
+                                                                uniform double mjc:armature = 0.05
+                                                                uniform double mjc:damping = 2
+                                                                uniform double mjc:frictionloss = 0.5
+                                                                float newton:armature = 0.05
+                                                                float newton:damping = 2
+                                                                float newton:friction = 0.5
+                                                                float physxJoint:armature = 0.05
+                                                                float physxJoint:jointFriction = 0.5
+                                                            }
+
+                                                            over "tip_left" (
+                                                                instanceable = false
+                                                            )
+                                                            {
+                                                                over "tip_left"
+                                                                {
+                                                                    color3f[] primvars:displayColor = [(0.25, 0.25, 0.25)]
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "tip_right"
+                                                        {
+                                                            custom float mjc:body:gravcomp = 1
+                                                            custom float mjc:gravcomp = 1
+
+                                                            over "joint8"
+                                                            {
+                                                                uniform double mjc:armature = 0.05
+                                                                uniform double mjc:damping = 2
+                                                                uniform double mjc:frictionloss = 0.5
+                                                                float newton:armature = 0.05
+                                                                float newton:damping = 2
+                                                                float newton:friction = 0.5
+                                                                float physxJoint:armature = 0.05
+                                                                float physxJoint:jointFriction = 0.5
+                                                            }
+
+                                                            over "tip_right" (
+                                                                instanceable = false
+                                                            )
+                                                            {
+                                                                over "tip_right"
+                                                                {
+                                                                    color3f[] primvars:displayColor = [(0.25, 0.25, 0.25)]
+                                                                }
+                                                            }
+                                                        }
+
+                                                        over "gripper" (
+                                                            instanceable = false
+                                                        )
+                                                        {
+                                                            over "gripper"
+                                                            {
+                                                                color3f[] primvars:displayColor = [(0.25, 0.25, 0.25)]
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            def PhysicsFixedJoint "linear_4310_gripper_attach_joint"
+                                            {
+                                                rel physics:body0 = </i2rt_yam/Geometry/arm/link_1/link_2/link_3/link_4/link_5/link_6>
+                                                rel physics:body1 = </i2rt_yam/Geometry/arm/link_1/link_2/link_3/link_4/link_5/link_6/linear_4310_attach/Geometry/gripper>
+                                                point3f physics:localPos0 = (0, 0, 0)
+                                                point3f physics:localPos1 = (0, -0, 0)
+                                                quatf physics:localRot0 = (0, 0, 0, 1)
+                                                quatf physics:localRot1 = (-6.123235e-17, 0.7071068, 0.7071068, 2.2993474e-17)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+
+    # Which of AUTOLab's two YAM chains the arm has. `menagerie` (also no
+    # selection) is this asset as MuJoCo Menagerie ships it: AUTOLab's tool-hanging
+    # yam_tool_hanging and its cuRobo URDF, base frame 10 mm above the base's
+    # underside. `autolab_v1` is the generated base_frame + autolab_v1 layers:
+    # AUTOLab's yam_i2rt (cable routing, USB-C), frame on the underside. The
+    # linear_4310 hand selects it; the crank hands select `menagerie`.
+    variantSet "kinematics" = {
+        "menagerie" {
+            over "Geometry"
+            {
+                over "arm"
+                {
+                    point3f physics:centerOfMass = (0, 0, 0.026)
+                }
+            }
+        }
+        "autolab_v1" (
+            prepend references = [@kinematics/autolab_v1.usda@</i2rt_yam>, @kinematics/base_frame.usda@</i2rt_yam>]
+        ) {
+            over "Geometry"
+            {
+                over "arm"
+                {
+                    point3f physics:centerOfMass = (0, 0, 0.036)
+                }
+            }
+        }
+    }
+}

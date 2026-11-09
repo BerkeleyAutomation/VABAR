@@ -1,0 +1,41 @@
+[project]
+name = "isaaclab-arena-gap"
+version = "0.0.1"
+description = "Glue to run the GaP agent against Isaac Lab Arena (real-robot-first)"
+requires-python = ">=3.11"
+# Runtime deps are minimal here; the GaP engine and skill bundles are consumed
+# from separately pinned sibling checkouts. The bridge needs msgpack and numpy,
+# scene freezing reads YAML, and the public --viz viser backend needs its optional
+# viewer package. Arena and GaP keep their heavier environments.
+dependencies = [
+    "isaaclab-arena-vabar",
+    "msgpack",
+    "msgpack-numpy==0.4.8",
+    "numpy",
+    "PyYAML",
+    "viser>=1.0.16",
+]
+
+[project.scripts]
+vabar-arena = "isaaclab_arena_gap.cli:main"
+vabar-eval = "isaaclab_arena_gap.container_cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/isaaclab_arena_gap"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["external"]
+markers = [
+    "live: launches a fresh Isaac Sim process and requires a visible CUDA device",
+]
+
+[tool.uv.sources]
+isaaclab-arena-vabar = { path = "../isaaclab_arena_vabar", editable = true }

@@ -1,0 +1,189 @@
+USB-C bf985d0 Arena runtime and artist perception adaptation. Fit observed socket and plug-shell geometry.
+
+--- a/workflow.json
++++ b/workflow.json
+@@ -1,5 +1,6 @@
+ {
+   "version": 3,
++  "requires": {"tools": ["sam3.segment_text"]},
+   "meta": {
+     "observation_mode": "on_demand",
+     "name": "usbc_insert_mate",
+--- a/scripts/ground_vision.py
++++ b/scripts/ground_vision.py
+@@ -52,8 +52,8 @@
+ not choosing where to look from."
+ """
+
+-PLUG_QUERY = "orange plug"
+-RECEPTACLE_QUERY = "blue object"
++PLUG_QUERY = "orange and silver USB-C plug"
++RECEPTACLE_QUERY = "silver metal connector"
+ """The prompts, and the colour word in each is the whole of it.
+
+ **Measured on this render**, SAM3 through
+@@ -91,7 +91,7 @@
+ relative to the other.
+ """
+
+-PLUG_SCORE = 0.20
++PLUG_SCORE = 0.04
+ RECEPTACLE_SCORE = 0.20
+ """Detection floors. Low, deliberately: on a render like this the true
+ detections score in the eighties and nineties while the false ones do not
+--- a/scripts/relook_vision.py
++++ b/scripts/relook_vision.py
+@@ -15,7 +15,8 @@
+
+ sys.path.insert(0, str(Path(__file__).resolve().parent))
+ from held_frame import fit_top_frame
+-from surface_frame import fit_plug, fit_receptacle
++from surface_frame import fit_receptacle
++from isaaclab_arena_gap.usbc_shell_perception import fit_plug_shell
+
+ REQUIRED_TOOLS = ("sam3.segment_text", "usbc.receptacle_shape", "usbc.plug_shape")
+ WHY_ABSENT = (
+@@ -32,9 +33,10 @@
+ A cell with two hand cameras would name one here.
+ """
+
+-PLUG_QUERY = "orange plug"
+-RECEPTACLE_QUERY = "blue object"
+-PLUG_SCORE = 0.20
++PLUG_QUERY = "orange and silver USB-C plug"
++RELOOK_PLUG_QUERY = "orange plug"  # the relook pass keeps the RSS prompt
++RECEPTACLE_QUERY = "cylindrical metal connector"
++PLUG_SCORE = 0.04
+ RECEPTACLE_SCORE = 0.20
+ MIN_MASK_PIXELS = 40
+ """The ground body's prompts and floors, restated -- same scene, same palette,
+@@ -207,6 +209,34 @@
+         if int(np.count_nonzero(mask)) >= MIN_MASK_PIXELS:
+             return mask
+     return None
++
++
++def _fit_socket(ctx, rgb, depth, K, T, shape, mouth_hint, axis_hint, query):
++    """Select the bulkhead by measured surface support, not SAM score alone.
++
++    Silver also describes the plug tip. A braced bulkhead can rotate away from
++    its overhead heading, so recover with its current visible principal axis.
++    The RSS registration still checks inliers, residual, rank and movement.
++    """
++    result = ctx.tool("sam3.segment_text", image=rgb, query=query, max_results=0)
++    fits = []
++    prior = np.asarray(axis_hint, dtype=float)
++    for mask, score in zip(result.get("masks") or [], result.get("scores") or [], strict=True):
++        if float(score) < RECEPTACLE_SCORE:
++            continue
++        points = _to_world(_foreground_mask(mask, depth), depth, K, T)
++        points = points[np.linalg.norm(points - np.asarray(mouth_hint), axis=1) < 0.080]
++        if len(points) < 150:
++            continue
++        fit = fit_receptacle(points, shape, mouth_hint, axis_hint)
++        if fit is None:
++            fresh_axis = np.r_[_principal_xy(points), 0.0]
++            if fresh_axis @ prior < 0.0:
++                fresh_axis = -fresh_axis
++            fit = fit_receptacle(points, shape, mouth_hint, fresh_axis)
++        if fit is not None:
++            fits.append(fit)
++    return min(fits, key=lambda fit: fit["residual_m"]) if fits else None
+
+
+ def _principal_xy(points: np.ndarray) -> np.ndarray:
+@@ -358,27 +388,15 @@
+             return dict(NOTHING)
+         kept_static = {"mouth_point": inspect_mouth_point or scene_mouth_point, "bore_axis": kept_axis}
+     if kept_static is not None:
+-        rec_pts = None
+-    else:
+-        rec_mask = _detect(ctx, rgb, receptacle_query, RECEPTACLE_SCORE)
+-        if rec_mask is None:
+-            print(f"[{label}:vision] no {receptacle_query!r} in {camera!r}", flush=True)
+-            return dict(NOTHING)  # type: ignore[return-value]
+-        rec_pts = _to_world(_foreground_mask(rec_mask, depth), depth, K, T)
+-        if len(rec_pts) < MIN_MASK_PIXELS:
+-            return dict(NOTHING)  # type: ignore[return-value]
+-
+-    if rec_pts is None:
+         frame = kept_static
+         axis = np.asarray([float(v) for v in frame["bore_axis"]], dtype=np.float64)
+         mouth = np.asarray([float(v) for v in frame["mouth_point"]], dtype=np.float64)
+         source = "earlier camera frame of bolted fixture"
+     else:
+-        fit = fit_receptacle(
+-            rec_pts,
+-            shape,
++        fit = _fit_socket(
++            ctx, rgb, depth, K, T, shape,
+             inspect_mouth_point or scene_mouth_point,
+-            measured_bore_axis or scene_bore_axis,
++            measured_bore_axis or scene_bore_axis, receptacle_query,
+         )
+         if fit is None:
+             print(f"[{label}:vision] no supported fresh socket surface fit", flush=True)
+@@ -392,7 +410,7 @@
+             flush=True,
+         )
+
+-    plug_mask = _detect(ctx, rgb, plug_query, PLUG_SCORE)
++    plug_mask = _detect(ctx, rgb, RELOOK_PLUG_QUERY if label == "relook" else plug_query, PLUG_SCORE)
+     side_read = None
+     if plug_mask is None and label != "relook":
+         side_read = _side_shoulder(ctx, observation, axis, scene_plug_half_h, plug_query)
+@@ -446,31 +464,29 @@
+         # even when the segmenter correctly finds the held connector.
+         hsv = cv2.cvtColor(np.ascontiguousarray(rgb, dtype=np.uint8), cv2.COLOR_RGB2HSV)
+         orange = cv2.inRange(hsv, np.array([5, 24, 48], np.uint8), np.array([40, 255, 255], np.uint8)) > 0
+-        held_frame = fit_top_frame(_to_world(np.asarray(plug_mask, dtype=bool) & orange, depth, K, T), axis)
+-        if held_frame:
+-            normal = np.asarray(held_frame["up"])
+-            face = np.asarray(held_frame["point"])
+-            top = plug_point.copy()
+-            top[2] = (face @ normal - top[:2] @ normal[:2]) / normal[2]
+-            plug_point = top - float(scene_plug_half_h) * normal
+-            refined = fit_plug(
+-                plug_pts,
+-                ctx.tool("usbc.plug_shape"),
+-                plug_point,
+-                held_frame["axis"],
+-                held_frame["up"],
+-            )
+-            if refined is None:
+-                print(f"[{label}:vision] no supported held-plug surface fit", flush=True)
+-                return dict(NOTHING)
+-            held_frame = refined
+-            plug_point = np.asarray(refined["point"])
+-            print(
+-                f"[{label}:vision] held plug surface fit: {held_frame['inlier_count']} points, "
+-                f"axis={np.round(held_frame['axis'], 4).tolist()}, "
+-                f"residual={held_frame['residual_m'] * 1000:.3f} mm",
+-                flush=True,
+-            )
++        shell_points = _to_world(np.asarray(plug_mask, dtype=bool) & orange, depth, K, T)
++        held_frame = fit_top_frame(shell_points, axis)
++        if held_frame is None:
++            print(f"[{label}:vision] no supported shell top plane", flush=True)
++            return dict(NOTHING)
++        refined = fit_plug_shell(
++            shell_points,
++            ctx.tool("usbc.plug_shape"),
++            held_frame["axis"],
++            held_frame["up"],
++            _to_world(np.ones(depth.shape, dtype=bool), depth, K, T),
++        )
++        if refined is None:
++            print(f"[{label}:vision] no supported shell fit with visible tip depth", flush=True)
++            return dict(NOTHING)
++        held_frame = refined
++        plug_point = np.asarray(refined["point"])
++        print(
++            f"[{label}:vision] held plug shell fit: {held_frame['inlier_count']} points, "
++            f"axis={np.round(held_frame['axis'], 4).tolist()}, "
++            f"residual={held_frame['residual_m'] * 1000:.3f} mm",
++            flush=True,
++        )
+     if not _consistent_with_grasp(plug_point, observation):
+         print(
+             f"[{label}:vision] inferred shoulder is outside the held-plug envelope; "

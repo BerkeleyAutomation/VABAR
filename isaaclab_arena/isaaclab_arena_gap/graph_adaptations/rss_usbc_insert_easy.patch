@@ -1,0 +1,45 @@
+USB-C bf985d0 runtime adaptation: declare SAM3, use shared robot math imports, and segment the artist plug including its metal nose.
+
+--- a/workflow.json
++++ b/workflow.json
+@@ -1,5 +1,6 @@
+ {
+   "version": 3,
++  "requires": {"tools": ["sam3.segment_text"]},
+   "meta": {
+     "observation_mode": "on_demand",
+     "name": "usbc_insert_mate",
+--- a/scripts/ground_vision.py
++++ b/scripts/ground_vision.py
+@@ -52,7 +52,7 @@
+ not choosing where to look from."
+ """
+ 
+-PLUG_QUERY = "orange plug"
++PLUG_QUERY = "orange and silver USB-C plug"
+ RECEPTACLE_QUERY = "blue object"
+ """The prompts, and the colour word in each is the whole of it.
+ 
+@@ -91,7 +91,7 @@
+ relative to the other.
+ """
+ 
+-PLUG_SCORE = 0.20
++PLUG_SCORE = 0.04
+ RECEPTACLE_SCORE = 0.20
+ """Detection floors. Low, deliberately: on a render like this the true
+ detections score in the eighties and nineties while the false ones do not
+--- a/scripts/relook_vision.py
++++ b/scripts/relook_vision.py
+@@ -32,9 +32,9 @@
+ A cell with two hand cameras would name one here.
+ """
+ 
+-PLUG_QUERY = "orange plug"
++PLUG_QUERY = "orange and silver USB-C plug"
+ RECEPTACLE_QUERY = "blue object"
+-PLUG_SCORE = 0.20
++PLUG_SCORE = 0.04
+ RECEPTACLE_SCORE = 0.20
+ MIN_MASK_PIXELS = 40
+ """The ground body's prompts and floors, restated -- same scene, same palette,

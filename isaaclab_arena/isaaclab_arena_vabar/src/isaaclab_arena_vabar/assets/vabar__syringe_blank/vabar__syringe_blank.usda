@@ -1,0 +1,143 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+# The goal syringe's twin with no red on it.
+#
+# The sharps-disposal graph decides *which* syringe the instruction means by
+# looking for the red needle cap: perceive_target.py scores every candidate
+# mask by the fraction of red pixels inside it and takes the reddest, calling
+# that "direct evidence no detection score can fake". The RSS spare is the
+# export's bare mesh with no texture bound, so only the goal syringe is red and
+# the test is decisive. This benchmark's syringe is a SimReady asset whose cap is painted
+# into one albedo map, so two instances of it are both red and the test is a
+# coin flip -- measured as the graph disposing of the spare and leaving
+# syringe_0 (the scored object) on the tray.
+#
+# Geometry, mass, inertia and colliders are the goal syringe's, referenced
+# rather than copied: the spare must behave identically and differ only in
+# appearance. Only the albedo is swapped, for a copy with every red-dominant
+# pixel replaced by its own luminance -- shading and markings intact, hue gone.
+# Its albedo otherwise matches the goal syringe's (see vabar__syringe.usda), so
+# the two differ in the cap alone.
+def Xform "Asset" (
+    prepend references = @../vabar__syringe/simready_usd/sm_vabar__syringe_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "syringe_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            point3f physics:centerOfMass = (-1.7238747e-7, -0.012434371, 3.5859337e-8)
+            float3 physics:diagonalInertia = (0.000030499892, 5.135534e-7, 0.000030529893)
+            float physics:mass = 0.02491309
+            quatf physics:principalAxes = (1, 0, 0, 0)
+
+            over "syringe_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @../vabar__syringe/collision_hulls.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01> (
+                    bindMaterialAs = "strongerThanDescendants"
+                )
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_002" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_003" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_004" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_005" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_006" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_007" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+
+                over "Hull_008" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                }
+            }
+
+            def Cube "CollisionProxy" (
+                active = false
+                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
+            ) {
+                double size = 1
+                token purpose = "guide"
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__syringe_a01>
+                double3 xformOp:scale = (0.0295660002, 0.1560000060, 0.0196019997)
+                uniform token[] xformOpOrder = ["xformOp:scale"]
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__syringe_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+
+    # Both shaders that read the albedo: the USD Preview Surface chain feeds
+    # viewport/renderer previews and OmniPBR feeds RTX, and the camera the
+    # graph segments could be served by either.
+    over "Materials" {
+        over "m_opaque__plastic__syringe_a01" {
+            over "Albedo" {
+                asset inputs:file = @./textures/t_syringe_blank_a01_alb.png@
+            }
+
+            over "OmniPBR_Shader" {
+                asset inputs:diffuse_texture = @./textures/t_syringe_blank_a01_alb.png@
+            }
+        }
+    }
+}

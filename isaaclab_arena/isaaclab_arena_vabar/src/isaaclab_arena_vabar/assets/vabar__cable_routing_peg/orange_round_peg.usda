@@ -1,0 +1,67 @@
+#usda 1.0
+(
+    defaultPrim = "RoundPeg"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "RoundPeg" (
+    prepend references = @./round_peg.usdc@</RoundPeg>
+)
+{
+    over "Visuals"
+    {
+        over "F1" (
+            prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "MaterialBindingAPI"]
+        )
+        {
+            bool physics:collisionEnabled = true
+            uniform token physics:approximation = "none"
+            float newton:contactGap = 0.01
+            float newton:contactMargin = 0
+            rel material:binding:physics = </RoundPeg/CableEasyFixtureMaterial>
+            rel material:binding = </RoundPeg/CableEasyAppearance>
+            color3f[] primvars:displayColor = [(0.85, 0.35, 0.12)] (
+                interpolation = "constant"
+            )
+        }
+    }
+    over "Collisions"
+    {
+        over "LowerFlange"
+        {
+            bool physics:collisionEnabled = false
+        }
+        over "Shaft"
+        {
+            bool physics:collisionEnabled = false
+        }
+        over "UpperFlange"
+        {
+            bool physics:collisionEnabled = false
+        }
+    }
+    def Material "CableEasyAppearance"
+    {
+        token outputs:surface.connect = </RoundPeg/CableEasyAppearance/PreviewSurface.outputs:surface>
+        def Shader "PreviewSurface"
+        {
+            uniform token info:id = "UsdPreviewSurface"
+            color3f inputs:diffuseColor = (0.85, 0.35, 0.12)
+            float inputs:roughness = 0.8
+            float inputs:metallic = 0
+            int inputs:useSpecularWorkflow = 0
+            token outputs:surface
+        }
+    }
+    def Material "CableEasyFixtureMaterial" (
+        prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI"]
+    )
+    {
+        float physics:dynamicFriction = 2
+        float physics:staticFriction = 2
+        float newton:contactStiffness = 10000
+        float newton:contactDamping = 0.1
+    }
+}

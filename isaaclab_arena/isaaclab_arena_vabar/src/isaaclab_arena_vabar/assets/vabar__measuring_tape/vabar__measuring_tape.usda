@@ -1,0 +1,38 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__measuring_tape_01.usd@</RootNode>
+) {
+    double3 xformOp:scale = (0.84, 0.84, 0.84)
+    uniform token[] xformOpOrder = ["xformOp:scale"]
+
+    over "Geometry" {
+        over "measuring_tape_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            point3f physics:centerOfMass = (-0.0012026118, -0.001979218, -0.00026451325)
+            float3 physics:diagonalInertia = (0.000033128395, 0.000034021177, 0.000048529408)
+            float physics:mass = 0.1000000015
+            quatf physics:principalAxes = (1, 0, 0, 0)
+
+            over "measuring_tape_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__measure_tape_a01" {
+            float physics:dynamicFriction = 1
+            float physics:restitution = 0
+            float physics:staticFriction = 1
+        }
+    }
+}

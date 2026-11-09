@@ -1,0 +1,99 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__instrument_tray_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "instrument_tray_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Inertia of the voxelised visual mesh at uniform density and the delivered mass,
+            # about the delivered centre of mass. The delivered inertia was 4-7x smaller
+            # (0.52e-3, 0.26e-3, 0.76e-3 about its principal axes). The Robotiq pads do not
+            # drag the open tray's floor, so the physical inertia is safe here.
+            point3f physics:centerOfMass = (2.1897722e-07, 1.1909287e-07, 0.0014164944)
+            float3 physics:diagonalInertia = (0.00095313216, 0.0035499612, 0.0044873175)
+            float physics:mass = 0.24748048
+            quatf physics:principalAxes = (0.70710743, 2.1742726e-05, 2.932355e-05, 0.70710613)
+
+            # The artist mesh renders; it does not collide. MuJoCo collides a mesh as its
+            # convex hull, which fills this open tray in solid to its 6 mm rim, so syringes
+            # rested 9 mm above the floor they are drawn on. The proxy is the tray as
+            # drawn and as AUTOLab's make_tray.py builds it: a 3 mm floor and four 3 mm
+            # walls, 12 mm tall.
+            over "instrument_tray_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+            }
+
+            def Xform "CollisionProxy" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__aluminiumBrushed_c01> (
+                    bindMaterialAs = "strongerThanDescendants"
+                )
+                token purpose = "guide"
+
+                def Cube "floor" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                ) {
+                    double size = 2
+                    float3 xformOp:scale = (0.1, 0.2, 0.0015)
+                    double3 xformOp:translate = (0.0, 0.0, -0.0045)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+
+                def Cube "wall_x_min" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                ) {
+                    double size = 2
+                    float3 xformOp:scale = (0.0015, 0.2, 0.006)
+                    double3 xformOp:translate = (-0.0985, 0.0, 0.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+
+                def Cube "wall_x_max" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                ) {
+                    double size = 2
+                    float3 xformOp:scale = (0.0015, 0.2, 0.006)
+                    double3 xformOp:translate = (0.0985, 0.0, 0.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+
+                def Cube "wall_y_min" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                ) {
+                    double size = 2
+                    float3 xformOp:scale = (0.097, 0.0015, 0.006)
+                    double3 xformOp:translate = (0.0, -0.1985, 0.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+
+                def Cube "wall_y_max" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI"]
+                ) {
+                    double size = 2
+                    float3 xformOp:scale = (0.097, 0.0015, 0.006)
+                    double3 xformOp:translate = (0.0, 0.1985, 0.0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:scale"]
+                }
+            }
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__aluminiumBrushed_c01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

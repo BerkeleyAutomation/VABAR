@@ -1,0 +1,35 @@
+# AUTOLab's syringe_packing/gap_perception run unmodified
+# through RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter). The workspace declares only
+# the work surface, in Arena's world frame; RoboSimStudio derives transport heights and clearances from it
+# and the hand.
+runs:
+  vabar_syringe_disposal_single_gap:
+    environment:
+      type: vabar_syringe_disposal__single
+      enable_cameras: true
+    environment_builder:
+      placement_seed: 42
+    policy:
+      type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+      robot_profile: fr3
+      gap_graph: syringe_packing/gap_perception
+      gap_inputs:
+        # v1.0 has no one-syringe cell; AUTOLab's tray document asks for this instruction.
+        autolab_task: syringe_packing/tray_pair
+      gap_workspace:
+        # Arena world frame: the FR3 workcell table top, 0.132 m below the arm base.
+        surface_z: 0.78
+      auto_spawn: true
+      gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+      gap_host: 127.0.0.1
+      gap_io_timeout_s: 180
+      policy_device: cuda
+      gap_camera: top_camera
+      gap_bridge_camera: overhead
+      gap_wrist_camera: wrist_camera
+      gap_wrist_bridge_camera: eye_in_hand
+      gap_aux_camera: oblique_camera
+      gap_aux_bridge_camera: agentview
+    rollout_limit:
+      num_episodes: 1
+    num_rebuilds: 1

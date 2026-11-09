@@ -1,0 +1,17 @@
+{
+    "SimReady_Metadata": {
+        "asset_location": "sm_vabar__round_nut_01.usd",
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "vabar__round_nut",
+    "asset_name": "vabar__round_nut",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "vabar__round_nut.blend",
+    "usd_date_generated": "2026-08-28 16:39:44",
+    "used_dsrs_exporter": true
+}

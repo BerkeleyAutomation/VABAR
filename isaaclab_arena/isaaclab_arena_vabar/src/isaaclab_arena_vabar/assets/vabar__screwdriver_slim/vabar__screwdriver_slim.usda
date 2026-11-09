@@ -1,0 +1,102 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @payloads/autolab_appearance.usda@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__screwdriver_slim_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "Visual_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Two-material inertia of the voxelised visual mesh at the delivered mass: its metal
+            # parts 6.8x as dense as the handle, the split closest to the delivered centre of
+            # mass. Taken about the delivered centre of mass, 0.5 mm from this model's. The
+            # delivered inertia was 0.8/4.6/4.6x this on its principal axes (above the physical
+            # limit for this shape). Mass unchanged.
+            point3f physics:centerOfMass = (0.069499724, -9.7614395e-07, 5.9190734e-07)
+            float3 physics:diagonalInertia = (1.9462494e-06, 0.0001460317, 0.00014607921)
+            float physics:mass = 0.07839327
+            quatf physics:principalAxes = (0.99992263, 0.012439442, 2.0245225e-06, 2.7466653e-05)
+
+            over "Visual_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {
+                bool physics:collisionEnabled = 0
+                double xformOp:rotateX = -90
+                uniform token[] xformOpOrder = ["xformOp:rotateX"]
+            }
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_hulls.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_002" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_003" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_004" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_005" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_006" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+
+                over "Hull_007" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__plastic__green_a01>
+                }
+            }
+
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__plastic__green_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

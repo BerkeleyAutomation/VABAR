@@ -1,0 +1,16 @@
+{
+    "SimReady_Metadata": {
+        "asset_type": "prop",
+        "validation": {
+            "profile": "Prop-Robotics-Neutral",
+            "profile_version": "1.0.0"
+        }
+    },
+    "asset_dir": "vabar__phillips_screwdriver",
+    "asset_name": "vabar__phillips_screwdriver",
+    "asset_type": "prop",
+    "profile": "Prop-Robotics-Neutral",
+    "source_file": "vabar__phillips_screwdriver.blend",
+    "usd_date_generated": "2026-08-28 16:52:49",
+    "used_dsrs_exporter": true
+}

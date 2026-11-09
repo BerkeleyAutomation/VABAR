@@ -1,0 +1,198 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__plier_cutter_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "Visual_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            point3f physics:centerOfMass = (0.000000180624, 0.0034940792, -0.053974073)
+            float3 physics:diagonalInertia = (0.000047620805, 0.00008530793, 0.000039513502)
+            float physics:mass = 0.060187485
+            quatf physics:principalAxes = (0.99999994, 0.00025546388, 0.000058470987, -0.00020416623)
+
+            over "Visual_mesh_00" (
+                delete apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI", "PhysxSDFMeshCollisionAPI", "PhysicsMassAPI"]
+            ) {}
+
+            def Xform "StoredConvexCollision" (
+                prepend apiSchemas = ["MaterialBindingAPI"]
+                prepend references = @collision_hulls.usdc@</Asset>
+            ) {
+                rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+
+                over "Hull_000" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_001" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_002" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_003" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_004" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_005" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_006" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_007" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_008" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_009" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_010" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_011" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_012" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_013" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_014" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_015" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_016" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_017" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_018" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_019" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_020" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_021" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_022" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_023" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_024" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+
+                over "Hull_025" (
+                    prepend apiSchemas = ["MaterialBindingAPI"]
+                ) {
+                    rel material:binding:physics = </Asset/PhysicsMaterials/physics_mat_m_opaque__metal__steelMate_gray_a01>
+                }
+            }
+
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__steelMate_gray_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

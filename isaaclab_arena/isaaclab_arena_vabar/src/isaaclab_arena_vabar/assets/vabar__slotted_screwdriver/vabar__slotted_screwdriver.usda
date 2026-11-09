@@ -1,0 +1,39 @@
+#usda 1.0
+(
+    defaultPrim = "Asset"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    upAxis = "Z"
+)
+
+def Xform "Asset" (
+    prepend references = @simready_usd/sm_vabar__slotted_screwdriver_01.usd@</RootNode>
+) {
+    over "Geometry" {
+        over "slotted_screwdriver_01_obj_00" (
+            prepend apiSchemas = ["PhysicsMassAPI"]
+        ) {
+            # Two-material inertia of the voxelised visual mesh at the delivered mass: its metal
+            # parts 6.8x as dense as the handle, the split closest to the delivered centre of
+            # mass. The centre of mass is the model's: the delivered one sat 9 mm from any
+            # metal/handle density split of this mesh. The delivered inertia was 0.7/2.2/2.2x this
+            # on its principal axes. Mass unchanged.
+            point3f physics:centerOfMass = (-3.0071383e-05, 0.035345021, -3.0047092e-05)
+            float3 physics:diagonalInertia = (4.6184418e-06, 0.00019056799, 0.00019060075)
+            float physics:mass = 0.1
+            quatf physics:principalAxes = (0.65806235, 0.25809719, -0.25782569, -0.65868482)
+
+            over "slotted_screwdriver_01_mesh_00" (
+                delete apiSchemas = ["PhysicsMassAPI"]
+            ) {}
+        }
+    }
+
+    over "PhysicsMaterials" {
+        over "physics_mat_m_opaque__metal__glossy_a01" {
+            float physics:dynamicFriction = 0.8
+            float physics:restitution = 0
+            float physics:staticFriction = 0.8
+        }
+    }
+}

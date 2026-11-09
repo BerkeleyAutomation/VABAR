@@ -1,0 +1,130 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "MuJoCo USD Converter v0.2.0"
+    }
+    defaultPrim = "base"
+    kilogramsPerUnit = 1
+    metersPerUnit = 1
+    subLayers = [
+        @./robot.usda@
+    ]
+    upAxis = "Z"
+)
+
+def Xform "base" (
+    prepend apiSchemas = ["GeomModelAPI", "PhysicsArticulationRootAPI", "NewtonArticulationRootAPI", "IsaacRobotAPI"]
+    assetInfo = {
+        string name = "base"
+    }
+    kind = "component"
+)
+{
+    float3[] extentsHint = [(-0.043751635, -0.091558725, -0.026697844), (0.04401252, 0.091532655, 0.02666238), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.002, -0.002, -0.002), (0.002, 0.002, 0.002)]
+    custom rel isaac:physics:robotJoints
+    custom rel isaac:physics:robotLinks
+    custom token isaac:robotType = "Default"
+    bool newton:selfCollisionEnabled = 0
+
+    def Scope "Geometry"
+    {
+        def Xform "vabar__multimeter" (
+            prepend apiSchemas = ["PhysicsRigidBodyAPI", "IsaacLinkAPI"]
+        )
+        {
+            quatf xformOp:orient = (1, 0, 0, 0)
+            float3 xformOp:scale = (1, 1, 1)
+            double3 xformOp:translate = (0, 0, 0)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            def Cube "industrial_multimeter_0_g0" (
+                prepend apiSchemas = ["PhysicsCollisionAPI", "NewtonCollisionAPI", "MjcCollisionAPI", "PhysicsMassAPI", "MaterialBindingAPI"]
+            )
+            {
+                float3[] extent = [(-1, -1, -1), (1, 1, 1)]
+                rel material:binding:physics = </base/Physics/PhysicsMaterial>
+                uniform int mjc:condim = 4
+                float newton:contactGap = 0
+                bool physics:collisionEnabled = 0
+                float physics:density = 1000
+                float physics:mass = 0.398371
+                color3f[] primvars:displayColor = [(0.5, 0, 0)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                double size = 2
+                token visibility = "invisible"
+                quatf xformOp:orient = (0.49948812, 0.49983004, -0.49977124, 0.50090945)
+                float3 xformOp:scale = (0.026547693, 0.043710656, 0.09145998)
+                double3 xformOp:translate = (0.000130442791, -0.0000130346054, -0.0000177328325)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+
+            def Xform "industrial_multimeter_0_g0_visual" (
+                displayName = ""
+                instanceable = false
+                prepend references = @./instances.usda@</Instances/industrial_multimeter_0_g0_visual>
+            )
+            {
+                quatd xformOp:orient = (1, 0, 0, 0)
+                double3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                over "industrial_multimeter_0_g0_visual" (
+                    prepend apiSchemas = ["PhysicsCollisionAPI", "PhysicsMeshCollisionAPI"]
+                )
+                {
+                    uniform token physics:approximation = "convexDecomposition"
+                }
+            }
+
+            def Sphere "industrial_multimeter_0_default_site" (
+                prepend apiSchemas = ["MjcSiteAPI"]
+            )
+            {
+                float3[] extent = [(-0.002, -0.002, -0.002), (0.002, 0.002, 0.002)]
+                color3f[] primvars:displayColor = [(1, 0, 0)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [0] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                uniform token purpose = "guide"
+                double radius = 0.002
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
+                double3 xformOp:translate = (0, 0, 0)
+                uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+            }
+        }
+    }
+
+    def Scope "Materials"
+    {
+    }
+
+    def Scope "Physics"
+    {
+        def Material "PhysicsMaterial" (
+            prepend apiSchemas = ["PhysicsMaterialAPI", "NewtonMaterialAPI", "MjcMaterialAPI"]
+        )
+        {
+            uniform double mjc:rollingfriction = 0.02
+            uniform double mjc:torsionalfriction = 0.05
+            float newton:rollingFriction = 0.02
+            float newton:torsionalFriction = 0.05
+            float physics:dynamicFriction = 1
+        }
+    }
+
+    def Scope "VisualMaterials"
+    {
+    }
+}

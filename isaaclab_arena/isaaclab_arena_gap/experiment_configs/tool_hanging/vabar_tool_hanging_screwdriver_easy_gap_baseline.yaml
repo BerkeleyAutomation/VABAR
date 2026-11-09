@@ -1,0 +1,38 @@
+# AUTOLab's tool_hanging/gap_perception run through
+# RoboSimStudio's own policy agent (isaaclab_arena_gap.rss_adapter).
+runs:
+  vabar_tool_hanging_screwdriver_easy_gap:
+    environment:
+      type: vabar_tool_hanging__screwdriver_easy
+      enable_cameras: true
+    environment_builder:
+      placement_seed: 42
+    policy:
+      type: isaaclab_arena_gap.gap_remote_policy.GapRemotePolicy
+      robot_profile: yam_bimanual_wide
+      gap_control_frequency_hz: 60.0
+      gap_graph: tool_hanging/gap_perception
+      gap_inputs:
+        instruction: put the screwdriver upright into the small box on the pegboard
+        # This tool's level-1 document, one of v1.0's tool_hanging/L1 instances.
+        autolab_task: tool_hanging/screwdrivers_level1
+      # v1.0 scores the scene the graph leaves: the RSS solution already holds its 60 settle steps
+      # (1 s at 60 Hz) after the graph ends before it closes, so Arena scores at that close.
+      graph_success_settle_s: 0.0
+      graph_failure_settle_s: 0.0
+      auto_spawn: true
+      gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh
+      gap_host: 127.0.0.1
+      gap_io_timeout_s: 180
+      policy_device: cuda
+      gap_camera: top_camera
+      gap_bridge_camera: overhead
+      gap_wrist_camera: left_wrist_camera
+      gap_wrist_bridge_camera: eye_in_hand_left
+      gap_aux_camera: side_camera
+      gap_aux_bridge_camera: side
+      gap_extra_cameras:
+        right_wrist_camera: eye_in_hand_right
+    rollout_limit:
+      num_episodes: 1
+    num_rebuilds: 1

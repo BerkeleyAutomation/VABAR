@@ -1,0 +1,102 @@
+external_yaml: tool_hanging_env_config.yaml
+env_name: wrench_easy
+embodiment:
+  id: yam
+  registry_name: vabar__bimanual_yam
+  params:
+    left_mount_position: [0.3025, 0.17, 0.81]
+    right_mount_position: [0.3025, -0.17, 0.81]
+    # AUTOLab's tool-hanging hand: the crank hand opening to 47.5 mm per finger.
+    gripper: crank_4310_wide
+background:
+  id: background
+  registry_name: vabar__yam_workcell_table
+  params:
+    initial_pose:
+      position_xyz: [0.2525, 0.0, 0.75]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+object_references:
+- id: table
+  parent_id: background
+  prim_path: placement_surface
+  object_type: base
+  params: {}
+objects:
+- id: hdr_shadow_receiver
+  registry_name: vabar__hdr_shadow_receiver
+  params: {}
+- id: pegboard_rack
+  registry_name: vabar__pegboard_rack
+  params:
+    instance_name: pegboard_rack
+    initial_pose:
+      position_xyz: [0.88, -0.16, 1.11]
+      rotation_xyzw: [0.0, 0.0, 0.0, 1.0]
+- id: wrench_hook_2
+  registry_name: vabar__wrench_hook_2
+  params:
+    instance_name: wrench_hook_2
+    initial_pose:
+      position_xyz: [0.88, 0.057508475, 1.150515762]
+      rotation_xyzw: [0.0, 0.0, 1.0, 0.0]
+- id: empty_warehouse_hdr_light
+  registry_name: vabar__empty_warehouse_dome_light
+  params: {}
+- id: ring_spanner_19
+  registry_name: vabar__wrench_ring_19
+  params:
+    instance_name: ring_spanner_19
+relations:
+- kind: is_anchor
+  subject: table
+  params: {}
+- kind: is_anchor
+  subject: pegboard_rack
+  params: {}
+- kind: is_anchor
+  subject: wrench_hook_2
+  params: {}
+- kind: "on"
+  subject: ring_spanner_19
+  reference: table
+  params: {}
+- kind: position_limits
+  subject: ring_spanner_19
+  # The RSS version's 25 easy hang-wrench instances sample independent X/Y offsets
+  # uniformly from [-0.02, 0.02] m around the nominal pose. Translate that
+  # physical-center distribution through this artist mesh's different origin;
+  # on(table) continues to determine the resting height.
+  params:
+    {x_min: 0.7706098816, x_max: 0.8106098816,
+     y_min: 0.2014786708, y_max: 0.2414786708}
+- kind: rotate_around_solution
+  subject: ring_spanner_19
+  params: {yaw_rad: 3.141592653589793}
+task:
+  composition: atomic
+  description: hang the dark 19 mm wrench on the hook
+  subtasks:
+  - kind: IndustrialToolHangingTask
+    params:
+      episode_length_s: 141.66666666666666
+      # Scored on the episode's final state, exactly as AUTOLab v1.0 scores tool hanging.
+      tools: [ring_spanner_19]
+      fixtures: [wrench_hook_2]
+      goals:
+      - tool: ring_spanner_19
+        fixture: wrench_hook_2
+        loop:
+          center_xyz: [0.024331, 0.2214774, 0.00425]
+          normal_xyz: [0.0, 0.0, 1.0]
+          radius_m: 0.0102
+          # AUTOLab's wrench enclosure_tolerance: a released ring rests on the shank at the
+          # rim of its opening, and tilts off the exact loop plane as it settles.
+          enclosure_tolerance_m: 0.008
+        rod:
+          start_xyz: [0.0611, -0.00249, 0.0042]
+          end_xyz: [0.0, -0.00249, 0.0042]
+          radius_m: 0.00249
+        contact_force_n: 0.2
+        speed_m_s: 0.15
+        # AUTOLab's wrench documents score encloses, not threaded.
+        predicate: encloses
