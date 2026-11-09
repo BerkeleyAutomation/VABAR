@@ -1,5 +1,5 @@
 {
- "source": "AUTOLab tasks/syringe_packing/start_poses/tray_pair_both_tNN.json (make_tray_pair_trials.py, seed 0), all 30 trials",
+ "source": "AUTOLab tasks/syringe_packing/start_poses/tray_pair_both_tNN.json at 18b974e (make_tray_pair_trials.py, seed 0), all 30 trials; poses/tray_pair_both_tNN.json in the current RSS version holds the same X/Y/yaw",
  "frame": "instrument tray: x across (0.2 m), y along (0.4 m); each syringe is [x_m, y_m, yaw_rad] of its origin, long axis = local +y; tray_yaw_rad is the trial's world tray heading",
  "layouts": [
   {

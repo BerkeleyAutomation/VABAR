@@ -35,7 +35,7 @@ def test_pair_layouts_are_two_barrels_across_the_tray_90_mm_apart():
         assert math.hypot(x1 - x0, y1 - y0) == pytest.approx(0.09, abs=1e-3)
         assert yaw0 == pytest.approx(math.pi / 2, abs=1e-3)
         assert yaw1 == pytest.approx(math.pi / 2, abs=1e-3)
-        # make_tray_pair_trials.py: the tray at 140.4 deg, yawed uniform(+-25 deg).
+        # The RSS pair trials (make_tray_pair_trials.py at 18b974e): the tray at 140.4 deg, yawed uniform(+-25 deg).
         assert abs(layout.tray_yaw - 2.4504) <= math.radians(25) + 1e-3
 
 

@@ -1,5 +1,5 @@
 {
- "source": "AUTOLab tasks/syringe_packing/start_poses/tray_clutter_tNN.json (make_tray_clutter_trials.py --count 30 --seed 5), the seven six-syringe trials",
+ "source": "AUTOLab tasks/syringe_packing/start_poses/tray_clutter_tNN.json at 18b974e (make_tray_clutter_trials.py --count 30 --seed 5), the seven six-syringe trials. The current RSS version (poses/tray_clutter_tNN.json) drops syringe_0 from t08, t14 and t19 as lying across its tray wall; each lies at |y| <= 0.174 m, inside this tray's 0.197 m inner half-length, so all seven stay",
  "frame": "instrument tray: x across (0.2 m), y along (0.4 m); each syringe is [x_m, y_m, yaw_rad] of its origin, long axis = local +y",
  "layouts": [
   {
