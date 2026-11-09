@@ -1,6 +1,6 @@
 # VABAR graph adaptations
 
-Every Experiment runs the RSS graph (v1.0) through the RSS adapter (`run_rss_graph.sh`).
+Every Experiment runs the RSS graph through the RSS adapter (`run_rss_graph.sh`).
 Where a config names `gap_adaptation`, `rss_adapter.runner.adapted_graph` copies the pinned
 graph to a scratch directory and applies `graph_adaptations/<name>.patch` there; the RSS graphs
 at the repository root are never modified, and a patch that no longer applies stops the run. "Artist" assets
@@ -9,10 +9,10 @@ of the RSS version.
 
 | Patch | Graph (revision) | Experiment | Why it differs from the RSS graph |
 |---|---|---|---|
-| `rss_usbc_insert_easy` | `usbc_insert/mate` (v1.0 `18b974e`) | USB-C insertion easy | Arena: the artist plug's silver nose. The plug prompt names it so SAM 3 segments the whole plug |
-| `rss_usbc_insert_medium` | `usbc_insert/mate` (v1.0 `18b974e`) | USB-C insertion medium | Arena: the silver plug nose and the silver metal bulkhead, which the RSS graph looks for as a "blue object" |
-| `rss_tool_hanging_artist_wrench` | `tool_hanging/gap_perception` (v1.0 `18b974e`) | wrench easy | Arena: the artist ring spanner. Without its CAD, `cad_distal_loop` registers the RSS adjustable wrench onto it and takes the open jaw for the ring |
-| `rss_tool_hanging_artist_wrench_level2` | `tool_hanging/gap_perception_level2` (v1.0 `18b974e`) | wrench medium | Same artist ring spanner and the same hunks, on the level-2 graph and the easy graph's scripts it runs from `../gap_perception/scripts`. Its patch paths start at the RSS `tool_hanging/graphs` directory |
+| `rss_usbc_insert_easy` | `usbc_insert/mate` (written on `18b974e`; applies unchanged at `69429b1`) | USB-C insertion easy | Arena: the artist plug's silver nose. The plug prompt names it so SAM 3 segments the whole plug |
+| `rss_usbc_insert_medium` | `usbc_insert/mate` (written on `18b974e`; applies unchanged at `69429b1`) | USB-C insertion medium | Arena: the silver plug nose and the silver metal bulkhead, which the RSS graph looks for as a "blue object" |
+| `rss_tool_hanging_artist_wrench` | `tool_hanging/gap_perception` (written on `18b974e`; applies unchanged at `69429b1`) | wrench easy | Arena: the artist ring spanner. Without its CAD, `cad_distal_loop` registers the RSS adjustable wrench onto it and takes the open jaw for the ring |
+| `rss_tool_hanging_artist_wrench_level2` | `tool_hanging/gap_perception_level2` (written on `18b974e`; applies unchanged at `69429b1`) | wrench medium | Same artist ring spanner and the same hunks, on the level-2 graph and the easy graph's scripts it runs from `../gap_perception/scripts`. Its patch paths start at the RSS `tool_hanging/graphs` directory |
 
 These patches adapt the RSS graphs to this benchmark's own assets and stay here. A change
 that fixes behaviour not specific to Arena belongs in the RSS version, not in a patch.

@@ -17,7 +17,7 @@ You will need, before running `./setup.sh`:
   without the VLM key.
 
 Every runnable pairing is a typed Arena Experiment under `isaaclab_arena_gap/experiment_configs/`, grouped by
-task family. Every one runs AUTOLab v1.0's graph through the RSS adapter (`isaaclab_arena_gap.rss_adapter`,
+task family. Every one runs the RSS version's graph through the RSS adapter (`isaaclab_arena_gap.rss_adapter`,
 section 3). The supported GaP pairs are the four syringe tasks with
 `syringe_packing/gap_perception`; the Gear Mesh single, pair, and train families with
 `gear_mesh/gap_perception`; the three easy tool-sorting tasks with `tool_sort/gap_perception_loop`; the easy
@@ -71,7 +71,7 @@ lock: Isaac Lab 17.0.2 from the pinned Isaac Lab 3.0 EA source commit
 
 | In-tree checkout | Remote | Immutable revision | Required |
 |---|---|---|---|
-| `.` | the `isaaclab_arena/` folder of the VABAR repository (`BerkeleyAutomation/AUTOLab-GaP-NVIDIA-Collaboration`, `vabar-robosimstudio`); the RSS version (AUTOLab v1.0) is the repository root | The commit you check out | Yes |
+| `.` | the `isaaclab_arena/` folder of the VABAR repository (`BerkeleyAutomation/VABAR`); the RSS version is the repository root | The commit you check out | Yes |
 | `external/gap/graph-as-policy` | `graph-robots/graph-as-policy` | `71549e1584839337eb355c280e7b1e50c805b8c7` | Yes |
 | `external/gap/open-robot-skills` | `graph-robots/open-robot-skills` | `752dfbd96968d4d08379f8111765efbf6457800b` | Yes |
 | `external/IsaacLab-Arena` | `isaac-sim/IsaacLab-Arena` (`release/0.3.1`) | `c7edf3a9d5d8276565208f72422f8f8a0806d6cf` | Yes, release 0.3.1 + native venv |
@@ -84,7 +84,8 @@ AUTOLab's runtime boots each out-of-process from its own environment under
 `gap skills install` builds those bundle environments, and each of them installs its `gap-core`
 (the bundle RPC server) editable from this checkout.
 
-The RSS version at the repository root is AUTOLab's v1.0 release, used by
+The RSS version at the repository root (its tasks, graphs and lock; RoboSimStudio
+`KeplerC/robosimstudio@39b7a6e` and graph-as-policy `06dd619` at the time of writing) is used by
 `isaaclab_arena_gap.rss_adapter`: every shipped
 experiment config sets `gap_launcher: isaaclab_arena_gap/scripts/run_rss_graph.sh` and runs AUTOLab's graph
 through RoboSimStudio's own policy agent, in AUTOLab's locked environment
@@ -189,7 +190,7 @@ does not persist them in an image layer.
 
 The shell entrypoint exists before Arena's gitlink or any Python environment is available. It
 selects Python 3.12 through `.python-version`, prepares the root simulation environment, and
-delegates GaP, AUTOLab v1.0 and the skill bundles to their independent locks. Setup uses an existing `CUDA_HOME`
+delegates GaP, the RSS version and the skill bundles to their independent locks. Setup uses an existing `CUDA_HOME`
 or auto-detects `/usr/local/cuda`; on a module-based system, load the site CUDA module or set
 `CUDA_HOME` first. After the first setup, `uv run vabar-arena setup` remains an equivalent convenience
 command.
@@ -198,7 +199,7 @@ Behind the launcher, the idempotent setup performs, in order:
 
 1. exact selective submodule initialization;
 2. GaP `uv sync --frozen` with Python 3.11;
-3. AUTOLab v1.0 `uv sync --frozen --no-default-groups` into `AUTOLAB_VABAR_VENV`, the RSS adapter's
+3. the RSS version's `uv sync --frozen --no-default-groups` into `AUTOLAB_VABAR_VENV`, the RSS adapter's
    environment, plus `usd-core` and `newton-usd-schemas` to load Arena's robot USD;
 4. locked Python-3.11 environments for `curobo`, `geometry`, `grounding-dino`, `sam3`, and `vlm`;
 5. Arena-owned `uv sync --frozen`, targeted at the repository root `.venv`, with Python 3.12 and
@@ -283,7 +284,7 @@ OMNI_KIT_ACCEPT_EULA=YES ACCEPT_EULA=Y \
 
 The first test run covers what needs a GaP runtime: the Arena bridge transport the RSS adapter
 drives, the graph-result sidecars, the launcher, and the artist-wrench CAD replay through
-AUTOLab v1.0's graph scripts. The root test run covers the Arena policy, transport, robot adapters,
+the RSS version's graph scripts. The root test run covers the Arena policy, transport, robot adapters,
 the RSS adapter's bindings and adaptations, and simulator-free industrial contracts. It collects only
 `isaaclab_arena_gap/tests` and `isaaclab_arena_vabar/tests`; live tests are skipped by default, so this
 command does not initialize Isaac Sim. Preflight verifies repository ancestry, Python environments,
@@ -550,7 +551,7 @@ enabled.
   `isaaclab_arena_vabar`.
 - Generic simulation, experiment construction, policy lifecycle hooks, scoring, and recording
   framework: Isaac Lab Arena.
-- Robot model, IK, motion, task graphs and graph runtime: AUTOLab v1.0 (the RSS version at the repository root, with
+- Robot model, IK, motion, task graphs and graph runtime: the RSS version at the repository root (with
   RoboSimStudio and its own locked GaP); generic skill bundles: pinned upstream `open-robot-skills`;
   bundle RPC server (`gap-core`) and bundle installer: upstream `graph-as-policy`.
 
