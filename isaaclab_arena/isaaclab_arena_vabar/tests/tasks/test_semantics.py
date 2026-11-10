@@ -346,6 +346,47 @@ def test_tool_hanging_parses_alternative_bows_and_applies_physical_gates() -> No
         tool_hanging_goal_completion(env, goals=(goal,))
 
 
+def test_tool_hanging_scores_a_non_finite_tool_pose_as_incomplete() -> None:
+    from isaaclab_arena_vabar.tasks.tool_hanging.task import _goal_spec
+    from isaaclab_arena_vabar.tasks.tool_hanging.terminations import (
+        tool_hanging_goal_completion,
+    )
+
+    tool = _asset((0.0, 0.0, 0.0))
+    fixture = _asset((0.0, 0.0, 0.0))
+    goal = _goal_spec(
+        {
+            "tool": "wrench",
+            "fixture": "hook",
+            "predicate": "encloses",
+            "loop": {
+                "center_xyz": (0.0, 0.0, 0.0),
+                "normal_xyz": (0.0, 0.0, 1.0),
+                "radius_m": 0.03,
+            },
+            "rod": {
+                "start_xyz": (0.0, 0.0, -0.04),
+                "end_xyz": (0.0, 0.0, 0.04),
+                "radius_m": 0.002,
+            },
+            "contact_force_n": 0.2,
+            "speed_m_s": 0.08,
+        },
+        {"wrench": tool},
+        {"hook": fixture},
+    )
+    sensor = SimpleNamespace(
+        data=SimpleNamespace(force_matrix_w=torch.tensor([[[[0.3, 0.0, 0.0]]]]))
+    )
+    env = SimpleNamespace(
+        scene={"wrench": tool, "hook": fixture, goal.contact_sensor_name: sensor}
+    )
+    assert tool_hanging_goal_completion(env, goals=(goal,)).item()
+
+    tool.data.root_link_pos_w.torch[0, 2] = float("nan")
+    assert not tool_hanging_goal_completion(env, goals=(goal,)).item()
+
+
 @pytest.mark.parametrize("field", ("predicate", "alternative_loops"))
 def test_tool_hanging_rejects_loop_options_without_loop_geometry(field: str) -> None:
     from isaaclab_arena_vabar.tasks.tool_hanging.task import _goal_spec

@@ -122,6 +122,18 @@ def _world_pose(asset_or_frame) -> torch.Tensor:
     return torch.cat((position, orientation), dim=-1)
 
 
+def _finite_rows(*poses: torch.Tensor) -> tuple[torch.Tensor, list[torch.Tensor]]:
+    """Return which rows are finite in every pose, and the poses with the others replaced.
+
+    A tool that the solver throws to a non-finite state has not been hung: its
+    rows score as incomplete instead of failing the whole episode's scoring.
+    """
+    finite = torch.stack([torch.isfinite(pose).all(dim=-1) for pose in poses]).all(dim=0)
+    identity = torch.zeros_like(poses[0][0])
+    identity[6] = 1.0
+    return finite, [torch.where(finite.unsqueeze(-1), pose, identity) for pose in poses]
+
+
 def _contained_in_fixture_box(goal: HangingGoalSpec, tool_pose: torch.Tensor, fixture_pose: torch.Tensor) -> torch.Tensor:
     assert goal.containment_min_xyz is not None and goal.containment_max_xyz is not None
     # RSS region_bounds translates world-axis bounds by the fixture origin;
@@ -139,13 +151,16 @@ def tool_hanging_goal_completion(env, *, goals: tuple[HangingGoalSpec, ...]) -> 
     for goal in goals:
         tool = env.scene[goal.tool_name]
         if goal.containment_min_xyz is not None:
-            geometry_complete = _contained_in_fixture_box(
-                goal, _world_pose(tool), _world_pose(env.scene[goal.fixture_name])
+            finite, (tool_pose, fixture_pose) = _finite_rows(
+                _world_pose(tool), _world_pose(env.scene[goal.fixture_name])
             )
+            geometry_complete = _contained_in_fixture_box(goal, tool_pose, fixture_pose)
         else:
             assert goal.loop is not None and goal.rod is not None
-            loop_pose = _world_pose(env.scene[goal.loop_owner_name])
-            rod_pose = _world_pose(env.scene[goal.rod_owner_name])
+            finite, (loop_pose, rod_pose) = _finite_rows(
+                _world_pose(env.scene[goal.loop_owner_name]),
+                _world_pose(env.scene[goal.rod_owner_name]),
+            )
             if goal.predicate == "threaded":
                 predicate = threaded
             elif goal.predicate == "encloses":
@@ -161,6 +176,7 @@ def tool_hanging_goal_completion(env, *, goals: tuple[HangingGoalSpec, ...]) -> 
                 ],
                 dim=-1,
             ).any(dim=-1)
+        geometry_complete = geometry_complete & finite
         sensor = env.scene[goal.contact_sensor_name]
         has_contact = (
             _filtered_force_magnitude(env, goal.contact_sensor_name, sensor)
