@@ -163,7 +163,8 @@ task:
   - kind: IndustrialToolHangingTask
     params:
       episode_length_s: 366.6666666666667
-      # Scored on the episode's final state, exactly as AUTOLab v1.0 scores tool hanging.
+      # Scored as the RSS version's wrenches_level2.task scores it: each tool hung, at rest and
+      # released, held for 1 s (hold-for 1.0), and success ends the episode.
       tools: [wrench_1, wrench_2]
       fixtures: [wrench_hook_1, wrench_hook_2]
       goals:
@@ -179,6 +180,12 @@ task:
           radius_m: 0.00249
         contact_force_n: 0.2
         speed_m_s: 0.15
+        # (> (hands-clear TOOL) R), measured from the tool's physical centre (the centre of its
+        # collision hulls' bounds; this artist mesh's origin lies 0.34 m off the tool): R is the
+        # tool's 118 mm radius about it plus 15 mm, rounded up to the centimetre, the RSS version's
+        # rule. Its documents state 0.21, for their larger wrench, about their own origin.
+        hands_clear_m: 0.14
+        release_point_xyz: [0.128, 0.22148, 0.00425]
         predicate: encloses
       - tool: wrench_2
         fixture: wrench_hook_2
@@ -192,4 +199,10 @@ task:
           radius_m: 0.00249
         contact_force_n: 0.2
         speed_m_s: 0.15
+        # (> (hands-clear TOOL) R), measured from the tool's physical centre (the centre of its
+        # collision hulls' bounds; this artist mesh's origin lies 0.34 m off the tool): R is the
+        # tool's 118 mm radius about it plus 15 mm, rounded up to the centimetre, the RSS version's
+        # rule. Its documents state 0.21, for their larger wrench, about their own origin.
+        hands_clear_m: 0.14
+        release_point_xyz: [0.128, 0.22148, 0.00425]
         predicate: encloses

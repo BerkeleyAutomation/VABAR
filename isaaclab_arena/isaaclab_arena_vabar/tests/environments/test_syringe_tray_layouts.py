@@ -11,11 +11,12 @@ import pytest
 from isaaclab_arena_vabar.environments.syringe_disposal import tray_layouts
 
 
-def test_clutter_layouts_are_six_syringes_lying_across_the_tray():
+def test_clutter_layouts_are_the_rss_trials_lying_across_the_tray():
     layouts = tray_layouts.load_tray_layouts("clutter_layouts.json")
-    assert len(layouts) == 7
+    # The RSS version's t04, t06, t08, t14, t19, t25 and t27; it drops one syringe from
+    # t08, t14 and t19.
+    assert [len(layout.syringes) for layout in layouts] == [6, 6, 5, 5, 5, 6, 6]
     for layout in layouts:
-        assert len(layout.syringes) == 6
         # The YAML's rotate_around_solution keeps the tray at AUTOLab's heading.
         assert layout.tray_yaw is None
         for x, y, yaw in layout.syringes:
@@ -35,7 +36,7 @@ def test_pair_layouts_are_two_barrels_across_the_tray_90_mm_apart():
         assert math.hypot(x1 - x0, y1 - y0) == pytest.approx(0.09, abs=1e-3)
         assert yaw0 == pytest.approx(math.pi / 2, abs=1e-3)
         assert yaw1 == pytest.approx(math.pi / 2, abs=1e-3)
-        # make_tray_pair_trials.py: the tray at 140.4 deg, yawed uniform(+-25 deg).
+        # The RSS pair trials (make_tray_pair_trials.py at 18b974e): the tray at 140.4 deg, yawed uniform(+-25 deg).
         assert abs(layout.tray_yaw - 2.4504) <= math.radians(25) + 1e-3
 
 
@@ -176,3 +177,27 @@ def test_both_and_cluttered_opt_in():
         "vabar_syringe_disposal__designated": None,
         "vabar_syringe_disposal__cluttered": "clutter_layouts.json",
     }
+
+
+def test_a_trial_with_fewer_syringes_parks_the_spare_off_the_tray():
+    names = tuple(f"syringe_{i}" for i in range(6))
+    assets, layout = _solved(names, math.pi / 2)
+    trial = tray_layouts.TrayLayout(syringes=tuple((0.0, 0.05 * i, 0.3) for i in range(5)))
+    tray_layouts.apply_layout(layout, names, trial)
+    x, y, z = layout.positions[assets["syringe_5"]]
+    assert (x, y) == tray_layouts.PARKED_XY
+    assert z == pytest.approx(0.80 - tray_layouts.TRAY_FLOOR_ABOVE_TABLE_M)
+    assert layout.orientations[assets["syringe_5"]] == pytest.approx(tray_layouts.PARKED_YAW)
+    low, high = tray_layouts.PARKED_BOUNDS_XYZXYZ[:3], tray_layouts.PARKED_BOUNDS_XYZXYZ[3:]
+    assert all(lo <= v <= hi for v, lo, hi in zip((x, y, z), low, high, strict=True))
+    # Every laid-out syringe stays outside the parked box.
+    for name in names[:5]:
+        px, py, _ = layout.positions[assets[name]]
+        assert not (low[0] <= px <= high[0] and low[1] <= py <= high[1])
+
+
+def test_cluttered_scores_the_parked_box_the_layouts_use():
+    from ib_support import load_scene, scene_params
+
+    params = scene_params(load_scene("syringe_disposal/cluttered.yaml"))
+    assert tuple(params["parked_bounds_xyzxyz"]) == tray_layouts.PARKED_BOUNDS_XYZXYZ

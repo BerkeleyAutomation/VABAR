@@ -1,6 +1,6 @@
 # Arena GaP adapter
 
-`isaaclab_arena_gap` connects AUTOLab v1.0's GaP manipulation graphs to industrial Isaac Lab Arena
+`isaaclab_arena_gap` connects the RSS version's GaP manipulation graphs to industrial Isaac Lab Arena
 environments. Arena owns simulation, task scoring, recording, and episode JSONL. The graph runs in
 AUTOLab's own environment through RoboSimStudio's policy agent (the RSS adapter, `rss_adapter/`),
 receives calibrated observations and returns robot targets through a synchronous msgpack bridge.
@@ -38,7 +38,7 @@ From the repository root:
 ```
 
 The root `.venv` contains Arena, Isaac Lab, Isaac Sim, `isaaclab_arena_vabar`, and `isaaclab_arena_gap`.
-The RSS adapter runs in AUTOLab v1.0's own environment (`AUTOLAB_VABAR_VENV`, synced from AUTOLab's
+The RSS adapter runs in the RSS version's own environment (`AUTOLAB_VABAR_VENV`, synced from AUTOLab's
 lock; `docs/SETUP.md` section 3 says where it lives); the five skill bundles keep separate Python 3.11 environments. VLM credentials belong in
 `$HOME/.config/gap/vlm.env`; the repository supplies overrideable provider, endpoint, and model
 defaults. A repository-owned registry override adapts the pinned VLM bundle's GPT-5 request shape
@@ -87,7 +87,7 @@ interface, provenance contract, build command, and one-episode OSMO smoke. The
 live under `experiment_configs/`.
 
 The catalog contains 22 single-environment baseline Experiments, all managed GaP
-remote-policy Experiments that run AUTOLab v1.0's graph through the RSS adapter
+remote-policy Experiments that run the RSS version's graph through the RSS adapter
 (`rss_adapter`, launcher `scripts/run_rss_graph.sh`). Five additional
 Experiments (cable easy and medium; gear easy, easy pair and medium train) evaluate the published
 layout seeds. Syringe has four GaP

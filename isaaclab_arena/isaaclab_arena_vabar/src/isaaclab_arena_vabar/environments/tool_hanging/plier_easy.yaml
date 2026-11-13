@@ -80,7 +80,8 @@ task:
   - kind: IndustrialToolHangingTask
     params:
       episode_length_s: 141.66666666666666
-      # Scored on the episode's final state, exactly as AUTOLab v1.0 scores tool hanging.
+      # Scored as the RSS version's pliers_level1.task scores it: each tool hung, at rest and
+      # released, held for 1 s (hold-for 1.0), and success ends the episode.
       tools: [plier_1]
       fixtures: [plier_support_left]
       goals:
@@ -91,3 +92,8 @@ task:
           maximum_xyz: [0.143, -0.123, 0.1]
         contact_force_n: 0.2
         speed_m_s: 0.15
+        # (> (hands-clear TOOL) R), measured from the tool's physical centre (the centre of its
+        # collision hulls' bounds): R is the tool's 83 mm radius about it plus 15 mm, rounded up
+        # to the centimetre, the RSS version's rule. Its documents state 0.11, about their own origin.
+        hands_clear_m: 0.10
+        release_point_xyz: [0.01009, 0.00092, 0.004]

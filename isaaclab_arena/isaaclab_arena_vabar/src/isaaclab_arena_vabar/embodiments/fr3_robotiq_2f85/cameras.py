@@ -5,8 +5,8 @@ One rig per suite, copied from the rig each RSS suite stages:
 - gear mesh: ``gear_mesh_views@v2`` in tasks/gear_mesh/staging.py;
 - tool sorting Level 1: ``tool_sort_agentview@v3`` in tasks/tool_sort/staging.py,
   named by profile ``vab_industrial_robotiq@v1``;
-- syringe: ``agentview@v2`` in tasks/syringe_packing/staging.py, named by
-  profile ``vab_industrial@v2``.
+- syringe: ``sharps_agentview@v1`` in tasks/syringe_packing/staging.py, named by
+  profile ``sharps_vab_industrial@v1`` (the same rig, formerly ``agentview@v2``).
 """
 
 import math
@@ -228,7 +228,7 @@ class Fr3ToolSortingCameraCfg(ArenaCameraCfg):
 
 @configclass
 class Fr3SyringeCameraCfg(ArenaCameraCfg):
-    """``agentview@v2``: overhead, agentview and eye-in-hand, all 1280 x 960."""
+    """``sharps_agentview@v1`` (formerly ``agentview@v2``): overhead, agentview and eye-in-hand, all 1280 x 960."""
 
     top_camera: CameraCfg = _fixed("top_camera", _SYRINGE_VIEWS, _VAB_PANDA_BASE)
     oblique_camera: CameraCfg = _fixed(

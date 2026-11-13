@@ -24,7 +24,7 @@ BASELINES = [p for p in RSS_CONFIGS if p.name.endswith("_gap_baseline.yaml")]
 NON_V1_DOCUMENTS = {
     # v1.0's syringe cells are both-syringes (L1) and clutter (L2); Arena's single and
     # designated variants post one syringe from the tray, AUTOLab's tray_pair task.
-    "syringe_packing/tray_pair": ("dispose_the_syringe_from_the_tray.task", "graphs/gap_perception"),
+    "syringe_packing/tray_pair": ("tray_pair.task", "graphs/gap_perception"),
 }
 # v1.0 recorded no gear selection and takes the first 30 documents by index. The gear
 # campaigns pin each seed to the document the RSS comparison runs used; these

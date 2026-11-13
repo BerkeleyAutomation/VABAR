@@ -1,10 +1,11 @@
-"""Tool-hanging completion predicates and the final-state success term."""
+"""Tool-hanging completion predicates and the released, held success term."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Literal
 
+import isaaclab.utils.math as math_utils
 import torch
 from isaaclab.managers import SceneEntityCfg
 
@@ -14,6 +15,17 @@ from .geometry import LoopFeature, RodFeature, _world_point, encloses, threaded
 
 _FORCE_WINDOW_STEPS = 10
 _FORCE_HISTORY_ATTR = "_tool_hanging_force_history"
+_HOLD_STATE_ATTR = "_tool_hanging_hold_state"
+
+
+# Isaac Lab prepares termination parameters in place, so this dataclass must stay mutable.
+@dataclass
+class HandTcp:
+    """One arm's tool centre, as the RSS version's ``hands-clear`` reads it."""
+
+    robot_name: str
+    body_name: str
+    offset_xyz: tuple[float, float, float]
 
 
 @dataclass
@@ -35,6 +47,10 @@ class HangingGoalSpec:
     alternative_fixture_names: tuple[str, ...] = ()
     predicate: Literal["threaded", "encloses"] = "threaded"
     alternative_loops: tuple[LoopFeature, ...] = ()
+    hands_clear_m: float | None = None
+    """The release clause's ``R``: every TCP must be farther than this from the release point."""
+    release_point_xyz: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    """The point ``hands_clear_m`` is measured from, in the tool's frame (see the scene YAMLs)."""
 
     @property
     def fixture_names(self) -> tuple[str, ...]:
@@ -106,6 +122,18 @@ def _world_pose(asset_or_frame) -> torch.Tensor:
     return torch.cat((position, orientation), dim=-1)
 
 
+def _finite_rows(*poses: torch.Tensor) -> tuple[torch.Tensor, list[torch.Tensor]]:
+    """Return which rows are finite in every pose, and the poses with the others replaced.
+
+    A tool that the solver throws to a non-finite state has not been hung: its
+    rows score as incomplete instead of failing the whole episode's scoring.
+    """
+    finite = torch.stack([torch.isfinite(pose).all(dim=-1) for pose in poses]).all(dim=0)
+    identity = torch.zeros_like(poses[0][0])
+    identity[6] = 1.0
+    return finite, [torch.where(finite.unsqueeze(-1), pose, identity) for pose in poses]
+
+
 def _contained_in_fixture_box(goal: HangingGoalSpec, tool_pose: torch.Tensor, fixture_pose: torch.Tensor) -> torch.Tensor:
     assert goal.containment_min_xyz is not None and goal.containment_max_xyz is not None
     # RSS region_bounds translates world-axis bounds by the fixture origin;
@@ -123,13 +151,16 @@ def tool_hanging_goal_completion(env, *, goals: tuple[HangingGoalSpec, ...]) -> 
     for goal in goals:
         tool = env.scene[goal.tool_name]
         if goal.containment_min_xyz is not None:
-            geometry_complete = _contained_in_fixture_box(
-                goal, _world_pose(tool), _world_pose(env.scene[goal.fixture_name])
+            finite, (tool_pose, fixture_pose) = _finite_rows(
+                _world_pose(tool), _world_pose(env.scene[goal.fixture_name])
             )
+            geometry_complete = _contained_in_fixture_box(goal, tool_pose, fixture_pose)
         else:
             assert goal.loop is not None and goal.rod is not None
-            loop_pose = _world_pose(env.scene[goal.loop_owner_name])
-            rod_pose = _world_pose(env.scene[goal.rod_owner_name])
+            finite, (loop_pose, rod_pose) = _finite_rows(
+                _world_pose(env.scene[goal.loop_owner_name]),
+                _world_pose(env.scene[goal.rod_owner_name]),
+            )
             if goal.predicate == "threaded":
                 predicate = threaded
             elif goal.predicate == "encloses":
@@ -145,6 +176,7 @@ def tool_hanging_goal_completion(env, *, goals: tuple[HangingGoalSpec, ...]) -> 
                 ],
                 dim=-1,
             ).any(dim=-1)
+        geometry_complete = geometry_complete & finite
         sensor = env.scene[goal.contact_sensor_name]
         has_contact = (
             _filtered_force_magnitude(env, goal.contact_sensor_name, sensor)
@@ -164,29 +196,75 @@ def tool_hanging_success(env, *, goals: tuple[HangingGoalSpec, ...]) -> torch.Te
     return torch.all(tool_hanging_goal_completion(env, goals=goals), dim=-1)
 
 
-def _episode_is_ending(env, like: torch.Tensor) -> torch.Tensor:
-    """Whether this step ends the episode: the policy asked to stop, or the time limit is reached."""
-    request_state = getattr(env, "external_policy_termination_requested", None)
-    policy_termination = (
-        torch.as_tensor(request_state(), device=like.device, dtype=torch.bool)
-        if request_state is not None
-        else torch.zeros_like(like)
-    )
-    return policy_termination | (as_torch(env.episode_length_buf) >= env.max_episode_length)
+def _tcp_positions(env, hands: tuple[HandTcp, ...]) -> torch.Tensor:
+    """Every hand's tool-centre position, shape ``(num_envs, len(hands), 3)``."""
+    positions = []
+    for hand in hands:
+        robot = env.scene[hand.robot_name]
+        names = list(robot.data.body_names)
+        if names.count(hand.body_name) != 1:
+            raise ValueError(f"{hand.robot_name} must have exactly one body named {hand.body_name!r}")
+        index = names.index(hand.body_name)
+        body_position = as_torch(robot.data.body_link_pos_w)[:, index]
+        body_quaternion = as_torch(robot.data.body_link_quat_w)[:, index]
+        offset = torch.as_tensor(hand.offset_xyz, device=body_position.device, dtype=body_position.dtype)
+        positions.append(body_position + math_utils.quat_apply(body_quaternion, offset.expand_as(body_position)))
+    return torch.stack(positions, dim=1)
 
 
-def tool_hanging_final_state_success(
-    env, *, goals: tuple[HangingGoalSpec, ...]
+def tool_hanging_hands_clear(
+    env, *, goals: tuple[HangingGoalSpec, ...], hands: tuple[HandTcp, ...]
 ) -> torch.Tensor:
-    """Score the scene the episode ends on, exactly as AUTOLab v1.0 scores tool hanging.
+    """Per goal, whether no hand's TCP is within ``hands_clear_m`` of the tool's release point.
 
-    AUTOLab's suite sets ``(:terminate-on-success false)`` and evaluates its goal on the
-    episode's last step: the graph's end plus its settle steps, or the step limit. A goal met
-    earlier, mid-insertion with the tool still in hand, does not end the episode. As in
-    AUTOLab, nothing checks release: a tool still pressed against its fixture when the step
-    limit ends the episode passes if every clause holds.
-
-    The goal is evaluated on every step so the contact-force window keeps its history.
+    The RSS version's ``(> (hands-clear TOOL) R)``: the distance from the tool to the nearest
+    tool centre of either arm. A goal without ``hands_clear_m`` has no release clause.
     """
-    complete = tool_hanging_success(env, goals=goals)
-    return complete & _episode_is_ending(env, complete)
+    tcps = _tcp_positions(env, hands) if hands else None
+    clear: list[torch.Tensor] = []
+    for goal in goals:
+        tool_pose = _world_pose(env.scene[goal.tool_name])
+        if goal.hands_clear_m is None or tcps is None:
+            clear.append(torch.ones(tool_pose.shape[0], dtype=torch.bool, device=tool_pose.device))
+            continue
+        point = _world_point(goal.release_point_xyz, tool_pose)
+        distance = torch.linalg.vector_norm(tcps - point[:, None, :], dim=-1).amin(dim=-1)
+        clear.append(distance > goal.hands_clear_m)
+    return torch.stack(clear, dim=-1)
+
+
+def tool_hanging_released_completion(
+    env, *, goals: tuple[HangingGoalSpec, ...], hands: tuple[HandTcp, ...]
+) -> torch.Tensor:
+    """Per goal, every clause of the RSS version's goal this step: hung, at rest, and let go."""
+    return tool_hanging_goal_completion(env, goals=goals) & tool_hanging_hands_clear(
+        env, goals=goals, hands=hands
+    )
+
+
+def tool_hanging_held_success(
+    env, *, goals: tuple[HangingGoalSpec, ...], hands: tuple[HandTcp, ...], hold_s: float
+) -> torch.Tensor:
+    """Success once every goal, release included, has held for ``hold_s`` of simulated time.
+
+    The RSS version wraps each tool's clause in ``(hold-for 1.0 ...)`` and ends the episode on
+    success; its ``HoldFor`` counts held time from the first step the clause held. Both tools of
+    a level-2 scene holding for the last second is the same as their conjunction holding for it,
+    so one streak per environment serves. Evaluated once per
+    control step; a repeated call within a step reads the stored streak.
+    """
+    complete = torch.all(tool_hanging_released_completion(env, goals=goals, hands=hands), dim=-1)
+    steps = as_torch(env.episode_length_buf).to(device=complete.device, dtype=torch.long)
+    state = getattr(env, _HOLD_STATE_ATTR, None)
+    if state is None or state[0].shape[0] != complete.shape[0]:
+        state = (torch.zeros_like(steps), torch.full_like(steps, -1))
+        setattr(env, _HOLD_STATE_ATTR, state)
+    streak, last_steps = state
+    reset = steps < last_steps
+    streak[reset] = 0
+    changed = steps != last_steps
+    streak[changed] = torch.where(complete[changed], streak[changed] + 1, torch.zeros_like(streak[changed]))
+    last_steps[changed] = steps[changed]
+    # As RSS's HoldFor: held time runs from the first step the clause held, so N steps hold (N - 1) dt.
+    held_s = (streak - 1).clamp(min=0).to(torch.float64) * float(env.step_dt)
+    return (streak > 0) & (held_s >= float(hold_s) - 1.0e-9)
