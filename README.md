@@ -66,6 +66,20 @@ Hugging Face, so set `HF_TOKEN` first; the VLM is configured with `GAP_VLM_*`. S
 
 `python -m vabar run --help` lists everything.
 
+### Rooms
+
+With the path-traced renderer (`--renderer rtx`), each bench stands in a 3D room from NVIDIA's public
+Isaac Sim assets: a warehouse aisle for tool sorting, tool hanging and gear meshing, a hospital supply
+room for syringe packing, and data-hall server rows for the two cable tasks. The rooms are scenery
+only: no colliders and no effect on the physics. Download them once (about 2 GB, 15 minutes):
+
+```bash
+uv run python tools/fetch_rooms.py   # into ~/.cache/vabar/isaac_rooms; set VABAR_ROOMS_DIR to keep them elsewhere
+```
+
+`VABAR_ROOMS=0` turns them off. Without the files, or with the tiled renderer, scenes look as before.
+The rooms are in what the policy's cameras see, so a run with them is not pixel-identical to one without.
+
 ### Running in Isaac Lab Arena
 
 The same tasks and graphs also run in [Isaac Lab Arena](https://github.com/isaac-sim/IsaacLab-Arena) on

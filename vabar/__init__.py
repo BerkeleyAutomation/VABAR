@@ -75,6 +75,9 @@ def install(*, only: bool = True) -> Path:
     from robosimstudio.roots import add_task_root
 
     add_task_root(TASKS)
+    from .rooms import install as install_rooms
+
+    install_rooms()  # each suite's Isaac room in every path-traced picture (VABAR_ROOMS=0 turns it off)
     return TASKS
 
 
