@@ -5,7 +5,7 @@ Shuangyu Xie<sup>*</sup>, Kaiyuan Chen, Uksang Yoo, Xinyue Zhu, Meadow Shen, Jai
 Lionel Gulich, Alexander Millane, Rafael Cathomen, Tuur Stuyck, Sangeeta Subramanian, Yichao Pan,
 Bruce McGowan, Michael Benedict, Linxi Fan, Yuke Zhu, Spencer Huang, Ken Goldberg
 
-[Project page](https://vabar-benchmark.github.io/) | [RoboSimStudio](https://github.com/robosimstudio/robosimstudio) | [Skill library](https://github.com/graph-robots/open-robot-skills)
+[Project page](https://berkeleyautomation.github.io/vabar-website/) | [RoboSimStudio](https://github.com/robosimstudio/robosimstudio) | [Skill library](https://github.com/graph-robots/open-robot-skills)
 
 <p align="center">
   <img alt="The six VABAR task classes: tool sorting, tool hanging, gear meshing, syringe packing, cable insertion and cable routing" src="media/teaser.jpg" width="100%" />
